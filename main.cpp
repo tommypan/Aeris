@@ -25,29 +25,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	wcex.hIconSm = wcex.hIcon;
 	wcex.hInstance = hInstance;
 	wcex.lpfnWndProc = WndProc;
-	wcex.lpszClassName = L"LightDemo";
+	wcex.lpszClassName = L"Aeris";
 	wcex.lpszMenuName = nullptr;
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 
 	if (!RegisterClassEx(&wcex))
-		return 0;
+		return -1;
 
 
 	RECT rc = { 0, 0, 800, 600 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, false);
 
-	HWND hwnd = CreateWindowEx(WS_EX_APPWINDOW, L"LightDemo", L"LightDemo", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+	HWND hwnd = CreateWindowEx(WS_EX_APPWINDOW, L"Aeris", L"Aeris", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
 		CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
 	if (!hwnd)
-		return 0;
+		return -2;
 
 	ShowWindow(hwnd, nShowCmd);
 
 
 	bool result =  RenderSetting::GetIntance()->InitDirect3D(hInstance, hwnd);
 	if (!result)
-		return 0;
+		return -3;
 	demo = Scene::GetInstance();
 	demo->LoadContent();
 	MSG msg;

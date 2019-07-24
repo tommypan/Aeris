@@ -2339,8 +2339,8 @@ inline Matrix Matrix::Compose(const Vector3& translation, const Quaternion& rota
 	using namespace DirectX;
 	Matrix result = Matrix::Identity;
 	result = result * XMMatrixTranslation(translation.x, translation.y, translation.z);
+	Matrix::Transform(result, rotation, result);
 	result = result * XMMatrixScaling(scale.x, scale.y, scale.z);
-	Matrix::Transform(result, rotation,result);
 	return result;
 }
 

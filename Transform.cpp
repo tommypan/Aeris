@@ -1,7 +1,7 @@
 #include "Transform.h"
 #include "Macro.h"
 
-Transform::Transform(Entity* entity_) :_hostEntity(entity_)
+Transform::Transform(Entity* entity_) :_hostEntity(entity_), _parent(nullptr)
 {
 	name = entity_->GetName();
 	_position = Vector3::Zero;
