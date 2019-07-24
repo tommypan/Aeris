@@ -20,10 +20,10 @@ Transform::~Transform()
 {
 	 if (_needUpdate)
 	 {
-		 _world = Matrix::Compose(_position, _rotation, _scale);
+		 //_world = Matrix::Compose(_position, _rotation, _scale);
 		 _needUpdate = false;
 	 }
-	//return Matrix::CreateTranslation(_position) * Matrix::CreateFromQuaternion(_rotation) * Matrix::CreateScale(_scale);
+	return Matrix::CreateTranslation(_position) * Matrix::CreateFromQuaternion(_rotation) * Matrix::CreateScale(_scale);
 	 return _world;
 }
 

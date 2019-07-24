@@ -59,7 +59,7 @@ public:
 	DirectX::XMMATRIX proj;
 private:
 	Shader * shader;//同上
-
+	int RenderQueue;
 	//光源和材质
 	//DirectionalLight				m_dirLight;
 	//PointLight						m_pointLight;

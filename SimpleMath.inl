@@ -2581,7 +2581,7 @@ inline Matrix Matrix::CreateLookAt(const Vector3& eye, const Vector3& target, co
 	XMVECTOR eyev = XMLoadFloat3(&eye);
 	XMVECTOR targetv = XMLoadFloat3(&target);
 	XMVECTOR upv = XMLoadFloat3(&up);
-	XMStoreFloat4x4(&R, XMMatrixLookAtRH(eyev, targetv, upv));
+	XMStoreFloat4x4(&R, XMMatrixLookAtLH(eyev, targetv, upv));
 	return R;
 }
 
