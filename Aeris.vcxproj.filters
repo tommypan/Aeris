@@ -57,6 +57,9 @@
     <ClCompile Include="SimpleMath.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="TestCase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Material.h">
@@ -99,6 +102,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SimpleMath.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCase.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

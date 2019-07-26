@@ -2,11 +2,12 @@
 #include <windowsx.h>
 #include <memory>
 #include "Scene.h"
+#include "TestCase.h"
 #include "RenderSetting.h"
 
 using namespace std;
 
-Scene* demo = nullptr;
+TestCase* demo = nullptr;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -48,7 +49,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	bool result =  RenderSetting::GetIntance()->InitDirect3D(hInstance, hwnd);
 	if (!result)
 		return -3;
-	demo = Scene::GetInstance();
+	demo = new TestCase();
 	demo->LoadContent();
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -60,7 +61,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			DispatchMessage(&msg);
 		}
 		demo->Update(0.0f);
-		demo->Render();		
+		Scene::GetInstance()->Render();
 	}
 	demo->UnLoadContent();
 	delete demo;
