@@ -36,9 +36,9 @@ public:
 	std::string name;
 private:
 	void UpdateChildrenTransform(bool updatePos,bool updateRot,bool updateSca);
-	inline void UpdatePositionByLocal() { _parent != nullptr ? (_position = _localPosition + _parent->GetPosition()) : (_position = _localPosition); };
-	inline void UpdateRotationByLocal() { _parent != nullptr ? (_rotation = _localRotation + _parent->GetRotation()) : (_rotation = _localRotation); };
-	inline void UpdateScalenByLocal() { _parent != nullptr ? (_scale = _localScale * _parent->GetScale()) : (_scale = _localScale); };
+	inline void UpdatePositionByLocal() { _parent != nullptr ? (_position = Vector3::Transform(_parent->GetScale()*_localPosition, _parent->GetRotation()) + _parent->GetPosition()) : (_position = _localPosition); };
+	inline void UpdateRotationByLocal() { _parent != nullptr ? (_rotation = _localRotation * _parent->GetRotation()) : (_rotation = _localRotation); };
+	inline void UpdateScaleByLocal() { _parent != nullptr ? (_scale = _localScale * _parent->GetScale()) : (_scale = _localScale); };
 private:
 	std::list<Transform*> _children;
 	Entity * _hostEntity;

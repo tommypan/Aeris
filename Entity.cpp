@@ -4,12 +4,14 @@
 #include "RenderSetting.h"
 #include "Shader.h"
 #include "MeshRender.h"
+#include "Scene.h"
 
 Entity::Entity():_layer(Layer::Default)
 { 
 	_transform = new Transform(this); 
 	_mesh = new Mesh();
 	_material = new Material();
+	Scene::GetInstance()->AddChild(this);
 }
 
 Entity::Entity(Mesh* mesh) :_layer(Layer::Default)
@@ -19,6 +21,7 @@ Entity::Entity(Mesh* mesh) :_layer(Layer::Default)
 	_material = new Material();
 	_material->SetShader("FX\\Lighting.fx");
 	_meshRender = new MeshRender(_mesh,_material);
+	Scene::GetInstance()->AddChild(this);
 }
 
 Entity::Entity(const std::string&  meshPath, const std::string& materialPathh) :_mesh(nullptr),_material(nullptr), _layer(Layer::Default)
@@ -27,6 +30,7 @@ Entity::Entity(const std::string&  meshPath, const std::string& materialPathh) :
 	_transform = new Transform(this);
 	_mesh = new Mesh(meshPath);
 	_material = new Material(materialPathh);
+	Scene::GetInstance()->AddChild(this);
 }
 
 Entity::~Entity()

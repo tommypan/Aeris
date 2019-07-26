@@ -17,19 +17,7 @@ Camera::~Camera()
 
 void Camera::Render()
 {
-	Vector3 target(0.0f, 0.0f, 0.0f);
-	Vector3  up(0.0f, 1.0f, 0.0f);
-	Matrix v= Matrix::CreateLookAt(_transform->GetPosition(), Vector3::Zero, Vector3::Up);
-	//XMStoreFloat4x4(&m_view, v);
-	_transform->SetRotation(Quaternion::CreateFromRotationMatrix(v));
 	XMStoreFloat4x4(&m_view, _transform->GetWorldTransform().Invert());
-
-	//XMVECTOR target = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	//XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	//XMMATRIX V = XMMatrixLookAtLH((XMVECTOR)_transform->GetPosition(), target, up);
-	//XMStoreFloat4x4(&m_view, V);
-
 
 	fov = CLAMP(fov,maxFov,minFov);
 	XMMATRIX T = XMMatrixPerspectiveFovLH(fov/ maxFov*XM_PI, RenderSetting::GetIntance()->m_width / static_cast<float>(RenderSetting::GetIntance()->m_height),

@@ -1,13 +1,14 @@
 #include "Transform.h"
 #include "Macro.h"
 
-Transform::Transform(Entity* entity_) :_hostEntity(entity_), _parent(nullptr)
+Transform::Transform(Entity* entity_) :_hostEntity(entity_)
 {
 	name = entity_->GetName();
 	_position = Vector3::Zero;
 	_rotation = Quaternion::Identity;
 	_scale = Vector3::One;
 	_needUpdate = true;
+	SetParent(nullptr);
 };
 
 Transform::~Transform()
@@ -20,16 +21,17 @@ Transform::~Transform()
 {
 	 if (_needUpdate)
 	 {
-		 //_world = Matrix::Compose(_position, _rotation, _scale);
+		 _world = Matrix::Compose(_position, _rotation, _scale);
 		 _needUpdate = false;
 	 }
-	return Matrix::CreateTranslation(_position) * Matrix::CreateFromQuaternion(_rotation) * Matrix::CreateScale(_scale);
 	 return _world;
 }
 
  void Transform::SetParent(Transform * parent)
  {
 	 _parent = parent;
+	 SetScale(_scale);
+	 SetRotation(_rotation);
 	 SetPosition(_position);
  }
 
@@ -39,7 +41,9 @@ void Transform::SetPosition(const Vector3& worldPosition)
 	_position = worldPosition;
 	if (_parent != nullptr)
 	{
-		_localPosition = worldPosition - _parent->GetPosition();
+		Quaternion invertRotation;
+		_parent->GetRotation().Inverse(invertRotation);
+		_localPosition = Vector3::Transform(worldPosition - _parent->GetPosition(), invertRotation) /_parent->GetScale();
 	}
 	else
 	{
@@ -54,7 +58,7 @@ void Transform::SetRotation(const Quaternion& worldRotation)
 	_rotation = worldRotation;
 	if (_parent != nullptr)
 	{
-		_localRotation = worldRotation - _parent->GetRotation();
+		_localRotation = worldRotation / _parent->GetRotation();
 	}
 	else
 	{
@@ -126,7 +130,7 @@ void Transform::UpdateChildrenTransform(bool updatePos, bool updateRot, bool upd
 	}
 	if (updateSca)
 	{
-		UpdateScalenByLocal();
+		UpdateScaleByLocal();
 	}
 
 	std::list<Transform*>::iterator start = _children.begin();

@@ -8,6 +8,16 @@
 
 Scene::Scene() :m_theta(1.5f*XM_PI), m_phi(0.4f*XM_PI), m_radius(40.0f)
 {
+
+}
+
+Scene::~Scene()
+{
+
+}
+
+bool Scene::LoadContent()
+{
 	//初始化各个物体的世界变换矩阵
 	//平行光
 	m_dirLight.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -28,23 +38,14 @@ Scene::Scene() :m_theta(1.5f*XM_PI), m_phi(0.4f*XM_PI), m_radius(40.0f)
 	m_spotLight.spot = 96.0f;
 	m_spotLight.range = 10000.0f;
 	camera = new Camera();
-	camera->cullMask = 1 << Layer::Default | 1<< Layer::Effect;
-}
+	camera->cullMask = 1 << Layer::Default | 1 << Layer::Effect;
 
-Scene::~Scene()
-{
-
-}
-
-bool Scene::LoadContent()
-{
 	Mesh* gridMesh = GeometryUtility::GetInstance()->CreateGrid(20.f, 20.f, 50, 50);
 	m_grid = new Entity(gridMesh);
 	m_grid->GetMaterial()->ambient = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
 	m_grid->GetMaterial()->diffuse = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
 	m_grid->GetMaterial()->specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
 	m_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
-	AddChild(m_grid);
 
 	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
 	m_box = new Entity(boxMesh);
@@ -54,7 +55,6 @@ bool Scene::LoadContent()
 	m_box->GetTransform()->SetPosition(Vector3(0.f, .75f, 0.f));
 	m_box->GetTransform()->SetScale(Vector3(2, 2, 2));
 	m_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
-	AddChild(m_box);
 
 
 	Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
@@ -63,7 +63,6 @@ bool Scene::LoadContent()
 	m_sphere[4]->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
 	m_sphere[4]->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
 	m_sphere[4]->GetTransform()->SetPosition(Vector3(0.f, 3.5f, 0.f));
-	AddChild(m_sphere[4]);
 
 	//4个圆柱和4个球（位于4个对称点上）
 	for (UINT i = 0; i < 2; ++i)
@@ -77,7 +76,6 @@ bool Scene::LoadContent()
 			m_sphere[i * 2 + j]->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
 			m_sphere[i * 2 + j]->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
 			m_sphere[i * 2 + j]->GetTransform()->SetPosition(Vector3(-5.f + i*10.f, 4.f, -5.f + j*10.f));
-			AddChild(m_sphere[i * 2 + j]);
 			//m_sphere[i * 2 + j]->SetLayer(Layer::UI);
 
 			Mesh* cylinderMesh = GeometryUtility::GetInstance()->CreateCylinder(0.5f, 0.5f, 2, 20, 20);
@@ -86,7 +84,6 @@ bool Scene::LoadContent()
 			m_cylinder[i * 2 + j]->GetMaterial()->diffuse = XMFLOAT4(0.651f, 0.5f, 0.392f, 1.0f);
 			m_cylinder[i * 2 + j]->GetMaterial()->specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
 			m_cylinder[i * 2 + j]->GetTransform()->SetPosition(Vector3(-5.f + i*10.f, 1.f, -5.f + j*10.f));
-			AddChild(m_cylinder[i * 2 + j]);
 			//m_cylinder[i * 2 + j]->SetLayer(Layer::UI);
 		}
 	}
@@ -119,12 +116,23 @@ void Scene::Update(float dt)
 	float z = m_radius*sinf(m_phi)*sinf(m_theta);
 	float y = m_radius*cosf(m_phi);
 
-	camera->GetTransform()->SetPosition(Vector3(x,y,z));
+	Vector3 orignPos = Vector3(x,y,z);
+
+	Matrix v = Matrix::CreateLookAt(orignPos, Vector3::Zero, Vector3::Up);
+	Matrix invertM = v.Invert();
+	Vector3 cameraScale;
+	Quaternion cameraRot;
+	Vector3 cameraPos;
+	invertM.Decompose(cameraScale, cameraRot, cameraPos);
+	camera->GetTransform()->SetScale(cameraScale);
+	camera->GetTransform()->SetRotation(cameraRot);
+	camera->GetTransform()->SetPosition(cameraPos);
+
 	//点光源和聚光灯要设置其位置
 	//点光源位置
 	m_pointLight.position = XMFLOAT3(0.0f, 5.0f, 0.0f);
 	//聚光灯位置设为相机位置，朝向看的位置
-	m_spotLight.position = camera->GetTransform()->GetPosition();
+	m_spotLight.position = orignPos;
 	XMStoreFloat3(&m_spotLight.direction, XMVector3Normalize(Vector3(0,0,0) - Vector3(x,y,z)));	
 }
 
