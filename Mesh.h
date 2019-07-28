@@ -48,7 +48,6 @@ public:
 	std::vector<UINT> indices;
 private:
 	bool _valide = false;
-
 private:
 	static std::unordered_map<std::string, Mesh*> _meshDatas;
 };

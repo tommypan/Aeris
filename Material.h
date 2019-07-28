@@ -5,6 +5,13 @@
 
 using namespace DirectX;
 
+enum RenderQueue
+{
+	Geometry = 2000,
+	AlphaTest = 3000,
+	Transperent = 4000,
+};
+
 struct MaterialUniform
 {
 	MaterialUniform(const XMFLOAT4& ambient_,const XMFLOAT4& diffuse_, const XMFLOAT4& specular_,const XMFLOAT4& reflect_)
@@ -48,6 +55,7 @@ private :
 		return result;
 	};
 
+	void Init();
 public:
 	Texture * texture;//这些地方其实可以封个ptr再暴露给外部，让外部没有机会瞎搞，不过这个只是自己用的renderengine，就算了
 	XMFLOAT4 ambient;
@@ -57,9 +65,9 @@ public:
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMMATRIX view;
 	DirectX::XMMATRIX proj;
+	int RenderQueue;
 private:
 	Shader * shader;//同上
-	int RenderQueue;
 	//光源和材质
 	//DirectionalLight				m_dirLight;
 	//PointLight						m_pointLight;

@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Transform.h"
 #include "Macro.h"
+#include "Material.h"
 
 enum Layer
 {
@@ -12,7 +13,6 @@ enum Layer
 };
 
 class Mesh;
-class Material;
 class Transform;
 class MeshRender;
 class Entity
@@ -26,9 +26,12 @@ public:
 	void Render(DirectX::CXMMATRIX view, DirectX::CXMMATRIX proj);
 	inline Transform * GetTransform() { return _transform; };
 	const std::string& GetName()const { return _name; };
-	Material* GetMaterial() { return _material; };
-	void SetLayer(Layer layer);
-	int GetLayer() { return int(_layer); };
+	Material* GetMaterial()const { return _material; };
+	inline int GetRenderQueue() { return _material != nullptr ? _material->RenderQueue : 0; };
+	inline void SetLayer(Layer layer) { _layer = layer; };
+	inline int GetLayer() { return int(_layer); };
+	inline void SetDistToCam(const float& dist) { _distToCurCamera = dist; };
+	bool operator<(Entity*compareE);
 protected:
 	void Clear();
 protected:
@@ -39,5 +42,6 @@ protected:
 	MeshRender* _meshRender;
 	DirectX::XMFLOAT4X4 _world;
 	Layer _layer;
+	float _distToCurCamera;
 };
 

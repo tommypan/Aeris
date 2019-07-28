@@ -1,12 +1,11 @@
 #include "Camera.h"
 #include "RenderSetting.h"
 #include "Scene.h"
-#include <list>
 #include <cmath>
 
 #define CLAMP(x, upper, lower) (min(upper, max(x, lower)))
 
-Camera::Camera():nearZ(1),farZ(1000), projection(CameraProjection::Perspective), minFov(1),maxFov(180), fov(30)
+Camera::Camera():nearZ(1),farZ(1000), projection(CameraProjection::Perspective), minFov(1),maxFov(180), fov(30), zTest(true)
 {
 	Scene::GetInstance()->RemoveChild(this);//效率考虑，没在AddChild去动态转换判断类型
 	Scene::GetInstance()->AddCamera(this);
@@ -31,8 +30,7 @@ void Camera::Render()
 	XMStoreFloat4x4(&m_view, _transform->GetWorldTransform().Invert());
 
 	fov = CLAMP(fov,maxFov,minFov);
-	XMMATRIX T = XMMatrixPerspectiveFovLH(fov/ maxFov*XM_PI, RenderSetting::GetIntance()->m_width / static_cast<float>(RenderSetting::GetIntance()->m_height),
-		nearZ, farZ);
+	XMMATRIX T = XMMatrixPerspectiveFovLH(fov/ maxFov*XM_PI, RenderSetting::GetIntance()->AspectRatio(),nearZ, farZ);
 	XMStoreFloat4x4(&m_proj, T);
 
 	RenderOpacity();
@@ -43,19 +41,31 @@ void Camera::Render()
 
 void Camera::RenderOpacity()
 {
-	std::list<Entity*>& opacity = Scene::GetInstance()->GeSortedOpacityChildren();
-	std::list<Entity*>::iterator startIt = opacity.begin();
-	while (startIt != opacity.end())
-	{
-		if (cullMask >> (*startIt)->GetLayer() & 1)
-		{
-			(*startIt)->Render(m_view, m_proj);
-		}
-		startIt++;
-	}
+	RenderSetting::GetIntance()->SetZWrite(true);
+	InnerRenderEntitys(Scene::GetInstance()->GeSortedOpacityChildren());
 }
 
 void Camera::RenderTransparent()
 {
+	RenderSetting::GetIntance()->SetZWrite(false);
+	InnerRenderEntitys(Scene::GetInstance()->GeSortedTransparentChildren());
+}
 
+void Camera::InnerRenderEntitys(std::map<int, std::list<Entity*>>& entitysMap)
+{
+	std::map<int, std::list<Entity*>>::iterator startMapIt = entitysMap.begin();
+	while (startMapIt != entitysMap.end())
+	{
+		std::list<Entity*>::iterator  startIt = (*startMapIt).second.begin();
+		while (startIt != (*startMapIt).second.end())
+		{
+			if (cullMask >> (*startIt)->GetLayer() & 1)
+			{
+				(*startIt)->Render(m_view, m_proj);
+			}
+			startIt++;
+		}
+
+		startMapIt++;
+	}
 }

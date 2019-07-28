@@ -12,7 +12,9 @@ m_pDepthStencilView(nullptr),
 m_pSwapChain(nullptr),
 m_hWnd(nullptr),
 m_width(800),
-m_height(600)
+m_height(600),
+m_pZWriteOpenState(nullptr),
+m_pZWriteCloseState(nullptr)
 {}
 
 RenderSetting::~RenderSetting()
@@ -140,34 +142,57 @@ bool RenderSetting::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	m_pImmediateContext->RSSetViewports(1, &vp);
 
 
-	//test start
-	// 关闭深度测试的深度/模板状态
-	// 若绘制非透明物体，务必严格按照绘制顺序
-	// 绘制透明物体则不需要担心绘制顺序？、/
-	//D3D11_DEPTH_STENCIL_DESC dsDesc;
-	//ZeroMemory(&dsDesc, sizeof(dsDesc));//--------------
-	//ID3D11DepthStencilState *ppDepthStencilState = nullptr;
-	////m_pImmediateContext->OMGetDepthStencilState(&ppDepthStencilState,0);
-	////ppDepthStencilState->GetDesc(&dsDesc);
-	//dsDesc.DepthEnable = false;
-	//dsDesc.StencilEnable = false;
-	//hr = m_pd3dDevice->CreateDepthStencilState(&dsDesc, &ppDepthStencilState);
-	//if (FAILED(hr))
-	//	return hr;
-	//m_pImmediateContext->OMSetDepthStencilState(ppDepthStencilState, 0);
-	//test end
+	// 开启深度写入/关闭模板状态
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	ZeroMemory(&dsDesc, sizeof(dsDesc));
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	//dsDesc.StencilEnable = true; 要一起设置
+	hr = m_pd3dDevice->CreateDepthStencilState(&dsDesc, &m_pZWriteOpenState);
+	if (FAILED(hr))
+		return hr;
+
+	// 关闭深度写入/关闭模板状态
+	ZeroMemory(&dsDesc, sizeof(dsDesc));
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ZERO;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	//dsDesc.StencilEnable = true; 要一起设置
+	hr = m_pd3dDevice->CreateDepthStencilState(&dsDesc, &m_pZWriteCloseState);
+	if (FAILED(hr))
+		return hr;
+
+	m_pImmediateContext->OMSetDepthStencilState(m_pZWriteOpenState, 0);
 	return true;
 }
 
 
 void RenderSetting::ShutDown()
 {
-	if (m_pImmediateContext) m_pImmediateContext->ClearState();
-
-	if (m_pRenderTargetView) m_pRenderTargetView->Release();
+	/*if (m_pRenderTargetView) m_pRenderTargetView->Release();
 	if (m_pSwapChain) m_pSwapChain->Release();
-	if (m_pImmediateContext) m_pImmediateContext->Release();
-	if (m_pd3dDevice) m_pd3dDevice->Release();
 	if (m_pDepthStencilBuffer) m_pDepthStencilBuffer->Release();
 	if (m_pDepthStencilView) m_pDepthStencilView->Release();
+	if (m_pZWriteOpenState)m_pZWriteOpenState->Release();
+	if (m_pZWriteCloseState)m_pZWriteCloseState->Release();*/
+	//if (m_pImmediateContext) m_pImmediateContext->Release();
+	if (m_pd3dDevice) m_pd3dDevice->Release();
+}
+
+void RenderSetting::SetZWrite(bool enable)
+{
+	if (enable)
+	{
+		m_pImmediateContext->OMSetDepthStencilState(m_pZWriteOpenState, 0);
+	}
+	else
+	{
+		m_pImmediateContext->OMSetDepthStencilState(m_pZWriteCloseState, 1);
+	}
+}
+
+void RenderSetting::SetZTest(bool enable)
+{
+
 }

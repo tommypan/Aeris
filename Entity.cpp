@@ -53,9 +53,14 @@ void Entity::Render(CXMMATRIX view, CXMMATRIX proj)
 	
 }
 
-void Entity::SetLayer(Layer layer)
+bool Entity::operator<(Entity* compareE)
 {
-	_layer = layer;
+	if (GetRenderQueue() == compareE->GetRenderQueue())
+	{
+		return this->_distToCurCamera > compareE->_distToCurCamera;
+	}
+
+	return GetRenderQueue() < compareE->GetRenderQueue();
 }
 
 void Entity::Clear()

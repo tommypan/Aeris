@@ -23,6 +23,8 @@ public:
 
 	void ShutDown();								//release
 
+	void SetZWrite(bool enable);
+	void SetZTest(bool enable);
 public:
 	static RenderSetting* GetIntance()
 	{
@@ -42,6 +44,8 @@ public:
 	ID3D11RenderTargetView* m_pRenderTargetView;	
 	ID3D11Texture2D*        m_pDepthStencilBuffer;	
 	ID3D11DepthStencilView* m_pDepthStencilView;
+	ID3D11DepthStencilState*m_pZWriteOpenState;
+	ID3D11DepthStencilState*m_pZWriteCloseState;
 };
 
 #endif//_DX11DEMOBASE_H_

@@ -8,6 +8,7 @@
 Material::Material()
 {
 	ZeroMemory(this,sizeof(this));
+	Init();
 }
 
 Material::Material(const Material& cp)
@@ -23,6 +24,7 @@ void Material::operator=(const Material& cp)
 Material::Material(const std::string& path)
 {
 	//todo加载材质球，做一票事情
+	Init();
 }
 
 Material::~Material()
@@ -81,4 +83,9 @@ void Material::SetShader(const std::string& name)
 void Material::SetVariable()
 {
 
+}
+
+void Material::Init()
+{
+	RenderQueue = RenderQueue::Geometry;
 }

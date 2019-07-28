@@ -3,7 +3,7 @@
 
 #include <list>
 #include <vector>
-
+#include <map>
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -25,9 +25,10 @@ public:
 	void RemoveChild(Entity* child);
 	void AddCamera(Camera* child);
 
-	 std::list<Entity*>& GeSortedOpacityChildren() { return _opacityChildren; };
-	const std::list<Entity*>& GeSortedTransparentChildren() { return _transparentChildren; };
-
+	std::map<int, std::list<Entity*>>& GeSortedOpacityChildren() { return _opacityChildrenMap; };
+	std::map<int, std::list<Entity*>>& GeSortedTransparentChildren() { return _transparentChildrenMap; };
+private:
+	void SortTransparentByCameraDist(Camera* targetCam);
 public:
 	static Scene* GetInstance()
 	{
@@ -35,8 +36,10 @@ public:
 		return &instance;
 	}
 private:
-	std::list<Entity*> _opacityChildren;
-	std::list<Entity*> _transparentChildren;
+	static bool SortCamera( Camera*& c1,  Camera*&  c2);
+private:
+	std::map<int, std::list<Entity*>> _opacityChildrenMap;
+	std::map<int, std::list<Entity*>> _transparentChildrenMap;
 	std::vector<Camera*> _cameras;
 };
 

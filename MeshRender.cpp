@@ -44,7 +44,6 @@ MeshRender::MeshRender(Mesh* mesh, Material* material)
 	resourceData.pSysMem = &vertices[0];
 	RenderSetting::GetIntance()->m_pd3dDevice->CreateBuffer(&vertexDesc, &resourceData, &m_pVertexBuffer);
 
-
 	std::vector<UINT> indices(_mesh->indices.size());
 	for (UINT i = 0; i < _mesh->indices.size(); ++i)
 	{
@@ -79,9 +78,9 @@ MeshRender::MeshRender(Mesh* mesh, Material* material)
 
 MeshRender::~MeshRender()
 {
-	SAFE_DELETE(m_pVertexBuffer);
-	SAFE_DELETE(m_pIndexBuffer);
-	SAFE_DELETE(m_pInputLayout);
+	SAFE_RELEASE(m_pVertexBuffer);
+	SAFE_RELEASE(m_pIndexBuffer);
+	SAFE_RELEASE(m_pInputLayout);
 	_mesh = nullptr;
 	_material = nullptr;
 }
