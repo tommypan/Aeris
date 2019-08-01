@@ -72,6 +72,8 @@ void Scene::AddCamera(Camera* child)
 {
 	_cameras.push_back(child);
 	std::sort(_cameras.begin(), _cameras.end(), &Scene::SortCamera);
+
+
 }
 
 void Scene::SortTransparentByCameraDist(Camera* targetCam)

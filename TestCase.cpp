@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Macro.h"
 #include "Transform.h"
+#include "Loader.h"
 
 TestCase::TestCase() :m_theta(1.5f*XM_PI), m_phi(0.4f*XM_PI), m_radius(40.0f)
 {
@@ -86,6 +87,9 @@ bool TestCase::LoadContent()
 			//m_cylinder[i * 2 + j]->SetLayer(Layer::UI);
 		}
 	}
+
+	Mesh * testM = new Mesh();
+	Loader::GetInstance()->Load("./Assets/12.obj", testM);
 
 	return true;
 }
