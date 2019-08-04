@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "TestCase.h"
 #include "RenderSetting.h"
+#include "Log.h"
 
 using namespace std;
 
@@ -44,7 +45,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		return -2;
 
 	ShowWindow(hwnd, nShowCmd);
-
+	Log::LogD("Init Engine");
 
 	bool result =  RenderSetting::GetIntance()->InitDirect3D(hInstance, hwnd);
 	if (!result)
