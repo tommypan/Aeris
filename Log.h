@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include <windows.h>
+#include <windowsx.h>
 
 class Log
 {
@@ -18,5 +20,5 @@ public:
 	static void LogE(const std::string & str);
 	static void WriteToFile();
 private:
-
+	static HANDLE _consolehwnd;
 };

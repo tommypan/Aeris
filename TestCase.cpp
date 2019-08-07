@@ -91,7 +91,7 @@ bool TestCase::LoadContent()
 
 	Mesh * testM = new Mesh();
 	Loader::GetInstance()->Load("./Assets/12.obj", testM);
-	Texture * tex = new Texture("./Assets/test1.dds");
+	Texture * tex = new Texture("./Assets/test2.dds");
 
 	return true;
 }
