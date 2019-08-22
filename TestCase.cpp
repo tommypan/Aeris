@@ -91,6 +91,13 @@ bool TestCase::LoadContent()
 
 	Mesh * testM = new Mesh();
 	Loader::GetInstance()->Load("./Assets/12.obj", testM);
+	Entity * customEntity = new Entity(testM);
+	customEntity->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
+	customEntity->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
+	customEntity->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
+	customEntity->GetTransform()->SetScale(Vector3(0.05, 0.05, 0.05));
+	customEntity->GetTransform()->SetPosition(Vector3(5, 0,1));
+
 	Texture * tex = new Texture("./Assets/test2.dds");
 
 	return true;
