@@ -30,6 +30,19 @@ Entity::Entity(const std::string&  meshPath, const std::string& materialPathh) :
 	_transform = new Transform(this);
 	_mesh = new Mesh(meshPath);
 	_material = new Material(materialPathh);
+	_material->SetShader("FX\\Lighting.fx");
+	_meshRender = new MeshRender(_mesh, _material);
+	Scene::GetInstance()->AddChild(this);
+}
+
+Entity::Entity(const std::string&  meshPath) :_mesh(nullptr), _material(nullptr), _layer(Layer::Default)
+{
+	//¸÷ÖÖÅÐ¿Õ
+	_transform = new Transform(this);
+	_mesh = new Mesh(meshPath);
+	_material = new Material();
+	_material->SetShader("FX\\Lighting.fx");
+	_meshRender = new MeshRender(_mesh, _material);
 	Scene::GetInstance()->AddChild(this);
 }
 

@@ -61,6 +61,12 @@ void Material::Render(Mesh* mesh)
 	ID3DX11EffectMatrixVariable * m_pFxWorldInvTranspose = shader->GetMatrixVariable("gWorldInvTranspose");
 	m_pFxWorldInvTranspose->SetMatrix(reinterpret_cast<float*>(&worldInvTranspose));
 
+	ID3D11ShaderResourceView* textureAtrribute = texture != nullptr ? texture->GetShaderAttribute() : nullptr;
+	if (textureAtrribute != nullptr)
+	{
+		shader->GetResourceVariable("g_tex")->SetResource(textureAtrribute);
+	}
+
 	D3DX11_TECHNIQUE_DESC techDesc;
 	m_pTechnique->GetDesc(&techDesc);
 	for (UINT i = 0; i < techDesc.Passes; ++i)

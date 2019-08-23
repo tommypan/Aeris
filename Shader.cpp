@@ -50,6 +50,11 @@ ID3DX11EffectVariable * Shader::GetVariable(const std::string& name)
 	return _effect->GetVariableByName(name.c_str());
 }
 
+ID3DX11EffectShaderResourceVariable * Shader::GetResourceVariable(const std::string& name)
+{
+	return _effect->GetVariableByName(name.c_str())->AsShaderResource();
+}
+
 ID3DX11EffectMatrixVariable * Shader::GetMatrixVariable(const std::string& name)
 {
 	return _effect->GetVariableByName(name.c_str())->AsMatrix();

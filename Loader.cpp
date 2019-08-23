@@ -24,7 +24,7 @@ bool Loader::Load(const std::string& path,Mesh* mesh)
 		{
 			return false;
 		}
-
+		int testTextureIndex = 0;
 		while (!feof(fp))
 		{
 			char lineBuffer[256];
@@ -37,6 +37,9 @@ bool Loader::Load(const std::string& path,Mesh* mesh)
 				{
 					Vector3 texcoord;
 					SplitToVector3(lineBuffer, " ", texcoord);
+					Vector2 realTexcoord(texcoord.x, texcoord.y);
+					mesh->vertices[testTextureIndex].coord = realTexcoord;
+					testTextureIndex++;
 				}
 				else if (lineBuffer[1] == 'n')
 				{

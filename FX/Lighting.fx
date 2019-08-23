@@ -1,5 +1,11 @@
 #include "LightHelper.fx"
 
+Texture2D g_tex;
+SamplerState samTex
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+};
+
 cbuffer cbPerFrame
 {
 	DirectionalLight gDirLight;
@@ -20,6 +26,7 @@ struct VertexIn
 {
 	float3 PosL    : POSITION;	//顶点坐标
 	float3 NormalL : NORMAL;	//顶点法线
+	float2 tex : TEXCOORD;
 };
 
 struct VertexOut
@@ -27,6 +34,7 @@ struct VertexOut
 	float4 PosH    : SV_POSITION;	//投影后的坐标
 	float3 PosW    : POSITION;		//世界变换后的坐标
 	float3 NormalW : NORMAL;		//世界变换后的顶点法线
+	float2 tex : TEXCOORD; 
 };
 
 VertexOut VS(VertexIn vin)
@@ -37,7 +45,7 @@ VertexOut VS(VertexIn vin)
 	vout.NormalW = mul(vin.NormalL, (float3x3)gWorldInvTranspose);
 
 	vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
-
+	vout.tex = vin.tex;    
 	return vout;
 }
 
@@ -77,8 +85,8 @@ float4 PS(VertexOut pin) : SV_Target
 
 	//最终颜色透明度使用漫反射光的
 	litColor.a = gMaterial.diffuse.a;
-
-	return litColor;
+	float4 texColor = g_tex.Sample(samTex,pin.tex) + litColor;
+	return texColor;
 }
 
 technique11 LightTech

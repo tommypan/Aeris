@@ -4,7 +4,6 @@
 #include "Shader.h"
 #include "Macro.h"
 #include "Transform.h"
-#include "Loader.h"
 #include "Texture.h"
 
 TestCase::TestCase() :m_theta(1.5f*XM_PI), m_phi(0.4f*XM_PI), m_radius(40.0f)
@@ -48,57 +47,53 @@ bool TestCase::LoadContent()
 	m_grid->GetMaterial()->specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
 	m_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
 
-	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
-	m_box = new Entity(boxMesh);
-	m_box->GetMaterial()->ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	m_box->GetMaterial()->diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	m_box->GetMaterial()->specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
-	m_box->GetTransform()->SetPosition(Vector3(0.f, .75f, 0.f));
-	m_box->GetTransform()->SetScale(Vector3(2, 2, 2));
-	m_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
+	//Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
+	//m_box = new Entity(boxMesh);
+	//m_box->GetMaterial()->ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	//m_box->GetMaterial()->diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	//m_box->GetMaterial()->specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
+	//m_box->GetTransform()->SetPosition(Vector3(0.f, .75f, 0.f));
+	//m_box->GetTransform()->SetScale(Vector3(2, 2, 2));
+	//m_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
 
 
-	Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
-	m_sphere[4] = new Entity(sphereMesh);
-	m_sphere[4]->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
-	m_sphere[4]->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
-	m_sphere[4]->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
-	m_sphere[4]->GetTransform()->SetPosition(Vector3(0.f, 3.5f, 0.f));
+	//Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
+	//m_sphere[4] = new Entity(sphereMesh);
+	//m_sphere[4]->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
+	//m_sphere[4]->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
+	//m_sphere[4]->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
+	//m_sphere[4]->GetTransform()->SetPosition(Vector3(0.f, 3.5f, 0.f));
 
-	//4个圆柱和4个球（位于4个对称点上）
-	for (UINT i = 0; i < 2; ++i)
-	{
-		for (UINT j = 0; j < 2; ++j)
-		{
+	////4个圆柱和4个球（位于4个对称点上）
+	//for (UINT i = 0; i < 2; ++i)
+	//{
+	//	for (UINT j = 0; j < 2; ++j)
+	//	{
 
-			Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
-			m_sphere[i * 2 + j] = new Entity(sphereMesh);
-			m_sphere[i * 2 + j]->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
-			m_sphere[i * 2 + j]->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
-			m_sphere[i * 2 + j]->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
-			m_sphere[i * 2 + j]->GetTransform()->SetPosition(Vector3(-5.f + i*10.f, 4.f, -5.f + j*10.f));
-			//m_sphere[i * 2 + j]->SetLayer(Layer::UI);
+	//		Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
+	//		m_sphere[i * 2 + j] = new Entity(sphereMesh);
+	//		m_sphere[i * 2 + j]->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
+	//		m_sphere[i * 2 + j]->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
+	//		m_sphere[i * 2 + j]->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
+	//		m_sphere[i * 2 + j]->GetTransform()->SetPosition(Vector3(-5.f + i*10.f, 4.f, -5.f + j*10.f));
+	//		//m_sphere[i * 2 + j]->SetLayer(Layer::UI);
 
-			Mesh* cylinderMesh = GeometryUtility::GetInstance()->CreateCylinder(0.5f, 0.5f, 2, 20, 20);
-			m_cylinder[i * 2 + j] = new Entity(cylinderMesh);
-			m_cylinder[i * 2 + j]->GetMaterial()->ambient = XMFLOAT4(0.651f, 0.5f, 0.392f, 1.0f);
-			m_cylinder[i * 2 + j]->GetMaterial()->diffuse = XMFLOAT4(0.651f, 0.5f, 0.392f, 1.0f);
-			m_cylinder[i * 2 + j]->GetMaterial()->specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
-			m_cylinder[i * 2 + j]->GetTransform()->SetPosition(Vector3(-5.f + i*10.f, 1.f, -5.f + j*10.f));
-			//m_cylinder[i * 2 + j]->SetLayer(Layer::UI);
-		}
-	}
+	//		Mesh* cylinderMesh = GeometryUtility::GetInstance()->CreateCylinder(0.5f, 0.5f, 2, 20, 20);
+	//		m_cylinder[i * 2 + j] = new Entity(cylinderMesh);
+	//		m_cylinder[i * 2 + j]->GetMaterial()->ambient = XMFLOAT4(0.651f, 0.5f, 0.392f, 1.0f);
+	//		m_cylinder[i * 2 + j]->GetMaterial()->diffuse = XMFLOAT4(0.651f, 0.5f, 0.392f, 1.0f);
+	//		m_cylinder[i * 2 + j]->GetMaterial()->specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
+	//		m_cylinder[i * 2 + j]->GetTransform()->SetPosition(Vector3(-5.f + i*10.f, 1.f, -5.f + j*10.f));
+	//		//m_cylinder[i * 2 + j]->SetLayer(Layer::UI);
+	//	}
+	//}
 
-	Mesh * testM = new Mesh();
-	Loader::GetInstance()->Load("./Assets/12.obj", testM);
-	Entity * customEntity = new Entity(testM);
+	Entity * customEntity = new Entity("./Assets/12.obj");
 	customEntity->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
 	customEntity->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
 	customEntity->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
 	customEntity->GetTransform()->SetScale(Vector3(0.05, 0.05, 0.05));
-	customEntity->GetTransform()->SetPosition(Vector3(5, 0,1));
-
-	Texture * tex = new Texture("./Assets/test2.dds");
+	customEntity->GetMaterial()->SetTxture("./Assets/test2.dds");
 
 	return true;
 }

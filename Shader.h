@@ -12,6 +12,7 @@ public:
 
 	ID3DX11EffectTechnique * GetTech(const std::string& name)const;
 	ID3DX11EffectVariable * GetVariable(const std::string& name);
+	ID3DX11EffectShaderResourceVariable * GetResourceVariable(const std::string& name);
 	ID3DX11EffectMatrixVariable * GetMatrixVariable(const std::string& name);
 	ID3DX11EffectVectorVariable * GetVectorVariable(const std::string& name);
 	inline bool IsValide() { return _valide; };

@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "Macro.h"
+#include "Loader.h"
 
 std::unordered_map<std::string, Mesh*> Mesh::_meshDatas;
 
@@ -21,6 +22,7 @@ void Mesh::operator=(const Mesh& cp)
 
 Mesh::Mesh(const std::string& path)
 {
+	Loader::GetInstance()->Load(path, this);
 	_valide = true;
 }
 

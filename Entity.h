@@ -21,6 +21,7 @@ public:
 	Entity();
 	Entity(Mesh* mesh);
 	Entity(const std::string&  meshPath, const std::string& materialPath);
+	Entity(const std::string&  meshPath);
 	~Entity();
 
 	void Render(DirectX::CXMMATRIX view, DirectX::CXMMATRIX proj);
