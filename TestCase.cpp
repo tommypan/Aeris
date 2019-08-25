@@ -25,18 +25,18 @@ bool TestCase::LoadContent()
 	m_dirLight.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	m_dirLight.direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
 	//点光源
-	m_pointLight.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	m_pointLight.diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
-	m_pointLight.specular = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
-	m_pointLight.att = XMFLOAT3(0.0f, 0.1f, 0.0f);
-	m_pointLight.range = 25.0f;
-	//聚光灯
-	m_spotLight.ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	m_spotLight.diffuse = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
-	m_spotLight.specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_spotLight.att = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	m_spotLight.spot = 96.0f;
-	m_spotLight.range = 10000.0f;
+	//m_pointLight.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	//m_pointLight.diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
+	//m_pointLight.specular = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
+	//m_pointLight.att = XMFLOAT3(0.0f, 0.1f, 0.0f);
+	//m_pointLight.range = 25.0f;
+	////聚光灯
+	//m_spotLight.ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	//m_spotLight.diffuse = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+	//m_spotLight.specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	//m_spotLight.att = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	//m_spotLight.spot = 96.0f;
+	//m_spotLight.range = 10000.0f;
 	camera = new Camera();
 	camera->cullMask = 1 << Layer::Default | 1 << Layer::Effect;
 
@@ -46,15 +46,18 @@ bool TestCase::LoadContent()
 	m_grid->GetMaterial()->diffuse = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
 	m_grid->GetMaterial()->specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
 	m_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
+	m_grid->GetMaterial()->SetTxture("./Assets/grid.dds");
+	m_grid->GetMaterial()->texture->SetSampleMode(D3D11_TEXTURE_ADDRESS_WRAP);
 
-	//Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
-	//m_box = new Entity(boxMesh);
-	//m_box->GetMaterial()->ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	//m_box->GetMaterial()->diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	//m_box->GetMaterial()->specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
-	//m_box->GetTransform()->SetPosition(Vector3(0.f, .75f, 0.f));
-	//m_box->GetTransform()->SetScale(Vector3(2, 2, 2));
-	//m_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
+	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
+	m_box = new Entity(boxMesh);
+	m_box->GetMaterial()->ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	m_box->GetMaterial()->diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	m_box->GetMaterial()->specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
+	m_box->SetRenderQueue(RenderQueue::Transperent);
+	m_box->GetTransform()->SetPosition(Vector3(0.f, 2.f, 3.f));
+	m_box->GetTransform()->SetScale(Vector3(2, 2, 2));
+	m_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
 
 
 	//Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);

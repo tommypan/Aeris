@@ -34,6 +34,7 @@ class Shader;
 class Mesh;
 class Material
 {
+	friend class Entity;
 public:
 	Material();
 	Material(const Material& cp);
@@ -65,9 +66,10 @@ public:
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMMATRIX view;
 	DirectX::XMMATRIX proj;
-	int RenderQueue;
 private:
 	Shader * shader;//同上
+	int RenderQueue;
+
 	//光源和材质
 	//DirectionalLight				m_dirLight;
 	//PointLight						m_pointLight;

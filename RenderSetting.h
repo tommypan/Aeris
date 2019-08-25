@@ -20,11 +20,11 @@ public:
 	float AspectRatio() const;						//width/height
 
 	bool InitDirect3D(HINSTANCE hInstance, HWND hWnd);
-
+	bool InitBlendState();
 	void ShutDown();								//release
 
 	void SetZWrite(bool enable);
-	void SetZTest(bool enable);
+	void SetAlphaBend(bool enable);
 public:
 	static RenderSetting* GetIntance()
 	{
@@ -46,6 +46,7 @@ public:
 	ID3D11DepthStencilView* m_pDepthStencilView;
 	ID3D11DepthStencilState*m_pZWriteOpenState;
 	ID3D11DepthStencilState*m_pZWriteCloseState;
+	ID3D11BlendState* m_pBlendState;
 };
 
 #endif//_DX11DEMOBASE_H_

@@ -1,10 +1,14 @@
 #include "LightHelper.fx"
 
-Texture2D g_tex;
-SamplerState samTex
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-};
+Texture2D g_tex: register(t0);
+//SamplerState samTex
+//{
+//    Filter = MIN_MAG_MIP_LINEAR;
+//	AddressU = WRAP;  
+//    AddressV = WRAP;
+//};
+
+SamplerState samTex: register( s0 );  
 
 cbuffer cbPerFrame
 {
@@ -86,7 +90,8 @@ float4 PS(VertexOut pin) : SV_Target
 	//最终颜色透明度使用漫反射光的
 	litColor.a = gMaterial.diffuse.a;
 	float4 texColor = g_tex.Sample(samTex,pin.tex) + litColor;
-	return texColor;
+	float4 result = float4(texColor.x, texColor.y, texColor.z, 0.5f);
+	return result;
 }
 
 technique11 LightTech

@@ -65,6 +65,7 @@ void Material::Render(Mesh* mesh)
 	if (textureAtrribute != nullptr)
 	{
 		shader->GetResourceVariable("g_tex")->SetResource(textureAtrribute);
+		shader->GetSamplerVariable("samTex")->SetSampler(0, texture->GetSampleState());
 	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;

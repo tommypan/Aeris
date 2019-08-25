@@ -1,4 +1,5 @@
 #include "RenderSetting.h"
+#include "Log.h"
 
 RenderSetting::RenderSetting():
 m_mainWndCaption(L"Directx11 Application"),
@@ -142,7 +143,7 @@ bool RenderSetting::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	m_pImmediateContext->RSSetViewports(1, &vp);
 
 
-	// 开启深度写入/关闭模板状态
+	// 开启深度写入,深度检测，/关闭模板状态
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 	ZeroMemory(&dsDesc, sizeof(dsDesc));
 	dsDesc.DepthEnable = true;
@@ -153,7 +154,7 @@ bool RenderSetting::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	if (FAILED(hr))
 		return hr;
 
-	// 关闭深度写入/关闭模板状态
+	// 关闭深度写入，开启深度检测/关闭模板状态
 	ZeroMemory(&dsDesc, sizeof(dsDesc));
 	dsDesc.DepthEnable = true;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -164,10 +165,35 @@ bool RenderSetting::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 		return hr;
 
 	m_pImmediateContext->OMSetDepthStencilState(m_pZWriteOpenState, 0);
+
+	InitBlendState();
 	return true;
 }
 
+bool RenderSetting::InitBlendState()
+{
+	D3D11_BLEND_DESC blendStateDescription;
+	// 初始化blend描述符 
+	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
 
+	// 创建一个alpha blend状态. 
+	blendStateDescription.RenderTarget[0].BlendEnable = TRUE;
+	blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	if (FAILED(m_pd3dDevice->CreateBlendState(&blendStateDescription, &m_pBlendState)))
+	{
+		Log::LogE("Create 'Transparent' blend state failed!");
+		return false;
+	}
+
+	return true;
+}
 void RenderSetting::ShutDown()
 {
 	/*if (m_pRenderTargetView) m_pRenderTargetView->Release();
@@ -188,11 +214,20 @@ void RenderSetting::SetZWrite(bool enable)
 	}
 	else
 	{
+		float blendFactor[] = { 0.f,0.f,0.f,0.f };
 		m_pImmediateContext->OMSetDepthStencilState(m_pZWriteCloseState, 1);
 	}
 }
 
-void RenderSetting::SetZTest(bool enable)
+void RenderSetting::SetAlphaBend(bool enable)
 {
-
+	if (enable)
+	{
+		float blendFactor[] = { 0.f,0.f,0.f,0.f };
+		m_pImmediateContext->OMSetBlendState(m_pBlendState, blendFactor, 0xffffffff);
+	}
+	else
+	{
+		m_pImmediateContext->OMSetBlendState(0, 0, 0xffffffff);
+	}
 }

@@ -42,12 +42,14 @@ void Camera::Render()
 void Camera::RenderOpacity()
 {
 	RenderSetting::GetIntance()->SetZWrite(true);
+	RenderSetting::GetIntance()->SetAlphaBend(false);
 	InnerRenderEntitys(Scene::GetInstance()->GeSortedOpacityChildren());
 }
 
 void Camera::RenderTransparent()
 {
 	RenderSetting::GetIntance()->SetZWrite(false);
+	RenderSetting::GetIntance()->SetAlphaBend(true);
 	InnerRenderEntitys(Scene::GetInstance()->GeSortedTransparentChildren());
 }
 

@@ -25,6 +25,7 @@ public:
 	~Entity();
 
 	void Render(DirectX::CXMMATRIX view, DirectX::CXMMATRIX proj);
+	void SetRenderQueue(int queue);
 	inline Transform * GetTransform() { return _transform; };
 	const std::string& GetName()const { return _name; };
 	Material* GetMaterial()const { return _material; };

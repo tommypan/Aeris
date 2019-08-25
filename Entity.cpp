@@ -66,6 +66,21 @@ void Entity::Render(CXMMATRIX view, CXMMATRIX proj)
 	
 }
 
+void Entity::SetRenderQueue(int queue)
+{
+	bool needResort = false;
+	if (queue != _material->RenderQueue)//todo 有更好的实现
+	{
+		needResort = true;
+		Scene::GetInstance()->RemoveChild(this);
+	}
+	_material->RenderQueue = queue;
+	if (needResort)
+	{
+		Scene::GetInstance()->AddChild(this);
+	}
+}
+
 bool Entity::operator<(Entity* compareE)
 {
 	if (GetRenderQueue() == compareE->GetRenderQueue())

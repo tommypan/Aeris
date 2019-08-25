@@ -3,7 +3,7 @@
 #include "DDSTextureLoader.h"
 #include "Log.h"
 
-Texture::Texture(const std::string& path):mDiffuseMapSRV(nullptr), tex(nullptr)
+Texture::Texture(const std::string& path):mDiffuseMapSRV(nullptr), tex(nullptr), sampleState(nullptr)
 {
 	std::wstring stemp = std::wstring(path.begin(), path.end());
 	HRESULT hr = CreateDDSTextureFromFile(RenderSetting::GetIntance()->m_pd3dDevice, stemp.c_str(), nullptr, &mDiffuseMapSRV);
@@ -18,10 +18,42 @@ Texture::Texture(const std::string& path):mDiffuseMapSRV(nullptr), tex(nullptr)
 
 	// 从2D纹理获取纹理描述
 	tex->GetDesc(&texDesc);
+
 }
 
 Texture::~Texture()
 {
 	SAFE_RELEASE(tex);
 	SAFE_RELEASE(mDiffuseMapSRV);
+}
+
+bool Texture::SetSampleMode(D3D11_TEXTURE_ADDRESS_MODE mode)
+{
+	D3D11_SAMPLER_DESC colorMapDesc;
+
+	ZeroMemory(&colorMapDesc, sizeof(colorMapDesc));
+
+	colorMapDesc.AddressU = mode;
+
+	colorMapDesc.AddressV = mode;
+
+	colorMapDesc.AddressW = mode;
+
+	colorMapDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+	colorMapDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+	colorMapDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	HRESULT hr = RenderSetting::GetIntance()->m_pd3dDevice->CreateSamplerState(&colorMapDesc,
+		&sampleState);
+
+	if (FAILED(hr))
+	{
+		Log::LogE("Failed to create color map sampler state!");
+		return false;
+
+	}
+
+	return true;
 }
