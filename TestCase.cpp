@@ -59,6 +59,16 @@ bool TestCase::LoadContent()
 	m_box->GetTransform()->SetScale(Vector3(2, 2, 2));
 	m_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
 
+	//Mesh* boxMesh2 = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
+	m_box2 = new Entity(boxMesh);
+	m_box2->GetMaterial()->ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	m_box2->GetMaterial()->diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	m_box2->GetMaterial()->specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
+	m_box2->SetRenderQueue(RenderQueue::Transperent);
+	m_box2->GetTransform()->SetPosition(Vector3(-1.f, 3.f, 8.f));
+	m_box2->GetTransform()->SetScale(Vector3(2, 2, 2));
+	m_box2->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
+
 
 	//Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
 	//m_sphere[4] = new Entity(sphereMesh);
@@ -106,6 +116,7 @@ void TestCase::UnLoadContent()
 	SAFE_DELETE(camera);
 	SAFE_DELETE(m_grid);
 	SAFE_DELETE(m_box);
+	SAFE_DELETE(m_box2);
 
 	for (int i = 0; i < 5; i++)
 	{

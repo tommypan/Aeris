@@ -30,6 +30,7 @@ private:
 	//绘制的几种几何图形
 	Entity*		m_grid;
 	Entity*		m_box;
+	Entity*		m_box2;
 	Entity*		m_sphere[5];
 	Entity*		m_cylinder[4];
 
