@@ -4,7 +4,7 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "Camera.h"
-
+#include "Sun.h"
 
 class TestCase
 {
@@ -24,7 +24,7 @@ private:
 	Camera * camera;
 	Camera * camera2;
 	//光源和材质
-	DirectionalLight				m_dirLight;
+	Sun				m_sun;
 	PointLight						m_pointLight;
 	SpotLight						m_spotLight;
 

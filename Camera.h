@@ -25,7 +25,7 @@ public:
 	void Render();
 
 private:
-	void RenderOpacity();
+	void RenderOpaque();
 	void RenderTransparent();
 	void InnerRenderEntitys(std::map<int, std::list<Entity*>>& opacityMap);
 public:

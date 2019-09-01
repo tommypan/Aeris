@@ -40,11 +40,11 @@ void Camera::Render()
 	XMMATRIX T = XMMatrixPerspectiveFovLH(fov/ maxFov*XM_PI, RenderSetting::GetIntance()->AspectRatio(),nearZ, farZ);
 	XMStoreFloat4x4(&m_proj, T);
 
-	RenderOpacity();
+	RenderOpaque();
 	RenderTransparent();
 }
 
-void Camera::RenderOpacity()
+void Camera::RenderOpaque()
 {
 	std::map<int, std::list<Entity*>>& renderList = Scene::GetInstance()->GeSortedOpaqueChildren();
 	if (renderList.size() > 0)

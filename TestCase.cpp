@@ -20,10 +20,10 @@ bool TestCase::LoadContent()
 {
 	//初始化各个物体的世界变换矩阵
 	//平行光
-	m_dirLight.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	m_dirLight.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	m_dirLight.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	m_dirLight.direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
+	m_sun.light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	m_sun.light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_sun.light.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_sun.light.direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
 	//点光源
 	//m_pointLight.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	//m_pointLight.diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
@@ -161,17 +161,17 @@ void TestCase::Update(float dt)
 	camera2->GetTransform()->SetPosition(cameraPos);
 	//点光源和聚光灯要设置其位置
 	//点光源位置
-	m_pointLight.position = XMFLOAT3(0.0f, 5.0f, 0.0f);
+	//m_pointLight.position = XMFLOAT3(0.0f, 5.0f, 0.0f);
 	//聚光灯位置设为相机位置，朝向看的位置
-	m_spotLight.position = orignPos;
-	XMStoreFloat3(&m_spotLight.direction, XMVector3Normalize(Vector3(0, 0, 0) - Vector3(x, y, z)));
+	//m_spotLight.position = orignPos;
+	//XMStoreFloat3(&m_spotLight.direction, XMVector3Normalize(Vector3(0, 0, 0) - Vector3(x, y, z)));
 
 
 	//set constant buffer
 	Shader* shader = Shader::GetShader(nullptr, "FX\\Lighting.fx");
-	shader->GetVariable("gDirLight")->SetRawValue(&m_dirLight, 0, sizeof(m_dirLight));
-	shader->GetVariable("gPointLight")->SetRawValue(&m_pointLight, 0, sizeof(m_pointLight));
-	shader->GetVariable("gSpotLight")->SetRawValue(&m_spotLight, 0, sizeof(m_spotLight));
+	shader->GetVariable("gDirLight")->SetRawValue(&(m_sun.light), 0, sizeof(m_sun.light));
+	//shader->GetVariable("gPointLight")->SetRawValue(&m_pointLight, 0, sizeof(m_pointLight));
+	//shader->GetVariable("gSpotLight")->SetRawValue(&m_spotLight, 0, sizeof(m_spotLight));
 	shader->GetVectorVariable("gEyePosW")->SetRawValue(&((XMFLOAT3)camera->GetTransform()->GetPosition()), 0, sizeof(XMFLOAT3));
 }
 

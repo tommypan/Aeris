@@ -5,8 +5,9 @@
 using namespace DirectX;
 
 //平行光
-struct DirectionalLight
+class DirectionalLight
 {
+public:
 	DirectionalLight() { ZeroMemory(this, sizeof(this)); }
 
 	XMFLOAT4 ambient;	//环境光
@@ -16,8 +17,9 @@ struct DirectionalLight
 	float pad;			//用于与HLSL中“4D向量”对齐规则匹配
 };
 //点光源
-struct PointLight
+class PointLight
 {
+public:
 	PointLight() { ZeroMemory(this, sizeof(this)); }
 
 	XMFLOAT4 ambient;
@@ -33,8 +35,9 @@ struct PointLight
 	float pad; // Pad the last float so we can set an array of lights if we wanted.
 };
 //聚光灯
-struct SpotLight
+class SpotLight
 {
+public:
 	SpotLight() { ZeroMemory(this, sizeof(this)); }
 
 	XMFLOAT4 ambient;
