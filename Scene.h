@@ -25,7 +25,7 @@ public:
 	void RemoveChild(Entity* child);
 	void AddCamera(Camera* child);
 
-	std::map<int, std::list<Entity*>>& GeSortedOpacityChildren() { return _opacityChildrenMap; };
+	std::map<int, std::list<Entity*>>& GeSortedOpaqueChildren() { return _opaqueChildrenMap; };
 	std::map<int, std::list<Entity*>>& GeSortedTransparentChildren() { return _transparentChildrenMap; };
 private:
 	void SortTransparentByCameraDist(Camera* targetCam);
@@ -38,7 +38,7 @@ public:
 private:
 	static bool SortCamera( Camera*& c1,  Camera*&  c2);
 private:
-	std::map<int, std::list<Entity*>> _opacityChildrenMap;
+	std::map<int, std::list<Entity*>> _opaqueChildrenMap;
 	std::map<int, std::list<Entity*>> _transparentChildrenMap;
 	std::vector<Camera*> _cameras;
 };

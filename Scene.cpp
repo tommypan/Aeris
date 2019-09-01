@@ -27,6 +27,7 @@ void Scene::Render()
 		(*cameraIt)->Render();
 		cameraIt++;
 	}
+	RenderSetting::GetIntance()->m_pSwapChain->Present(0, 0);
 }
 
 void Scene::AddChild(Entity* child)
@@ -39,7 +40,7 @@ void Scene::AddChild(Entity* child)
 	int childRenderQueue = child->GetRenderQueue();
 	if (child->GetRenderQueue() < (int)RenderQueue::Transperent)
 	{
-		std::list<Entity*>&  opacityChildren = _opacityChildrenMap[childRenderQueue];
+		std::list<Entity*>&  opacityChildren = _opaqueChildrenMap[childRenderQueue];
 		opacityChildren.push_back(child);
 	}
 	else
@@ -58,7 +59,7 @@ void Scene::RemoveChild(Entity* child)
 	int childRenderQueue = child->GetRenderQueue();
 	if (child->GetRenderQueue() < (int)RenderQueue::Transperent)
 	{
-		std::list<Entity*>&  opacityChildren = _opacityChildrenMap[childRenderQueue];
+		std::list<Entity*>&  opacityChildren = _opaqueChildrenMap[childRenderQueue];
 		opacityChildren.remove(child);
 	}
 	else

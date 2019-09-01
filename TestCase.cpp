@@ -38,7 +38,13 @@ bool TestCase::LoadContent()
 	//m_spotLight.spot = 96.0f;
 	//m_spotLight.range = 10000.0f;
 	camera = new Camera();
-	camera->cullMask = 1 << Layer::Default | 1 << Layer::Effect;
+	camera->cullMask = 1 << Layer::Default; //| 1 << Layer::Effect;
+	camera->depth = 2;
+	camera->clearFlag = CameraClearFlag::DontClear;
+
+	camera2 = new Camera();
+	camera2->cullMask = 1 << Layer::Effect;
+	camera2->depth = 1;
 
 	Mesh* gridMesh = GeometryUtility::GetInstance()->CreateGrid(20.f, 20.f, 50, 50);
 	m_grid = new Entity(gridMesh);
@@ -48,6 +54,7 @@ bool TestCase::LoadContent()
 	m_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
 	m_grid->GetMaterial()->SetTxture("./Assets/grid.dds");
 	m_grid->GetMaterial()->texture->SetSampleMode(D3D11_TEXTURE_ADDRESS_WRAP);
+	m_grid->SetLayer(Layer::Effect);
 
 	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
 	m_box = new Entity(boxMesh);
@@ -114,6 +121,7 @@ bool TestCase::LoadContent()
 void TestCase::UnLoadContent()
 {
 	SAFE_DELETE(camera);
+	SAFE_DELETE(camera2);
 	SAFE_DELETE(m_grid);
 	SAFE_DELETE(m_box);
 	SAFE_DELETE(m_box2);
@@ -148,7 +156,9 @@ void TestCase::Update(float dt)
 	camera->GetTransform()->SetScale(cameraScale);
 	camera->GetTransform()->SetRotation(cameraRot);
 	camera->GetTransform()->SetPosition(cameraPos);
-
+	camera2->GetTransform()->SetScale(cameraScale);
+	camera2->GetTransform()->SetRotation(cameraRot);
+	camera2->GetTransform()->SetPosition(cameraPos);
 	//点光源和聚光灯要设置其位置
 	//点光源位置
 	m_pointLight.position = XMFLOAT3(0.0f, 5.0f, 0.0f);

@@ -8,6 +8,14 @@ enum CameraProjection
 	Perspective = 0,
 	Orthongaphics = 1,
 };
+
+enum CameraClearFlag
+{
+	SolidColor = 0,
+	DepthOnly = 1,
+	DontClear = 2,
+};
+
 class Camera : public Entity
 {
 public:
@@ -28,6 +36,8 @@ public:
 	int depth;
 	int cullMask;
 	bool zTest;
+	int clearFlag;
+	float clearColor[4];
 private:
 	Matrix	m_view;
 	Matrix	m_proj;

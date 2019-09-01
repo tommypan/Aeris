@@ -5,7 +5,7 @@
 
 #define CLAMP(x, upper, lower) (min(upper, max(x, lower)))
 
-Camera::Camera():nearZ(1),farZ(1000), projection(CameraProjection::Perspective), minFov(1),maxFov(180), fov(30), zTest(true)
+Camera::Camera() :nearZ(1), farZ(1000), projection(CameraProjection::Perspective), minFov(1), maxFov(180), fov(30),depth(0), zTest(true), clearFlag(0), clearColor{ 0.75f, 0.75f, 0.75f, 1.0f }
 {
 	Scene::GetInstance()->RemoveChild(this);//效率考虑，没在AddChild去动态转换判断类型
 	Scene::GetInstance()->AddCamera(this);
@@ -19,13 +19,20 @@ void Camera::Render()
 {
 	if (RenderSetting::GetIntance()->m_pImmediateContext == 0)
 		return;
-	//clear render target view
-	float clearColor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
-	RenderSetting::GetIntance()->m_pImmediateContext->ClearRenderTargetView(RenderSetting::GetIntance()->m_pRenderTargetView, clearColor);
 
-	//clear depth/stencil view
-	RenderSetting::GetIntance()->m_pImmediateContext->ClearDepthStencilView(RenderSetting::GetIntance()->m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-		1.0f, 0);
+	if (clearFlag == CameraClearFlag::SolidColor)
+	{
+		RenderSetting::GetIntance()->m_pImmediateContext->ClearRenderTargetView(RenderSetting::GetIntance()->m_pRenderTargetView, clearColor);
+
+		RenderSetting::GetIntance()->m_pImmediateContext->ClearDepthStencilView(RenderSetting::GetIntance()->m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+			1.0f, 0);
+	}
+	else if (clearFlag == CameraClearFlag::DepthOnly)
+	{
+		RenderSetting::GetIntance()->m_pImmediateContext->ClearDepthStencilView(RenderSetting::GetIntance()->m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+			1.0f, 0);
+	}
+
 
 	XMStoreFloat4x4(&m_view, _transform->GetWorldTransform().Invert());
 
@@ -35,22 +42,29 @@ void Camera::Render()
 
 	RenderOpacity();
 	RenderTransparent();
-
-	RenderSetting::GetIntance()->m_pSwapChain->Present(0, 0);
 }
 
 void Camera::RenderOpacity()
 {
-	RenderSetting::GetIntance()->SetZWrite(true);
-	RenderSetting::GetIntance()->SetAlphaBend(false);
-	InnerRenderEntitys(Scene::GetInstance()->GeSortedOpacityChildren());
+	std::map<int, std::list<Entity*>>& renderList = Scene::GetInstance()->GeSortedOpaqueChildren();
+	if (renderList.size() > 0)
+	{
+		RenderSetting::GetIntance()->SetZWrite(true);
+		RenderSetting::GetIntance()->SetAlphaBend(false);
+		InnerRenderEntitys(renderList);
+	}
 }
 
 void Camera::RenderTransparent()
 {
-	RenderSetting::GetIntance()->SetZWrite(false);
-	RenderSetting::GetIntance()->SetAlphaBend(true);
-	InnerRenderEntitys(Scene::GetInstance()->GeSortedTransparentChildren());
+	std::map<int, std::list<Entity*>>& renderList = Scene::GetInstance()->GeSortedTransparentChildren();
+	if (renderList.size() > 0)
+	{
+		RenderSetting::GetIntance()->SetZWrite(false);
+		RenderSetting::GetIntance()->SetAlphaBend(true);
+		InnerRenderEntitys(renderList);
+	}
+
 }
 
 void Camera::InnerRenderEntitys(std::map<int, std::list<Entity*>>& entitysMap)

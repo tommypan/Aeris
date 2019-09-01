@@ -22,6 +22,7 @@ public:
 
 private:
 	Camera * camera;
+	Camera * camera2;
 	//光源和材质
 	DirectionalLight				m_dirLight;
 	PointLight						m_pointLight;
