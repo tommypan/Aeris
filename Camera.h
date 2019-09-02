@@ -23,7 +23,8 @@ public:
 	~Camera();
 
 	void Render();
-
+	void SetDepth(int depth);
+	inline int Depth() { return _depth; };
 private:
 	void RenderOpaque();
 	void RenderTransparent();
@@ -33,7 +34,6 @@ public:
 	float fov;
 	float nearZ;
 	float farZ;
-	int depth;
 	int cullMask;
 	bool zTest;
 	int clearFlag;
@@ -43,4 +43,5 @@ private:
 	Matrix	m_proj;
 	int minFov;
 	int maxFov;
+	int _depth;
 };

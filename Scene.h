@@ -24,7 +24,7 @@ public:
 	void AddChild(Entity* child);
 	void RemoveChild(Entity* child);
 	void AddCamera(Camera* child);
-
+	void SortCameras();
 	std::map<int, std::list<Entity*>>& GeSortedOpaqueChildren() { return _opaqueChildrenMap; };
 	std::map<int, std::list<Entity*>>& GeSortedTransparentChildren() { return _transparentChildrenMap; };
 private:

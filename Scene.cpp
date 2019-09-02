@@ -72,9 +72,12 @@ void Scene::RemoveChild(Entity* child)
 void Scene::AddCamera(Camera* child)
 {
 	_cameras.push_back(child);
+	SortCameras();
+}
+
+void Scene::SortCameras()
+{
 	std::sort(_cameras.begin(), _cameras.end(), &Scene::SortCamera);
-
-
 }
 
 void Scene::SortTransparentByCameraDist(Camera* targetCam)
@@ -108,5 +111,5 @@ void Scene::SortTransparentByCameraDist(Camera* targetCam)
 
 bool Scene::SortCamera( Camera*& c1, Camera*& c2)
 {
-	return c1->depth < c2->depth;
+	return c1->Depth() < c2->Depth();
 }

@@ -5,7 +5,7 @@
 
 #define CLAMP(x, upper, lower) (min(upper, max(x, lower)))
 
-Camera::Camera() :nearZ(1), farZ(1000), projection(CameraProjection::Perspective), minFov(1), maxFov(180), fov(30),depth(0), zTest(true), clearFlag(0), clearColor{ 0.75f, 0.75f, 0.75f, 1.0f }
+Camera::Camera() :nearZ(1), farZ(1000), projection(CameraProjection::Perspective), minFov(1), maxFov(180), fov(30),_depth(0), zTest(true), clearFlag(0), clearColor{ 0.75f, 0.75f, 0.75f, 1.0f }
 {
 	Scene::GetInstance()->RemoveChild(this);//效率考虑，没在AddChild去动态转换判断类型
 	Scene::GetInstance()->AddCamera(this);
@@ -42,6 +42,12 @@ void Camera::Render()
 
 	RenderOpaque();
 	RenderTransparent();
+}
+
+void Camera::SetDepth(int depth)
+{
+	_depth = depth;
+	Scene::GetInstance()->SortCameras();
 }
 
 void Camera::RenderOpaque()

@@ -37,14 +37,26 @@ bool TestCase::LoadContent()
 	//m_spotLight.att = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	//m_spotLight.spot = 96.0f;
 	//m_spotLight.range = 10000.0f;
+
+
+	//camera = new Camera();
+	//camera->cullMask = 1 << Layer::Default; //| 1 << Layer::Effect;
+	//camera->SetDepth(1);
+	//
+
+	//camera2 = new Camera();
+	//camera2->cullMask = 1 << Layer::Effect;
+	//camera2->SetDepth(2);
+	//camera2->clearFlag = CameraClearFlag::DontClear;
+
 	camera = new Camera();
-	camera->cullMask = 1 << Layer::Default; //| 1 << Layer::Effect;
-	camera->depth = 2;
-	camera->clearFlag = CameraClearFlag::DontClear;
+	camera->cullMask = 1 << Layer::Effect; //| 1 << Layer::Effect;
+	camera->SetDepth(1);
 
 	camera2 = new Camera();
-	camera2->cullMask = 1 << Layer::Effect;
-	camera2->depth = 1;
+	camera2->cullMask = 1 << Layer::Default;
+	camera2->SetDepth(2);
+	camera2->clearFlag = CameraClearFlag::DontClear;
 
 	Mesh* gridMesh = GeometryUtility::GetInstance()->CreateGrid(20.f, 20.f, 50, 50);
 	m_grid = new Entity(gridMesh);
