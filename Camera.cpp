@@ -2,6 +2,7 @@
 #include "RenderSetting.h"
 #include "Scene.h"
 #include <cmath>
+#include "RenderTexture.h"
 
 #define CLAMP(x, upper, lower) (min(upper, max(x, lower)))
 
@@ -22,15 +23,12 @@ void Camera::Render()
 
 	if (clearFlag == CameraClearFlag::SolidColor)
 	{
-		RenderSetting::GetIntance()->m_pImmediateContext->ClearRenderTargetView(RenderSetting::GetIntance()->m_pRenderTargetView, clearColor);
-
-		RenderSetting::GetIntance()->m_pImmediateContext->ClearDepthStencilView(RenderSetting::GetIntance()->m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-			1.0f, 0);
+		RenderSetting::GetIntance()->m_RenderTagertTexture->ClearRenderTarget(clearColor);
+		RenderSetting::GetIntance()->m_DepthStencilTexture->ClearRenderTarget(clearColor);
 	}
 	else if (clearFlag == CameraClearFlag::DepthOnly)
 	{
-		RenderSetting::GetIntance()->m_pImmediateContext->ClearDepthStencilView(RenderSetting::GetIntance()->m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-			1.0f, 0);
+		RenderSetting::GetIntance()->m_DepthStencilTexture->ClearRenderTarget(clearColor);
 	}
 
 

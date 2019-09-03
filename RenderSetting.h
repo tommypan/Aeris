@@ -10,6 +10,7 @@
 
 using namespace DirectX;
 
+class RenderTexture;
 class RenderSetting
 {
 public:
@@ -43,7 +44,9 @@ public:
 	IDXGISwapChain*			m_pSwapChain;			
 	ID3D11RenderTargetView* m_pRenderTargetView;	
 	ID3D11Texture2D*        m_pDepthStencilBuffer;	
-	ID3D11DepthStencilView* m_pDepthStencilView;
+	//ID3D11DepthStencilView* m_pDepthStencilView;
+	RenderTexture* m_DepthStencilTexture;
+	RenderTexture* m_RenderTagertTexture;
 	ID3D11DepthStencilState*m_pZWriteOpenState;
 	ID3D11DepthStencilState*m_pZWriteCloseState;
 	ID3D11BlendState* m_pBlendState;

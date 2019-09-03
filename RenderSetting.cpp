@@ -1,5 +1,6 @@
 #include "RenderSetting.h"
 #include "Log.h"
+#include "RenderTexture.h"
 
 RenderSetting::RenderSetting():
 m_mainWndCaption(L"Directx11 Application"),
@@ -9,7 +10,6 @@ m_pd3dDevice(nullptr),
 m_pImmediateContext(nullptr),
 m_pRenderTargetView(nullptr),
 m_pDepthStencilBuffer(nullptr),
-m_pDepthStencilView(nullptr),
 m_pSwapChain(nullptr),
 m_hWnd(nullptr),
 m_width(800),
@@ -100,47 +100,12 @@ bool RenderSetting::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	if (FAILED(hr))
 		return hr;
 
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
-	
+	//m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
+	m_RenderTagertTexture = new RenderTexture(m_pd3dDevice, m_pImmediateContext, m_pRenderTargetView, RenderTextureType::RenderTarget, m_width, m_height);
+	m_RenderTagertTexture->SetRenderTarget(m_pRenderTargetView);
 
-	//create depth stencil texture
-	D3D11_TEXTURE2D_DESC descDepth;
-	descDepth.Width = m_width;
-	descDepth.Height = m_height;
-	descDepth.ArraySize = 1;
-	descDepth.MipLevels = 1;
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
-	hr = m_pd3dDevice->CreateTexture2D(&descDepth, nullptr, &m_pDepthStencilBuffer);
-	if (FAILED(hr))
-		return hr;
-
-	//create the depth stencil view
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	ZeroMemory(&descDSV, sizeof(descDSV));
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
-	hr = m_pd3dDevice->CreateDepthStencilView(m_pDepthStencilBuffer, &descDSV, &m_pDepthStencilView);
-	if (FAILED(hr))
-		return hr;
-
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-	
-	//setup the viewport
-	D3D11_VIEWPORT vp;
-	vp.Width = static_cast<float>(m_width);
-	vp.Height = static_cast<float>(m_height);
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0.0f;
-	vp.TopLeftY = 0.0f;
-	m_pImmediateContext->RSSetViewports(1, &vp);
+	m_DepthStencilTexture = new RenderTexture(m_pd3dDevice, m_pImmediateContext, m_pRenderTargetView,RenderTextureType::RenderDepth,m_width,m_height);
+	m_DepthStencilTexture->SetRenderTarget(m_pRenderTargetView);
 
 
 	// 开启深度写入,深度检测，/关闭模板状态
