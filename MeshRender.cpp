@@ -2,7 +2,7 @@
 #include "Macro.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 #include "Shader.h"
 
 struct VertexStruct
@@ -44,7 +44,7 @@ MeshRender::MeshRender(Mesh* mesh, Material* material)
 	D3D11_SUBRESOURCE_DATA resourceData;
 	ZeroMemory(&resourceData, sizeof(resourceData));
 	resourceData.pSysMem = &vertices[0];
-	RenderSetting::GetIntance()->m_pd3dDevice->CreateBuffer(&vertexDesc, &resourceData, &m_pVertexBuffer);
+	RenderPipeline::GetIntance()->m_pd3dDevice->CreateBuffer(&vertexDesc, &resourceData, &m_pVertexBuffer);
 
 	std::vector<UINT> indices(_mesh->indices.size());
 	for (UINT i = 0; i < _mesh->indices.size(); ++i)
@@ -60,7 +60,7 @@ MeshRender::MeshRender(Mesh* mesh, Material* material)
 	D3D11_SUBRESOURCE_DATA indexData;
 	ZeroMemory(&indexData, sizeof(indexData));
 	indexData.pSysMem = &indices[0];
-	RenderSetting::GetIntance()->m_pd3dDevice->CreateBuffer(&indexDesc, &indexData, &m_pIndexBuffer);
+	RenderPipeline::GetIntance()->m_pd3dDevice->CreateBuffer(&indexDesc, &indexData, &m_pIndexBuffer);
 
 	//define the input layout
 	D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -75,7 +75,7 @@ MeshRender::MeshRender(Mesh* mesh, Material* material)
 	D3DX11_PASS_DESC passDesc;
 	m_pTechnique->GetPassByIndex(0)->GetDesc(&passDesc);
 	//create the input layout
-	HRESULT hr = RenderSetting::GetIntance()->m_pd3dDevice->CreateInputLayout(layout, numLayoutElements, passDesc.pIAInputSignature,
+	HRESULT hr = RenderPipeline::GetIntance()->m_pd3dDevice->CreateInputLayout(layout, numLayoutElements, passDesc.pIAInputSignature,
 		passDesc.IAInputSignatureSize, &m_pInputLayout);
 }
 
@@ -93,15 +93,15 @@ void MeshRender::Render()
 	//set vertex buffer
 	UINT stride = sizeof(VertexStruct);
 	UINT offset = 0;
-	RenderSetting::GetIntance()->m_pImmediateContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	RenderPipeline::GetIntance()->m_pImmediateContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	//set primitive topology
-	RenderSetting::GetIntance()->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	RenderPipeline::GetIntance()->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//set index buffer
-	RenderSetting::GetIntance()->m_pImmediateContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	RenderPipeline::GetIntance()->m_pImmediateContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	//set input layout
-	RenderSetting::GetIntance()->m_pImmediateContext->IASetInputLayout(m_pInputLayout);
+	RenderPipeline::GetIntance()->m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 
 	_material->Render(_mesh);
 }

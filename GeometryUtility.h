@@ -2,7 +2,7 @@
 #define _GEOMETRY_GENERATOR_H
 
 #include<vector>
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 
 class Mesh;
 class GeometryUtility

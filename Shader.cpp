@@ -1,6 +1,6 @@
 #include "Shader.h"
 #include "Macro.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 
 std::unordered_map<std::string, Shader*> Shader::_shaders;
 

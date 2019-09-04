@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "Texture.h"
 #include "Shader.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 #include "Mesh.h"
 
 
@@ -72,8 +72,8 @@ void Material::Render(Mesh* mesh)
 	m_pTechnique->GetDesc(&techDesc);
 	for (UINT i = 0; i < techDesc.Passes; ++i)
 	{
-		m_pTechnique->GetPassByIndex(i)->Apply(0, RenderSetting::GetIntance()->m_pImmediateContext);
-		RenderSetting::GetIntance()->m_pImmediateContext->DrawIndexed(mesh->GetIndexCount(), 0, 0);
+		m_pTechnique->GetPassByIndex(i)->Apply(0, RenderPipeline::GetIntance()->m_pImmediateContext);
+		RenderPipeline::GetIntance()->m_pImmediateContext->DrawIndexed(mesh->GetIndexCount(), 0, 0);
 	}
 }
 
@@ -84,7 +84,7 @@ void Material::SetTxture(const std::string& name)
 
 void Material::SetShader(const std::string& name)
 {
-	shader = Shader::GetShader(RenderSetting::GetIntance()->m_pd3dDevice, name);
+	shader = Shader::GetShader(RenderPipeline::GetIntance()->m_pd3dDevice, name);
 }
 
 void Material::SetVariable()

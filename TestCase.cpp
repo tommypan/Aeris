@@ -1,5 +1,5 @@
 #include "TestCase.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 #include "Entity.h"
 #include "Shader.h"
 #include "Macro.h"
@@ -191,7 +191,7 @@ void TestCase::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_lastMousePos.x = x;
 	m_lastMousePos.y = y;
-	SetCapture(RenderSetting::GetIntance()->m_hWnd);
+	SetCapture(RenderPipeline::GetIntance()->m_hWnd);
 }
 
 void TestCase::OnMouseUp(WPARAM btnState, int x, int y)

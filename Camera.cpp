@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 #include "Scene.h"
 #include <cmath>
 #include "RenderTexture.h"
@@ -18,24 +18,24 @@ Camera::~Camera()
 
 void Camera::Render()
 {
-	if (RenderSetting::GetIntance()->m_pImmediateContext == 0)
+	if (RenderPipeline::GetIntance()->m_pImmediateContext == 0)
 		return;
 
 	if (clearFlag == CameraClearFlag::SolidColor)
 	{
-		RenderSetting::GetIntance()->m_RenderTagertTexture->ClearRenderTarget(clearColor);
-		RenderSetting::GetIntance()->m_DepthStencilTexture->ClearRenderTarget(clearColor);
+		RenderPipeline::GetIntance()->m_RenderTagertTexture->ClearRenderTarget(clearColor);
+		RenderPipeline::GetIntance()->m_DepthStencilTexture->ClearRenderTarget(clearColor);
 	}
 	else if (clearFlag == CameraClearFlag::DepthOnly)
 	{
-		RenderSetting::GetIntance()->m_DepthStencilTexture->ClearRenderTarget(clearColor);
+		RenderPipeline::GetIntance()->m_DepthStencilTexture->ClearRenderTarget(clearColor);
 	}
 
 
 	XMStoreFloat4x4(&m_view, _transform->GetWorldTransform().Invert());
 
 	fov = CLAMP(fov,maxFov,minFov);
-	XMMATRIX T = XMMatrixPerspectiveFovLH(fov/ maxFov*XM_PI, RenderSetting::GetIntance()->AspectRatio(),nearZ, farZ);
+	XMMATRIX T = XMMatrixPerspectiveFovLH(fov/ maxFov*XM_PI, RenderPipeline::GetIntance()->AspectRatio(),nearZ, farZ);
 	XMStoreFloat4x4(&m_proj, T);
 
 	RenderOpaque();
@@ -53,8 +53,8 @@ void Camera::RenderOpaque()
 	std::map<int, std::list<Entity*>>& renderList = Scene::GetInstance()->GeSortedOpaqueChildren();
 	if (renderList.size() > 0)
 	{
-		RenderSetting::GetIntance()->SetZWrite(true);
-		RenderSetting::GetIntance()->SetAlphaBend(false);
+		RenderPipeline::GetIntance()->SetZWrite(true);
+		RenderPipeline::GetIntance()->SetAlphaBend(false);
 		InnerRenderEntitys(renderList);
 	}
 }
@@ -64,8 +64,8 @@ void Camera::RenderTransparent()
 	std::map<int, std::list<Entity*>>& renderList = Scene::GetInstance()->GeSortedTransparentChildren();
 	if (renderList.size() > 0)
 	{
-		RenderSetting::GetIntance()->SetZWrite(false);
-		RenderSetting::GetIntance()->SetAlphaBend(true);
+		RenderPipeline::GetIntance()->SetZWrite(false);
+		RenderPipeline::GetIntance()->SetAlphaBend(true);
 		InnerRenderEntitys(renderList);
 	}
 

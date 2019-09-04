@@ -3,7 +3,7 @@
 #include <memory>
 #include "Scene.h"
 #include "TestCase.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 #include "Log.h"
 
 using namespace std;
@@ -47,7 +47,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ShowWindow(hwnd, nShowCmd);
 	Log::LogD("Init Engine");
 
-	bool result =  RenderSetting::GetIntance()->InitDirect3D(hInstance, hwnd);
+	bool result =  RenderPipeline::GetIntance()->InitDirect3D(hInstance, hwnd);
 	if (!result)
 		return -3;
 	demo = new TestCase();
@@ -67,7 +67,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	demo->UnLoadContent();
 	delete demo;
 	demo = nullptr;
-	RenderSetting::GetIntance()->ShutDown();
+	RenderPipeline::GetIntance()->ShutDown();
 	return static_cast<int>(msg.wParam);
 }
 

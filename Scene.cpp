@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 #include "Entity.h"
 #include "Camera.h"
 #include<algorithm>
@@ -27,7 +27,7 @@ void Scene::Render()
 		(*cameraIt)->Render();
 		cameraIt++;
 	}
-	RenderSetting::GetIntance()->m_pSwapChain->Present(0, 0);
+	RenderPipeline::GetIntance()->Present();
 }
 
 void Scene::AddChild(Entity* child)

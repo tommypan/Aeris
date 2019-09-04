@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 #include "Shader.h"
 #include "MeshRender.h"
 #include "Scene.h"

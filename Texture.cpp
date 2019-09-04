@@ -1,12 +1,12 @@
 #include "Texture.h"
-#include "RenderSetting.h"
+#include "RenderPipeline.h"
 #include "DDSTextureLoader.h"
 #include "Log.h"
 
 Texture::Texture(const std::string& path):mDiffuseMapSRV(nullptr), tex(nullptr), sampleState(nullptr)
 {
 	std::wstring stemp = std::wstring(path.begin(), path.end());
-	HRESULT hr = CreateDDSTextureFromFile(RenderSetting::GetIntance()->m_pd3dDevice, stemp.c_str(), nullptr, &mDiffuseMapSRV);
+	HRESULT hr = CreateDDSTextureFromFile(RenderPipeline::GetIntance()->m_pd3dDevice, stemp.c_str(), nullptr, &mDiffuseMapSRV);
 	if (FAILED(hr))
 	{
 		//MessageBox(nullptr, L"create texture failed!", L"error", MB_OK);
@@ -45,7 +45,7 @@ bool Texture::SetSampleMode(D3D11_TEXTURE_ADDRESS_MODE mode)
 
 	colorMapDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	HRESULT hr = RenderSetting::GetIntance()->m_pd3dDevice->CreateSamplerState(&colorMapDesc,
+	HRESULT hr = RenderPipeline::GetIntance()->m_pd3dDevice->CreateSamplerState(&colorMapDesc,
 		&sampleState);
 
 	if (FAILED(hr))
