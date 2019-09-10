@@ -88,7 +88,7 @@ MeshRender::~MeshRender()
 	_material = nullptr;
 }
 
-void MeshRender::Render()
+void MeshRender::Render(bool useCutstomMat)
 {
 	//set vertex buffer
 	UINT stride = sizeof(VertexStruct);
@@ -103,5 +103,8 @@ void MeshRender::Render()
 	//set input layout
 	RenderPipeline::GetIntance()->m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 
-	_material->Render(_mesh);
+	if (!useCutstomMat)
+	{
+		_material->Render(_mesh);
+	}
 }

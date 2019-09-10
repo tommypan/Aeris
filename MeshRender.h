@@ -11,7 +11,7 @@ public:
 	MeshRender(Mesh* mesh, Material* material);
 	~MeshRender();
 
-	void Render();
+	void Render(bool useCutstomMat = false);
 private:
 	Mesh * _mesh;
 	Material * _material;

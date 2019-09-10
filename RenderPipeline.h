@@ -10,6 +10,10 @@
 
 using namespace DirectX;
 
+class Mesh;
+class Material;
+class MeshRender;
+class Texture;
 class RenderTexture;
 class RenderPipeline
 {
@@ -57,6 +61,11 @@ public:
 	ID3D11DepthStencilState*m_pZWriteOpenState;
 	ID3D11DepthStencilState*m_pZWriteCloseState;
 	ID3D11BlendState* m_pBlendState;
+private:
+	Mesh* _renderTextureMesh;
+	Material* _renderTextureMaterial;
+	MeshRender* _renderTextureMeshRender;
+	Texture* _renderTexture;
 };
 
 #endif//_DX11DEMOBASE_H_

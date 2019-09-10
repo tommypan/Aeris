@@ -3,10 +3,10 @@
 #include "DDSTextureLoader.h"
 #include "Log.h"
 
-Texture::Texture(const std::string& path):mDiffuseMapSRV(nullptr), tex(nullptr), sampleState(nullptr)
+Texture::Texture(const std::string& path):_shaderRes(nullptr), tex(nullptr), sampleState(nullptr)
 {
 	std::wstring stemp = std::wstring(path.begin(), path.end());
-	HRESULT hr = CreateDDSTextureFromFile(RenderPipeline::GetIntance()->m_pd3dDevice, stemp.c_str(), nullptr, &mDiffuseMapSRV);
+	HRESULT hr = CreateDDSTextureFromFile(RenderPipeline::GetIntance()->m_pd3dDevice, stemp.c_str(), nullptr, &_shaderRes);
 	if (FAILED(hr))
 	{
 		//MessageBox(nullptr, L"create texture failed!", L"error", MB_OK);
@@ -14,17 +14,22 @@ Texture::Texture(const std::string& path):mDiffuseMapSRV(nullptr), tex(nullptr),
 		return;
 	}
 	// 从资源视图获取2D纹理
-	mDiffuseMapSRV->GetResource((ID3D11Resource **)&tex);
+	_shaderRes->GetResource((ID3D11Resource **)&tex);
 
 	// 从2D纹理获取纹理描述
 	tex->GetDesc(&texDesc);
 
 }
 
+Texture::Texture(ID3D11ShaderResourceView* shaderAtt)
+{
+	_shaderRes = shaderAtt;
+}
+
 Texture::~Texture()
 {
 	SAFE_RELEASE(tex);
-	SAFE_RELEASE(mDiffuseMapSRV);
+	SAFE_RELEASE(_shaderRes);
 }
 
 bool Texture::SetSampleMode(D3D11_TEXTURE_ADDRESS_MODE mode)

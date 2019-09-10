@@ -1,6 +1,12 @@
 #include "RenderPipeline.h"
 #include "Log.h"
 #include "RenderTexture.h"
+#include "GeometryUtility.h"
+#include "Material.h"
+#include "MeshRender.h"
+#include "Texture.h"
+#include "Shader.h"
+#include "Mesh.h"
 
 RenderPipeline::RenderPipeline():
 m_mainWndCaption(L"Directx11 Application"),
@@ -89,6 +95,10 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	if (FAILED(hr))
 		return hr;
 
+	_renderTextureMesh = GeometryUtility::GetInstance()->CreateRect(m_width, m_height);
+	_renderTextureMaterial = new Material();
+	_renderTextureMaterial->SetShader("FX\\Lighting.fx");
+	_renderTextureMeshRender = new MeshRender(_renderTextureMesh, _renderTextureMaterial);
 	InitRenderTexture();
 	InitDepthStencilState();
 	InitBlendState();
@@ -102,7 +112,6 @@ void RenderPipeline::BuildShadowMap()
 
 void RenderPipeline::Present()
 {
-	//ÄÃµ½rendertexture µ½ backbuffer
 	BuildRenderTextureToBackBuffer();
 
 	m_pSwapChain->Present(0, 0);
@@ -117,6 +126,9 @@ void RenderPipeline::ShutDown()
 	if (m_pZWriteOpenState)m_pZWriteOpenState->Release();
 	if (m_pZWriteCloseState)m_pZWriteCloseState->Release();*/
 	//if (m_pImmediateContext) m_pImmediateContext->Release();
+	SAFE_DELETE(_renderTextureMesh)
+	SAFE_DELETE(_renderTextureMaterial)
+	SAFE_DELETE(_renderTextureMeshRender)
 	if (m_pd3dDevice) m_pd3dDevice->Release();
 }
 
@@ -212,15 +224,32 @@ bool RenderPipeline::InitBlendState()
 bool RenderPipeline::BuildRenderTextureToBackBuffer()
 {
 	HRESULT hr = S_OK;
-	//create render target view
 	ID3D11Texture2D *pBackBuffer = nullptr;
 	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
 	if (FAILED(hr))
 		return hr;
 
+
 	hr = m_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &m_pRenderTargetView);
 	pBackBuffer->Release();
 	if (FAILED(hr))
 		return hr;
+	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
+	//m_pImmediateContext->ClearDepthStencilView(m_pRenderTargetView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	float clearColor[4] = { 0,0,0,0 };
+	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+	_renderTextureMeshRender->Render(true);
+	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->m_pd3dDevice, "FX\\texture.fx");
+	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("TextureTech");
+	shader->GetResourceVariable("g_tex")->SetResource(m_RenderTagertTexture->GetShaderResourceView());
+
+	D3DX11_TECHNIQUE_DESC techDesc;
+	m_pTechnique->GetDesc(&techDesc);
+	for (UINT i = 0; i < techDesc.Passes; ++i)
+	{
+		m_pTechnique->GetPassByIndex(i)->Apply(0, RenderPipeline::GetIntance()->m_pImmediateContext);
+		RenderPipeline::GetIntance()->m_pImmediateContext->DrawIndexed(_renderTextureMesh->GetIndexCount(), 0, 0);
+	}
+
 	return hr;
 }

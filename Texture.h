@@ -5,12 +5,13 @@
 class Texture
 {
 public:
-	Texture() :mDiffuseMapSRV(nullptr), tex(nullptr), sampleState(nullptr){};
+	Texture() :_shaderRes(nullptr), tex(nullptr), sampleState(nullptr){};
 	Texture(const std::string& path);
+	Texture(ID3D11ShaderResourceView* shaderAtt);
 	~Texture();
 	inline ID3D11ShaderResourceView* GetShaderAttribute()
 	{
-		return mDiffuseMapSRV;
+		return _shaderRes;
 	}
 	inline ID3D11SamplerState* GetSampleState()
 	{
@@ -20,7 +21,7 @@ public:
 public:
 	D3D11_TEXTURE2D_DESC texDesc;
 private:
-	ID3D11ShaderResourceView* mDiffuseMapSRV;
+	ID3D11ShaderResourceView* _shaderRes;
 	ID3D11Texture2D* tex;
 	ID3D11SamplerState* sampleState;
 };

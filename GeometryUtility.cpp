@@ -1,6 +1,44 @@
 #include "GeometryUtility.h"
 #include "Mesh.h"
 
+Mesh* GeometryUtility::CreateRect(float width, float height)
+{
+	Mesh *	meshData = new Mesh();
+	meshData->vertices.clear();
+	meshData->indices.clear();
+	meshData->vertices.resize(4);
+	meshData->indices.resize(6);
+
+	float halfW = width * 0.5f;
+	float halfH = height * 0.5f;
+
+	meshData->vertices[0].pos = XMFLOAT3(-halfW, -halfH,0);
+	meshData->vertices[0].normal = XMFLOAT3(0.f, 0.f, -1.f);
+	meshData->vertices[0].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	meshData->vertices[0].coord = XMFLOAT2(0.f, 1.f);
+	meshData->vertices[1].pos = XMFLOAT3(-halfW, halfH, 0);
+	meshData->vertices[1].normal = XMFLOAT3(0.f, 0.f, -1.f);
+	meshData->vertices[1].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	meshData->vertices[1].coord = XMFLOAT2(0.f, 0.f);
+	meshData->vertices[2].pos = XMFLOAT3(halfW, halfH, 0);
+	meshData->vertices[2].normal = XMFLOAT3(0.f, 0.f, -1.f);
+	meshData->vertices[2].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	meshData->vertices[2].coord = XMFLOAT2(1.f, 0.f);
+	meshData->vertices[3].pos = XMFLOAT3(halfW, -halfH, 0);
+	meshData->vertices[3].normal = XMFLOAT3(0.f, 0.f, -1.f);
+	meshData->vertices[3].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	meshData->vertices[3].coord = XMFLOAT2(1.f, 1.f);
+
+	meshData->indices[0] = 0;
+	meshData->indices[1] = 1;
+	meshData->indices[2] = 2;
+	meshData->indices[3] = 0;
+	meshData->indices[4] = 2;
+	meshData->indices[5] = 3;
+
+	return meshData;
+}
+
 Mesh* GeometryUtility::CreateBox(float width, float height, float depth)
 {
 	Mesh* meshData = new Mesh();

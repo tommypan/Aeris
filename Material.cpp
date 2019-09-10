@@ -81,6 +81,10 @@ void Material::SetTxture(const std::string& name)
 {
 	texture = new Texture(name);
 }
+void Material::SetTxture(Texture * texture_)
+{
+	texture = texture_;
+}
 
 void Material::SetShader(const std::string& name)
 {

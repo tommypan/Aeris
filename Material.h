@@ -44,6 +44,7 @@ public:
 
 	void Render(Mesh* mesh);
 	void SetTxture(const std::string& name);
+	void SetTxture(Texture * texture_);
 	void SetShader(const std::string& name);
 
 	void SetVariable();
