@@ -17,7 +17,7 @@ public:
 		return &instance;
 	}
 
-	Mesh* CreateRect(float width, float height);
+	Mesh* CreateScreenRect();
 
 	//创建一个立方体：指定宽(X方向)、高(Y方向)、深(Z方向)
 	Mesh* CreateBox(float width, float height, float depth);

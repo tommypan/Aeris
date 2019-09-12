@@ -95,7 +95,7 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	if (FAILED(hr))
 		return hr;
 
-	_renderTextureMesh = GeometryUtility::GetInstance()->CreateRect(m_width, m_height);
+	_renderTextureMesh = GeometryUtility::GetInstance()->CreateScreenRect();
 	_renderTextureMaterial = new Material();
 	_renderTextureMaterial->SetShader("FX\\Lighting.fx");
 	_renderTextureMeshRender = new MeshRender(_renderTextureMesh, _renderTextureMaterial);
@@ -108,6 +108,11 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 void RenderPipeline::BuildShadowMap()
 {
 
+}
+
+void RenderPipeline::Prepare()
+{
+	m_DepthStencilTexture->SetRenderTarget(m_RenderTagertTexture->GetRenderTargetView());
 }
 
 void RenderPipeline::Present()
@@ -236,13 +241,14 @@ bool RenderPipeline::BuildRenderTextureToBackBuffer()
 		return hr;
 	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
 	//m_pImmediateContext->ClearDepthStencilView(m_pRenderTargetView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	float clearColor[4] = { 0,0,0,0 };
+	float clearColor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
 	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
 	_renderTextureMeshRender->Render(true);
 	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->m_pd3dDevice, "FX\\texture.fx");
+	//Texture * testTxt = new Texture("Assets\\grid.dds");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("TextureTech");
 	shader->GetResourceVariable("g_tex")->SetResource(m_RenderTagertTexture->GetShaderResourceView());
-
+	//shader->GetResourceVariable("g_tex")->SetResource(testTxt->GetShaderAttribute());
 	D3DX11_TECHNIQUE_DESC techDesc;
 	m_pTechnique->GetDesc(&techDesc);
 	for (UINT i = 0; i < techDesc.Passes; ++i)

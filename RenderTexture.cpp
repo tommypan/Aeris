@@ -36,6 +36,13 @@ RenderTexture::RenderTexture(ID3D11Device* d3dDevice, ID3D11DeviceContext* devic
 		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		depthStencilViewDesc.Texture2D.MipSlice = 0;
 		d3dDevice->CreateDepthStencilView(_texture, &depthStencilViewDesc, &_depthStencilView);
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+		shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; //此时因为是仅仅进行深度写，而不是颜色写，所以此时Shader资源格式跟深度缓存是一样的
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
+		d3dDevice->CreateShaderResourceView(_texture, &shaderResourceViewDesc, &_shaderResourceView);
 	}
 	else if (_renderType == RenderTextureType::RenderTarget)
 	{
@@ -44,14 +51,16 @@ RenderTexture::RenderTexture(ID3D11Device* d3dDevice, ID3D11DeviceContext* devic
 		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		renderTargetViewDesc.Texture2D.MipSlice = 0;
 		d3dDevice->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_renderTargetView);
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+		shaderResourceViewDesc.Format = textureDesc.Format;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		shaderResourceViewDesc.Texture2D.MipLevels = 1;
+		d3dDevice->CreateShaderResourceView(_texture, &shaderResourceViewDesc, &_shaderResourceView);
 	}
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; //此时因为是仅仅进行深度写，而不是颜色写，所以此时Shader资源格式跟深度缓存是一样的
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-	d3dDevice->CreateShaderResourceView(_texture, &shaderResourceViewDesc, &_shaderResourceView);
+
 
 	_viewPort.Width = (float)TextureWidth;
 	_viewPort.Height = (float)TexureHeight;

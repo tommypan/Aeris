@@ -17,6 +17,7 @@ Scene::~Scene()
 
 void Scene::Render()
 {
+	RenderPipeline::GetIntance()->Prepare();
 	std::vector<Camera*>::iterator cameraIt = _cameras.begin();
 	while (cameraIt != _cameras.end())
 	{

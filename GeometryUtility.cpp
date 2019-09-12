@@ -1,7 +1,7 @@
 #include "GeometryUtility.h"
 #include "Mesh.h"
 
-Mesh* GeometryUtility::CreateRect(float width, float height)
+Mesh* GeometryUtility::CreateScreenRect()
 {
 	Mesh *	meshData = new Mesh();
 	meshData->vertices.clear();
@@ -9,8 +9,8 @@ Mesh* GeometryUtility::CreateRect(float width, float height)
 	meshData->vertices.resize(4);
 	meshData->indices.resize(6);
 
-	float halfW = width * 0.5f;
-	float halfH = height * 0.5f;
+	float halfW = 1.0f;
+	float halfH = 1.0f;
 
 	meshData->vertices[0].pos = XMFLOAT3(-halfW, -halfH,0);
 	meshData->vertices[0].normal = XMFLOAT3(0.f, 0.f, -1.f);
