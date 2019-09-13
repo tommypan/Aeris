@@ -7,15 +7,15 @@ void Loader::SplitToVector3(char*  source, char*  split, DirectX::Vector3& resul
 	{
 		if (flag == 0)
 		{
-			result.x = atof(curtok);
+			result.x = (float)atof(curtok);
 		}
 		else if (flag == 1)
 		{
-			result.y = atof(curtok);
+			result.y = (float)atof(curtok);
 		}
 		else if (flag == 2)
 		{
-			result.z = atof(curtok);
+			result.z = (float)atof(curtok);
 		}
 		flag++;
 		curtok = strtok(nullptr, split);

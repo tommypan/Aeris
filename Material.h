@@ -29,10 +29,10 @@ struct MaterialUniform
 
 };
 
-class Texture;
+class Texture2D;
 class Shader;
 class Mesh;
-class Material
+__declspec(align(16)) class Material
 {
 	friend class Entity;
 public:
@@ -44,31 +44,42 @@ public:
 
 	void Render(Mesh* mesh);
 	void SetTxture(const std::string& name);
-	void SetTxture(Texture * texture_);
+	void SetTxture(Texture2D * texture_);
 	void SetShader(const std::string& name);
 
 	void SetVariable();
 
-	const Shader* GetShader() { return shader; };
+	const Shader* GetShader() { return _shader; };
+
+
+	void* operator new(size_t i)
+	{
+		return _mm_malloc(i, 16);
+	}
+
+	void operator delete(void* p)
+	{
+		_mm_free(p);
+	}
 private :
 	inline MaterialUniform GetUniform()
 	{
-		MaterialUniform result(ambient, diffuse, specular, reflect);
+		MaterialUniform result(Ambient, Diffuse, Specular, Reflect);
 		return result;
 	};
 
 	void Init();
 public:
-	Texture * texture;//这些地方其实可以封个ptr再暴露给外部，让外部没有机会瞎搞，不过这个只是自己用的renderengine，就算了
-	XMFLOAT4 ambient;
-	XMFLOAT4 diffuse;
-	XMFLOAT4 specular;//w表示高光强度
-	XMFLOAT4 reflect;
-	DirectX::XMFLOAT4X4 world;
-	DirectX::XMMATRIX view;
-	DirectX::XMMATRIX proj;
+	Texture2D * Texture;//这些地方其实可以封个ptr再暴露给外部，让外部没有机会瞎搞，不过这个只是自己用的renderengine，就算了
+	XMFLOAT4 Ambient;
+	XMFLOAT4 Diffuse;
+	XMFLOAT4 Specular;//w表示高光强度
+	XMFLOAT4 Reflect;
+	DirectX::XMFLOAT4X4 World;
+	DirectX::XMMATRIX View;
+	DirectX::XMMATRIX Proj;
 private:
-	Shader * shader;//同上
-	int RenderQueue;
+	Shader * _shader;//同上
+	int _renderQueue;
 
 };

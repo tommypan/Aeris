@@ -11,7 +11,7 @@ public:
 
 	void SetLightDirection(DirectX::Vector3& direction);
 public:
-	DirectionalLight light;//只有方向
+	DirectionalLight Light;//只有方向
 private:
 	Camera _camera;
 };

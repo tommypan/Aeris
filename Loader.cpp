@@ -38,7 +38,7 @@ bool Loader::Load(const std::string& path,Mesh* mesh)
 					Vector3 texcoord;
 					SplitToVector3(lineBuffer, " ", texcoord);
 					Vector2 realTexcoord(texcoord.x, texcoord.y);
-					mesh->vertices[testTextureIndex].coord = realTexcoord;
+					mesh->Vertices[testTextureIndex].coord = realTexcoord;
 					testTextureIndex++;
 				}
 				else if (lineBuffer[1] == 'n')
@@ -52,7 +52,7 @@ bool Loader::Load(const std::string& path,Mesh* mesh)
 					Vector3 pos;
 					SplitToVector3(lineBuffer, " ", pos);
 					tex.pos = pos;
-					mesh->vertices.push_back(tex);
+					mesh->Vertices.push_back(tex);
 				}
 			}
 			else if (lineBuffer[0] == 'f')
@@ -72,17 +72,17 @@ bool Loader::Load(const std::string& path,Mesh* mesh)
 				{
 					Vector3 index;
 					SplitToVector3(curtokArra[i], "/", index);
-					mesh->indices.push_back(index.x);
+					mesh->Indices.push_back(index.x);
 					if (flag == 4)
 					{
 						SplitToVector3(curtokArra[0], "/", index);
-						mesh->indices.push_back(index.x);
+						mesh->Indices.push_back(index.x);
 
 						SplitToVector3(curtokArra[2], "/", index);
-						mesh->indices.push_back(index.x);
+						mesh->Indices.push_back(index.x);
 
 						SplitToVector3(curtokArra[3], "/", index);
-						mesh->indices.push_back(index.x);
+						mesh->Indices.push_back(index.x);
 					}
 				}
 			

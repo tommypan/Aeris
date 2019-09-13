@@ -4,25 +4,14 @@
 #include "GeometryUtility.h"
 #include "Material.h"
 #include "MeshRender.h"
-#include "Texture.h"
+#include "Texture2D.h"
 #include "Shader.h"
 #include "Mesh.h"
 
-RenderPipeline::RenderPipeline():
-m_mainWndCaption(L"Directx11 Application"),
-m_driverType(D3D_DRIVER_TYPE_HARDWARE),
-m_featureLevel(D3D_FEATURE_LEVEL_11_0),
-m_pd3dDevice(nullptr),
-m_pImmediateContext(nullptr),
-m_pRenderTargetView(nullptr),
-m_pDepthStencilBuffer(nullptr),
-m_pSwapChain(nullptr),
-m_hWnd(nullptr),
-m_width(800),
-m_height(600),
-m_pZWriteOpenState(nullptr),
-m_pZWriteCloseState(nullptr)
-{}
+RenderPipeline::RenderPipeline():DefualtColor{ 0.75f, 0.75f, 0.75f, 1.0f }
+{
+	ClearParam();
+}
 
 RenderPipeline::~RenderPipeline()
 {
@@ -31,21 +20,20 @@ RenderPipeline::~RenderPipeline()
 
 float RenderPipeline::AspectRatio() const
 {
-	return static_cast<float>(m_width / m_height);
+	return static_cast<float>(Width / Height);
 }
 
 bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 {
 	HRESULT hr = S_OK;
-	m_hInstance = hInstance;
-	m_hWnd = hWnd;
+	HInstance = hInstance;
+	HWnd = hWnd;
 	RECT rc;
-	GetClientRect(m_hWnd, &rc);
-	m_width = rc.right - rc.left;
-	m_height = rc.bottom - rc.top;
+	GetClientRect(HWnd, &rc);
+	Width = rc.right - rc.left;
+	Height = rc.bottom - rc.top;
 
 	UINT createDeviceFlags = 0;
-
 #ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
@@ -70,12 +58,12 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.Width = m_width;
-	sd.BufferDesc.Height = m_height;
+	sd.BufferDesc.Width = Width;
+	sd.BufferDesc.Height = Height;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow = m_hWnd;
+	sd.OutputWindow = HWnd;
 	sd.SampleDesc.Count = 1;	
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
@@ -84,24 +72,38 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; ++driverTypeIndex)
 	{
 		hr = D3D11CreateDeviceAndSwapChain(nullptr, driverTypes[driverTypeIndex], nullptr,
-			createDeviceFlags, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &sd, &m_pSwapChain,
-			&m_pd3dDevice, &m_featureLevel, &m_pImmediateContext);
+			createDeviceFlags, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &sd, &_swapChain,
+			&Device, &FeatureLevel, &DeviceContext);
 		if (SUCCEEDED(hr))
 		{
-			m_driverType = driverTypes[driverTypeIndex];
+			DriverType = driverTypes[driverTypeIndex];
 			break;
 		}
 	}
 	if (FAILED(hr))
-		return hr;
+		return false;
 
 	_renderTextureMesh = GeometryUtility::GetInstance()->CreateScreenRect();
 	_renderTextureMaterial = new Material();
 	_renderTextureMaterial->SetShader("FX\\Lighting.fx");
 	_renderTextureMeshRender = new MeshRender(_renderTextureMesh, _renderTextureMaterial);
-	InitRenderTexture();
-	InitDepthStencilState();
-	InitBlendState();
+
+	hr = InitBackBuffer();
+	if (FAILED(hr))
+		return false;
+
+	hr = InitRenderTexture();
+	if (FAILED(hr))
+		return false;
+
+	hr = InitDepthStencilState();
+	if (FAILED(hr))
+		return false;
+
+	hr = InitBlendState();
+	if (FAILED(hr))
+		return false;
+
 	return true;
 }
 
@@ -112,14 +114,14 @@ void RenderPipeline::BuildShadowMap()
 
 void RenderPipeline::Prepare()
 {
-	m_DepthStencilTexture->SetRenderTarget(m_RenderTagertTexture->GetRenderTargetView());
+	DepthStencilTexture->SetRenderTarget(RenderTagertTexture->GetRenderTargetView());
 }
 
 void RenderPipeline::Present()
 {
 	BuildRenderTextureToBackBuffer();
 
-	m_pSwapChain->Present(0, 0);
+	_swapChain->Present(0, 0);
 }
 
 void RenderPipeline::ShutDown()
@@ -134,19 +136,19 @@ void RenderPipeline::ShutDown()
 	SAFE_DELETE(_renderTextureMesh)
 	SAFE_DELETE(_renderTextureMaterial)
 	SAFE_DELETE(_renderTextureMeshRender)
-	if (m_pd3dDevice) m_pd3dDevice->Release();
+	if (Device) Device->Release();
 }
 
 void RenderPipeline::SetZWrite(bool enable)
 {
 	if (enable)
 	{
-		m_pImmediateContext->OMSetDepthStencilState(m_pZWriteOpenState, 0);
+		DeviceContext->OMSetDepthStencilState(_zWriteOpenState, 0);
 	}
 	else
 	{
 		float blendFactor[] = { 0.f,0.f,0.f,0.f };
-		m_pImmediateContext->OMSetDepthStencilState(m_pZWriteCloseState, 1);
+		DeviceContext->OMSetDepthStencilState(_zWriteCloseState, 1);
 	}
 }
 
@@ -155,26 +157,70 @@ void RenderPipeline::SetAlphaBend(bool enable)
 	if (enable)
 	{
 		float blendFactor[] = { 0.f,0.f,0.f,0.f };
-		m_pImmediateContext->OMSetBlendState(m_pBlendState, blendFactor, 0xffffffff);
+		DeviceContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
 	}
 	else
 	{
-		m_pImmediateContext->OMSetBlendState(0, 0, 0xffffffff);
+		DeviceContext->OMSetBlendState(0, 0, 0xffffffff);
 	}
 }
 
-bool RenderPipeline::InitRenderTexture()
+void RenderPipeline::ClearParam()
 {
-	m_RenderTagertTexture = new RenderTexture(m_pd3dDevice, m_pImmediateContext, RenderTextureType::RenderTarget, m_width, m_height);
+	m_mainWndCaption = L"Directx11 Application";
+	DriverType = D3D_DRIVER_TYPE_HARDWARE;
+	FeatureLevel = D3D_FEATURE_LEVEL_11_0;
+	Device = nullptr;
+	DeviceContext = nullptr;
+	_backBufferRenderTargetView = nullptr;
+	_swapChain = nullptr;
+	HWnd = nullptr;
+	Width = 800;
+	Height = 600;
+	_zWriteOpenState = nullptr;
+	_zWriteCloseState = nullptr;
+	_blendState = nullptr;
+	_renderTextureMesh = nullptr;
+	_renderTextureMaterial = nullptr;
+	_renderTextureMeshRender = nullptr;
+	_renderTexture = nullptr;
+}
 
-	m_DepthStencilTexture = new RenderTexture(m_pd3dDevice, m_pImmediateContext, RenderTextureType::RenderDepth, m_width, m_height);
+HRESULT RenderPipeline::InitBackBuffer()
+{
 
-	m_DepthStencilTexture->SetRenderTarget(m_RenderTagertTexture->GetRenderTargetView());
+	HRESULT hr = S_OK;
+	ID3D11Texture2D *pBackBuffer = nullptr;
+	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
+	if (FAILED(hr))
+	{
+		Log::LogE("Init Back Buffer 1 step failed!");
+		return hr;
+	}
+
+
+	hr = Device->CreateRenderTargetView(pBackBuffer, nullptr, &_backBufferRenderTargetView);
+	pBackBuffer->Release();
+	if (FAILED(hr))
+	{
+		Log::LogE("Init Back Buffer 2 step failed!");
+		return hr;
+	}
+
+	return hr;
+}
+
+
+HRESULT RenderPipeline::InitRenderTexture()
+{
+	RenderTagertTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
+
+	DepthStencilTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderDepth, Width, Height);
 
 	return true;
 }
 
-bool RenderPipeline::InitDepthStencilState()
+HRESULT RenderPipeline::InitDepthStencilState()
 {
 	HRESULT hr = S_OK;
 	// 开启深度写入,深度检测，/关闭模板状态
@@ -184,9 +230,12 @@ bool RenderPipeline::InitDepthStencilState()
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	//dsDesc.StencilEnable = true; 要一起设置
-	hr = m_pd3dDevice->CreateDepthStencilState(&dsDesc, &m_pZWriteOpenState);
+	hr = Device->CreateDepthStencilState(&dsDesc, &_zWriteOpenState);
 	if (FAILED(hr))
+	{
+		Log::LogE("Init Depth Stencil State 1 step failed!");
 		return hr;
+	}
 
 	// 关闭深度写入，开启深度检测/关闭模板状态
 	ZeroMemory(&dsDesc, sizeof(dsDesc));
@@ -194,14 +243,17 @@ bool RenderPipeline::InitDepthStencilState()
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ZERO;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	//dsDesc.StencilEnable = true; 要一起设置
-	hr = m_pd3dDevice->CreateDepthStencilState(&dsDesc, &m_pZWriteCloseState);
+	hr = Device->CreateDepthStencilState(&dsDesc, &_zWriteCloseState);
 	if (FAILED(hr))
+	{
+		Log::LogE("Init Depth Stencil State 2 step failed!");
 		return hr;
+	}
 
 	return hr;
 }
 
-bool RenderPipeline::InitBlendState()
+HRESULT RenderPipeline::InitBlendState()
 {
 	D3D11_BLEND_DESC blendStateDescription;
 	// 初始化blend描述符 
@@ -217,7 +269,7 @@ bool RenderPipeline::InitBlendState()
 	blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendStateDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	if (FAILED(m_pd3dDevice->CreateBlendState(&blendStateDescription, &m_pBlendState)))
+	if (FAILED(Device->CreateBlendState(&blendStateDescription, &_blendState)))
 	{
 		Log::LogE("Create 'Transparent' blend state failed!");
 		return false;
@@ -226,36 +278,22 @@ bool RenderPipeline::InitBlendState()
 	return true;
 }
 
-bool RenderPipeline::BuildRenderTextureToBackBuffer()
+HRESULT RenderPipeline::BuildRenderTextureToBackBuffer()
 {
-	HRESULT hr = S_OK;
-	ID3D11Texture2D *pBackBuffer = nullptr;
-	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
-	if (FAILED(hr))
-		return hr;
 
-
-	hr = m_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &m_pRenderTargetView);
-	pBackBuffer->Release();
-	if (FAILED(hr))
-		return hr;
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
-	//m_pImmediateContext->ClearDepthStencilView(m_pRenderTargetView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	float clearColor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
-	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+	DeviceContext->OMSetRenderTargets(1, &_backBufferRenderTargetView, nullptr);
+	DeviceContext->ClearRenderTargetView(_backBufferRenderTargetView, DefualtColor);
 	_renderTextureMeshRender->Render(true);
-	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->m_pd3dDevice, "FX\\texture.fx");
-	//Texture * testTxt = new Texture("Assets\\grid.dds");
+	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\texture.fx");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("TextureTech");
-	shader->GetResourceVariable("g_tex")->SetResource(m_RenderTagertTexture->GetShaderResourceView());
-	//shader->GetResourceVariable("g_tex")->SetResource(testTxt->GetShaderAttribute());
+	shader->GetResourceVariable("g_tex")->SetResource(RenderTagertTexture->GetShaderResourceView());
 	D3DX11_TECHNIQUE_DESC techDesc;
 	m_pTechnique->GetDesc(&techDesc);
 	for (UINT i = 0; i < techDesc.Passes; ++i)
 	{
-		m_pTechnique->GetPassByIndex(i)->Apply(0, RenderPipeline::GetIntance()->m_pImmediateContext);
-		RenderPipeline::GetIntance()->m_pImmediateContext->DrawIndexed(_renderTextureMesh->GetIndexCount(), 0, 0);
+		m_pTechnique->GetPassByIndex(i)->Apply(0, RenderPipeline::GetIntance()->DeviceContext);
+		RenderPipeline::GetIntance()->DeviceContext->DrawIndexed(_renderTextureMesh->GetIndexCount(), 0, 0);
 	}
 
-	return hr;
+	return true;
 }

@@ -21,24 +21,24 @@ public:
 	void OnMouseMove(WPARAM btnState, int x, int y);
 
 private:
-	Camera * camera;
-	Camera * camera2;
+	Camera * _camera;
+	Camera * _camera2;
 	//光源和材质
-	Sun				m_sun;
-	PointLight						m_pointLight;
-	SpotLight						m_spotLight;
+	Sun				_sun;
+	PointLight						_pointLight;
+	SpotLight						_spotLight;
 
 	//绘制的几种几何图形
-	Entity*		m_grid;
-	Entity*		m_box;
-	Entity*		m_box2;
-	Entity*		m_sphere[5];
-	Entity*		m_cylinder[4];
+	Entity*		_grid;
+	Entity*		_box;
+	Entity*		_box2;
+	Entity*		_sphere[5];
+	Entity*		_cylinder[4];
 
 
-	float							m_theta;
-	float							m_phi;
-	float							m_radius;
-	POINT							m_lastMousePos;
+	float							_theta;
+	float							_phi;
+	float							_radius;
+	POINT							_lastMousePos;
 
 };

@@ -4,9 +4,9 @@
 #include "Shader.h"
 #include "Macro.h"
 #include "Transform.h"
-#include "Texture.h"
+#include "Texture2D.h"
 
-TestCase::TestCase() :m_theta(1.5f*XM_PI), m_phi(0.4f*XM_PI), m_radius(40.0f)
+TestCase::TestCase() :_theta(1.5f*XM_PI), _phi(0.4f*XM_PI), _radius(40.0f)
 {
 
 }
@@ -20,10 +20,10 @@ bool TestCase::LoadContent()
 {
 	//初始化各个物体的世界变换矩阵
 	//平行光
-	m_sun.light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	m_sun.light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	m_sun.light.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	m_sun.light.direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
+	_sun.Light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	_sun.Light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	_sun.Light.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	_sun.Light.direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
 	//点光源
 	//m_pointLight.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	//m_pointLight.diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
@@ -49,44 +49,44 @@ bool TestCase::LoadContent()
 	//camera2->SetDepth(2);
 	//camera2->clearFlag = CameraClearFlag::DontClear;
 
-	camera = new Camera();
-	camera->cullMask = 1 << Layer::Effect; //| 1 << Layer::Effect;
-	camera->SetDepth(1);
+	_camera = new Camera();
+	_camera->CullMask = 1 << Layer::Effect; //| 1 << Layer::Effect;
+	_camera->SetDepth(1);
 
-	camera2 = new Camera();
-	camera2->cullMask = 1 << Layer::Default;
-	camera2->SetDepth(2);
-	camera2->clearFlag = CameraClearFlag::DontClear;
+	_camera2 = new Camera();
+	_camera2->CullMask = 1 << Layer::Default;
+	_camera2->SetDepth(2);
+	_camera2->ClearFlag = CameraClearFlag::DontClear;
 
 	Mesh* gridMesh = GeometryUtility::GetInstance()->CreateGrid(20.f, 20.f, 50, 50);
-	m_grid = new Entity(gridMesh);
-	m_grid->GetMaterial()->ambient = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
-	m_grid->GetMaterial()->diffuse = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
-	m_grid->GetMaterial()->specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
-	m_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
-	m_grid->GetMaterial()->SetTxture("./Assets/grid.dds");
-	m_grid->GetMaterial()->texture->SetSampleMode(D3D11_TEXTURE_ADDRESS_WRAP);
-	m_grid->SetLayer(Layer::Effect);
+	_grid = new Entity(gridMesh);
+	_grid->GetMaterial()->Ambient = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
+	_grid->GetMaterial()->Diffuse = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
+	_grid->GetMaterial()->Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
+	_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
+	_grid->GetMaterial()->SetTxture("./Assets/grid.dds");
+	_grid->GetMaterial()->Texture->SetSampleMode(D3D11_TEXTURE_ADDRESS_WRAP);
+	_grid->SetLayer(Layer::Effect);
 
 	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
-	m_box = new Entity(boxMesh);
-	m_box->GetMaterial()->ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	m_box->GetMaterial()->diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	m_box->GetMaterial()->specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
-	m_box->SetRenderQueue(RenderQueue::Transperent);
-	m_box->GetTransform()->SetPosition(Vector3(0.f, 2.f, 3.f));
-	m_box->GetTransform()->SetScale(Vector3(2, 2, 2));
-	m_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
+	_box = new Entity(boxMesh);
+	_box->GetMaterial()->Ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	_box->GetMaterial()->Diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	_box->GetMaterial()->Specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
+	_box->SetRenderQueue(RenderQueue::Transperent);
+	_box->GetTransform()->SetPosition(Vector3(0.f, 2.f, 3.f));
+	_box->GetTransform()->SetScale(Vector3(2, 2, 2));
+	_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
 
 	//Mesh* boxMesh2 = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
-	m_box2 = new Entity(boxMesh);
-	m_box2->GetMaterial()->ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	m_box2->GetMaterial()->diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	m_box2->GetMaterial()->specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
-	m_box2->SetRenderQueue(RenderQueue::Transperent);
-	m_box2->GetTransform()->SetPosition(Vector3(-1.f, 3.f, 8.f));
-	m_box2->GetTransform()->SetScale(Vector3(2, 2, 2));
-	m_box2->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
+	_box2 = new Entity(boxMesh);
+	_box2->GetMaterial()->Ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	_box2->GetMaterial()->Diffuse = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
+	_box2->GetMaterial()->Specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
+	_box2->SetRenderQueue(RenderQueue::Transperent);
+	_box2->GetTransform()->SetPosition(Vector3(-1.f, 3.f, 8.f));
+	_box2->GetTransform()->SetScale(Vector3(2, 2, 2));
+	_box2->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
 
 
 	//Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
@@ -121,10 +121,10 @@ bool TestCase::LoadContent()
 	//}
 
 	Entity * customEntity = new Entity("./Assets/12.obj");
-	customEntity->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
-	customEntity->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
-	customEntity->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
-	customEntity->GetTransform()->SetScale(Vector3(0.05, 0.05, 0.05));
+	customEntity->GetMaterial()->Ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
+	customEntity->GetMaterial()->Diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
+	customEntity->GetMaterial()->Specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
+	customEntity->GetTransform()->SetScale(Vector3(0.05f, 0.05f, 0.05f));
 	customEntity->GetMaterial()->SetTxture("./Assets/test2.dds");
 
 	return true;
@@ -132,20 +132,20 @@ bool TestCase::LoadContent()
 
 void TestCase::UnLoadContent()
 {
-	SAFE_DELETE(camera);
-	SAFE_DELETE(camera2);
-	SAFE_DELETE(m_grid);
-	SAFE_DELETE(m_box);
-	SAFE_DELETE(m_box2);
+	SAFE_DELETE(_camera);
+	SAFE_DELETE(_camera2);
+	SAFE_DELETE(_grid);
+	SAFE_DELETE(_box);
+	SAFE_DELETE(_box2);
 
 	for (int i = 0; i < 5; i++)
 	{
-		SAFE_DELETE(m_sphere[i]);
+		SAFE_DELETE(_sphere[i]);
 	}
 
 	for (int i = 0; i < 4; i++)
 	{
-		SAFE_DELETE(m_cylinder[i]);
+		SAFE_DELETE(_cylinder[i]);
 	}
 
 	Shader::ReleaseAllShader();
@@ -153,9 +153,9 @@ void TestCase::UnLoadContent()
 
 void TestCase::Update(float dt)
 {
-	float x = m_radius*sinf(m_phi)*cosf(m_theta);
-	float z = m_radius*sinf(m_phi)*sinf(m_theta);
-	float y = m_radius*cosf(m_phi);
+	float x = _radius*sinf(_phi)*cosf(_theta);
+	float z = _radius*sinf(_phi)*sinf(_theta);
+	float y = _radius*cosf(_phi);
 
 	Vector3 orignPos = Vector3(x, y, z);
 
@@ -165,12 +165,12 @@ void TestCase::Update(float dt)
 	Quaternion cameraRot;
 	Vector3 cameraPos;
 	invertM.Decompose(cameraScale, cameraRot, cameraPos);
-	camera->GetTransform()->SetScale(cameraScale);
-	camera->GetTransform()->SetRotation(cameraRot);
-	camera->GetTransform()->SetPosition(cameraPos);
-	camera2->GetTransform()->SetScale(cameraScale);
-	camera2->GetTransform()->SetRotation(cameraRot);
-	camera2->GetTransform()->SetPosition(cameraPos);
+	_camera->GetTransform()->SetScale(cameraScale);
+	_camera->GetTransform()->SetRotation(cameraRot);
+	_camera->GetTransform()->SetPosition(cameraPos);
+	_camera2->GetTransform()->SetScale(cameraScale);
+	_camera2->GetTransform()->SetRotation(cameraRot);
+	_camera2->GetTransform()->SetPosition(cameraPos);
 	//点光源和聚光灯要设置其位置
 	//点光源位置
 	//m_pointLight.position = XMFLOAT3(0.0f, 5.0f, 0.0f);
@@ -181,17 +181,17 @@ void TestCase::Update(float dt)
 
 	//set constant buffer
 	Shader* shader = Shader::GetShader(nullptr, "FX\\Lighting.fx");
-	shader->GetVariable("gDirLight")->SetRawValue(&(m_sun.light), 0, sizeof(m_sun.light));
+	shader->GetVariable("gDirLight")->SetRawValue(&(_sun.Light), 0, sizeof(_sun.Light));
 	//shader->GetVariable("gPointLight")->SetRawValue(&m_pointLight, 0, sizeof(m_pointLight));
 	//shader->GetVariable("gSpotLight")->SetRawValue(&m_spotLight, 0, sizeof(m_spotLight));
-	shader->GetVectorVariable("gEyePosW")->SetRawValue(&((XMFLOAT3)camera->GetTransform()->GetPosition()), 0, sizeof(XMFLOAT3));
+	shader->GetVectorVariable("gEyePosW")->SetRawValue(&((XMFLOAT3)_camera->GetTransform()->GetPosition()), 0, sizeof(XMFLOAT3));
 }
 
 void TestCase::OnMouseDown(WPARAM btnState, int x, int y)
 {
-	m_lastMousePos.x = x;
-	m_lastMousePos.y = y;
-	SetCapture(RenderPipeline::GetIntance()->m_hWnd);
+	_lastMousePos.x = x;
+	_lastMousePos.y = y;
+	SetCapture(RenderPipeline::GetIntance()->HWnd);
 }
 
 void TestCase::OnMouseUp(WPARAM btnState, int x, int y)
@@ -211,26 +211,26 @@ void TestCase::OnMouseMove(WPARAM btnState, int x, int y)
 	if ((btnState & MK_LBUTTON) != 0)
 	{
 		//角度转弧度
-		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - m_lastMousePos.x));
-		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_lastMousePos.y));
+		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - _lastMousePos.x));
+		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - _lastMousePos.y));
 
-		m_theta -= dx;
-		m_phi -= dy;
+		_theta -= dx;
+		_phi -= dy;
 
-		m_phi = Clamp(m_phi, 0.1f, XM_PI - 0.1f);
+		_phi = Clamp(_phi, 0.1f, XM_PI - 0.1f);
 	}
 	else if ((btnState & MK_RBUTTON) != 0)
 	{
-		float dx = 0.2f*static_cast<float>(x - m_lastMousePos.x);
-		float dy = 0.2f*static_cast<float>(y - m_lastMousePos.y);
+		float dx = 0.2f*static_cast<float>(x - _lastMousePos.x);
+		float dy = 0.2f*static_cast<float>(y - _lastMousePos.y);
 
-		m_radius += dx - dy;
+		_radius += dx - dy;
 
-		m_radius = Clamp(m_radius, 3.0f, 300.0f);
+		_radius = Clamp(_radius, 3.0f, 300.0f);
 	}
 
-	m_lastMousePos.x = x;
-	m_lastMousePos.y = y;
+	_lastMousePos.x = x;
+	_lastMousePos.y = y;
 }
 
 

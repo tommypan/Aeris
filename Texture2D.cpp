@@ -1,12 +1,12 @@
-#include "Texture.h"
+#include "Texture2D.h"
 #include "RenderPipeline.h"
 #include "DDSTextureLoader.h"
 #include "Log.h"
 
-Texture::Texture(const std::string& path):_shaderRes(nullptr), tex(nullptr), sampleState(nullptr)
+Texture2D::Texture2D(const std::string& path):_shaderRes(nullptr), _tex(nullptr), _sampleState(nullptr)
 {
 	std::wstring stemp = std::wstring(path.begin(), path.end());
-	HRESULT hr = CreateDDSTextureFromFile(RenderPipeline::GetIntance()->m_pd3dDevice, stemp.c_str(), nullptr, &_shaderRes);
+	HRESULT hr = CreateDDSTextureFromFile(RenderPipeline::GetIntance()->Device, stemp.c_str(), nullptr, &_shaderRes);
 	if (FAILED(hr))
 	{
 		//MessageBox(nullptr, L"create texture failed!", L"error", MB_OK);
@@ -14,25 +14,25 @@ Texture::Texture(const std::string& path):_shaderRes(nullptr), tex(nullptr), sam
 		return;
 	}
 	// 从资源视图获取2D纹理
-	_shaderRes->GetResource((ID3D11Resource **)&tex);
+	_shaderRes->GetResource((ID3D11Resource **)&_tex);
 
 	// 从2D纹理获取纹理描述
-	tex->GetDesc(&texDesc);
+	_tex->GetDesc(&TexDesc);
 
 }
 
-Texture::Texture(ID3D11ShaderResourceView* shaderAtt)
+Texture2D::Texture2D(ID3D11ShaderResourceView* shaderAtt)
 {
 	_shaderRes = shaderAtt;
 }
 
-Texture::~Texture()
+Texture2D::~Texture2D()
 {
-	SAFE_RELEASE(tex);
+	SAFE_RELEASE(_tex);
 	SAFE_RELEASE(_shaderRes);
 }
 
-bool Texture::SetSampleMode(D3D11_TEXTURE_ADDRESS_MODE mode)
+bool Texture2D::SetSampleMode(D3D11_TEXTURE_ADDRESS_MODE mode)
 {
 	D3D11_SAMPLER_DESC colorMapDesc;
 
@@ -50,8 +50,8 @@ bool Texture::SetSampleMode(D3D11_TEXTURE_ADDRESS_MODE mode)
 
 	colorMapDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	HRESULT hr = RenderPipeline::GetIntance()->m_pd3dDevice->CreateSamplerState(&colorMapDesc,
-		&sampleState);
+	HRESULT hr = RenderPipeline::GetIntance()->Device->CreateSamplerState(&colorMapDesc,
+		&_sampleState);
 
 	if (FAILED(hr))
 	{

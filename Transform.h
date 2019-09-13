@@ -33,7 +33,7 @@ public:
 	void SetLocalScale(const Vector3& localScale);
 	Vector3 WorldToLocal(const Vector3& worldPos);
 public:
-	std::string name;
+	std::string Name;
 private:
 	void UpdateChildrenTransform(bool updatePos,bool updateRot,bool updateSca);
 	inline void UpdatePositionByLocal() { _parent != nullptr ? (_position = Vector3::Transform(_parent->GetScale()*_localPosition, _parent->GetRotation()) + _parent->GetPosition()) : (_position = _localPosition); };

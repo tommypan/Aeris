@@ -1,5 +1,5 @@
 #include "Material.h"
-#include "Texture.h"
+#include "Texture2D.h"
 #include "Shader.h"
 #include "RenderPipeline.h"
 #include "Mesh.h"
@@ -29,66 +29,66 @@ Material::Material(const std::string& path)
 
 Material::~Material()
 {
-	SAFE_DELETE(texture);
+	SAFE_DELETE(Texture);
 }
 
 void Material::Render(Mesh* mesh)
 {
-	if (shader == nullptr || mesh == nullptr)
+	if (_shader == nullptr || mesh == nullptr)
 	{
 		return;
 	}
 
-	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("LightTech");
+	ID3DX11EffectTechnique * technique = _shader->GetTech("LightTech");
 
-	XMMATRIX world_ = XMLoadFloat4x4(&world);
+	XMMATRIX world = XMLoadFloat4x4(&World);
 	//设置世界变换矩阵
-	ID3DX11EffectMatrixVariable * m_pFxWorld = shader->GetMatrixVariable("gWorld");
-	m_pFxWorld->SetMatrix(reinterpret_cast<float*>(&world_));
+	ID3DX11EffectMatrixVariable * fxWorld = _shader->GetMatrixVariable("gWorld");
+	fxWorld->SetMatrix(reinterpret_cast<float*>(&world));
 
 	//设置投影变换矩阵
-	ID3DX11EffectMatrixVariable * m_pFxWorldViewProj = shader->GetMatrixVariable("gWorldViewProj");
-	m_pFxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&(world_*view*proj)));
+	ID3DX11EffectMatrixVariable * fxWorldViewProj = _shader->GetMatrixVariable("gWorldViewProj");
+	fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&(world*View*Proj)));
 
 	//设置材质 
 	MaterialUniform uniform = GetUniform();
-	ID3DX11EffectVariable * m_pFxMaterial = shader->GetVariable("gMaterial");
-	m_pFxMaterial->SetRawValue(&uniform, 0, sizeof(uniform));
+	ID3DX11EffectVariable * fxMaterial = _shader->GetVariable("gMaterial");
+	fxMaterial->SetRawValue(&uniform, 0, sizeof(uniform));
 
 	//设置逆矩阵的转置
-	XMVECTOR det = XMMatrixDeterminant(world_);
-	XMMATRIX worldInvTranspose = XMMatrixTranspose(XMMatrixInverse(&det, world_));
-	ID3DX11EffectMatrixVariable * m_pFxWorldInvTranspose = shader->GetMatrixVariable("gWorldInvTranspose");
-	m_pFxWorldInvTranspose->SetMatrix(reinterpret_cast<float*>(&worldInvTranspose));
+	XMVECTOR det = XMMatrixDeterminant(world);
+	XMMATRIX worldInvTranspose = XMMatrixTranspose(XMMatrixInverse(&det, world));
+	ID3DX11EffectMatrixVariable * fxWorldInvTranspose = _shader->GetMatrixVariable("gWorldInvTranspose");
+	fxWorldInvTranspose->SetMatrix(reinterpret_cast<float*>(&worldInvTranspose));
 
-	ID3D11ShaderResourceView* textureAtrribute = texture != nullptr ? texture->GetShaderAttribute() : nullptr;
+	ID3D11ShaderResourceView* textureAtrribute = Texture != nullptr ? Texture->GetShaderAttribute() : nullptr;
 	if (textureAtrribute != nullptr)
 	{
-		shader->GetResourceVariable("g_tex")->SetResource(textureAtrribute);
-		shader->GetSamplerVariable("samTex")->SetSampler(0, texture->GetSampleState());
+		_shader->GetResourceVariable("g_tex")->SetResource(textureAtrribute);
+		_shader->GetSamplerVariable("samTex")->SetSampler(0, Texture->GetSampleState());
 	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;
-	m_pTechnique->GetDesc(&techDesc);
+	technique->GetDesc(&techDesc);
 	for (UINT i = 0; i < techDesc.Passes; ++i)
 	{
-		m_pTechnique->GetPassByIndex(i)->Apply(0, RenderPipeline::GetIntance()->m_pImmediateContext);
-		RenderPipeline::GetIntance()->m_pImmediateContext->DrawIndexed(mesh->GetIndexCount(), 0, 0);
+		technique->GetPassByIndex(i)->Apply(0, RenderPipeline::GetIntance()->DeviceContext);
+		RenderPipeline::GetIntance()->DeviceContext->DrawIndexed(mesh->GetIndexCount(), 0, 0);
 	}
 }
 
 void Material::SetTxture(const std::string& name)
 {
-	texture = new Texture(name);
+	Texture = new Texture2D(name);
 }
-void Material::SetTxture(Texture * texture_)
+void Material::SetTxture(Texture2D * texture_)
 {
-	texture = texture_;
+	Texture = texture_;
 }
 
 void Material::SetShader(const std::string& name)
 {
-	shader = Shader::GetShader(RenderPipeline::GetIntance()->m_pd3dDevice, name);
+	_shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, name);
 }
 
 void Material::SetVariable()
@@ -98,5 +98,5 @@ void Material::SetVariable()
 
 void Material::Init()
 {
-	RenderQueue = RenderQueue::Geometry;
+	_renderQueue = RenderQueue::Geometry;
 }

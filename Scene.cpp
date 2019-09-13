@@ -21,7 +21,7 @@ void Scene::Render()
 	std::vector<Camera*>::iterator cameraIt = _cameras.begin();
 	while (cameraIt != _cameras.end())
 	{
-		if ((*cameraIt)->zTest)
+		if ((*cameraIt)->ZTest)
 		{
 			SortTransparentByCameraDist((*cameraIt));
 		}
@@ -91,7 +91,7 @@ void Scene::SortTransparentByCameraDist(Camera* targetCam)
 		std::list<Entity*>::iterator  startIt = (*startMapIt).second.begin();
 		while (startIt != (*startMapIt).second.end())
 		{
-			if (targetCam->cullMask >> (*startIt)->GetLayer() & 1)
+			if (targetCam->CullMask >> (*startIt)->GetLayer() & 1)
 			{
 				(*startIt)->SetDistToCam(((*startIt)->GetTransform()->GetPosition() - cameraPos).Length());
 			}

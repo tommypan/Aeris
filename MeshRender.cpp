@@ -22,45 +22,45 @@ MeshRender::MeshRender(Mesh* mesh, Material* material)
 	_mesh = mesh;
 	_material = material;
 
-	if (_mesh == nullptr || material == nullptr || _mesh->vertices.size() == 0)
+	if (_mesh == nullptr || material == nullptr || _mesh->Vertices.size() == 0)
 	{
 		return;
 	}
 
-	std::vector<VertexStruct> vertices(_mesh->vertices.size());
+	std::vector<VertexStruct> vertices(_mesh->Vertices.size());
 
-	for (UINT i = 0; i < _mesh->vertices.size(); ++i)
+	for (UINT i = 0; i < _mesh->Vertices.size(); ++i)
 	{
-		vertices[i].pos = _mesh->vertices[i].pos;
-		vertices[i].normal = _mesh->vertices[i].pos;
-		vertices[i].texcoord = _mesh->vertices[i].coord;
+		vertices[i].pos = _mesh->Vertices[i].pos;
+		vertices[i].normal = _mesh->Vertices[i].pos;
+		vertices[i].texcoord = _mesh->Vertices[i].coord;
 	}
 
 	D3D11_BUFFER_DESC vertexDesc;
 	ZeroMemory(&vertexDesc, sizeof(vertexDesc));
 	vertexDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexDesc.ByteWidth = sizeof(VertexStruct)* _mesh->vertices.size();
+	vertexDesc.ByteWidth = sizeof(VertexStruct)* _mesh->Vertices.size();
 	D3D11_SUBRESOURCE_DATA resourceData;
 	ZeroMemory(&resourceData, sizeof(resourceData));
 	resourceData.pSysMem = &vertices[0];
-	RenderPipeline::GetIntance()->m_pd3dDevice->CreateBuffer(&vertexDesc, &resourceData, &m_pVertexBuffer);
+	RenderPipeline::GetIntance()->Device->CreateBuffer(&vertexDesc, &resourceData, &m_pVertexBuffer);
 
-	std::vector<UINT> indices(_mesh->indices.size());
-	for (UINT i = 0; i < _mesh->indices.size(); ++i)
+	std::vector<UINT> indices(_mesh->Indices.size());
+	for (UINT i = 0; i < _mesh->Indices.size(); ++i)
 	{
-		indices[i] = _mesh->indices[i];
+		indices[i] = _mesh->Indices[i];
 	}
 	D3D11_BUFFER_DESC indexDesc;
 	ZeroMemory(&indexDesc, sizeof(indexDesc));
 	indexDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexDesc.ByteWidth = sizeof(UINT)* _mesh->indices.size();
+	indexDesc.ByteWidth = sizeof(UINT)* _mesh->Indices.size();
 
 	D3D11_SUBRESOURCE_DATA indexData;
 	ZeroMemory(&indexData, sizeof(indexData));
 	indexData.pSysMem = &indices[0];
-	RenderPipeline::GetIntance()->m_pd3dDevice->CreateBuffer(&indexDesc, &indexData, &m_pIndexBuffer);
+	RenderPipeline::GetIntance()->Device->CreateBuffer(&indexDesc, &indexData, &m_pIndexBuffer);
 
 	//define the input layout
 	D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -75,7 +75,7 @@ MeshRender::MeshRender(Mesh* mesh, Material* material)
 	D3DX11_PASS_DESC passDesc;
 	m_pTechnique->GetPassByIndex(0)->GetDesc(&passDesc);
 	//create the input layout
-	HRESULT hr = RenderPipeline::GetIntance()->m_pd3dDevice->CreateInputLayout(layout, numLayoutElements, passDesc.pIAInputSignature,
+	HRESULT hr = RenderPipeline::GetIntance()->Device->CreateInputLayout(layout, numLayoutElements, passDesc.pIAInputSignature,
 		passDesc.IAInputSignatureSize, &m_pInputLayout);
 }
 
@@ -93,15 +93,15 @@ void MeshRender::Render(bool useCutstomMat)
 	//set vertex buffer
 	UINT stride = sizeof(VertexStruct);
 	UINT offset = 0;
-	RenderPipeline::GetIntance()->m_pImmediateContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	RenderPipeline::GetIntance()->DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	//set primitive topology
-	RenderPipeline::GetIntance()->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	RenderPipeline::GetIntance()->DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//set index buffer
-	RenderPipeline::GetIntance()->m_pImmediateContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	RenderPipeline::GetIntance()->DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	//set input layout
-	RenderPipeline::GetIntance()->m_pImmediateContext->IASetInputLayout(m_pInputLayout);
+	RenderPipeline::GetIntance()->DeviceContext->IASetInputLayout(m_pInputLayout);
 
 	if (!useCutstomMat)
 	{

@@ -57,9 +57,9 @@ void Entity::Render(CXMMATRIX view, CXMMATRIX proj)
 	{
 		if (_material != nullptr)//todo
 		{
-			_material->world = _transform->GetWorldTransform();
-			_material->view = view;
-			_material->proj = proj;
+			_material->World = _transform->GetWorldTransform();
+			_material->View = view;
+			_material->Proj = proj;
 		}
 		_meshRender->Render();
 	}
@@ -69,12 +69,12 @@ void Entity::Render(CXMMATRIX view, CXMMATRIX proj)
 void Entity::SetRenderQueue(int queue)
 {
 	bool needResort = false;
-	if (queue != _material->RenderQueue)//todo 有更好的实现
+	if (queue != _material->_renderQueue)//todo 有更好的实现
 	{
 		needResort = true;
 		Scene::GetInstance()->RemoveChild(this);
 	}
-	_material->RenderQueue = queue;
+	_material->_renderQueue = queue;
 	if (needResort)
 	{
 		Scene::GetInstance()->AddChild(this);

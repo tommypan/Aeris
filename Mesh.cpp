@@ -16,8 +16,8 @@ Mesh::Mesh(const Mesh& cp)
 
 void Mesh::operator=(const Mesh& cp)
 {
-	vertices.assign(cp.vertices.begin(), cp.vertices.end());
-	indices.assign(cp.indices.begin(), cp.indices.end());
+	Vertices.assign(cp.Vertices.begin(), cp.Vertices.end());
+	Indices.assign(cp.Indices.begin(), cp.Indices.end());
 }
 
 Mesh::Mesh(const std::string& path)
@@ -34,7 +34,7 @@ Mesh::~Mesh()
 
 UINT Mesh::GetIndexCount()
 {
-	return indices.size();
+	return Indices.size();
 }
 
 Mesh* Mesh::GetMesh(const std::string& path)

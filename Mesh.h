@@ -44,8 +44,8 @@ public:
 	static Mesh* GetMesh(const std::string& path);
 	static void ReleaseAllMeshData();
 public:
-	std::vector<Vertex> vertices;
-	std::vector<UINT> indices;
+	std::vector<Vertex> Vertices;
+	std::vector<UINT> Indices;
 private:
 	bool _valide = false;
 private:

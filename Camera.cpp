@@ -6,8 +6,9 @@
 
 #define CLAMP(x, upper, lower) (min(upper, max(x, lower)))
 
-Camera::Camera() :nearZ(1), farZ(1000), projection(CameraProjection::Perspective), minFov(1), maxFov(180), fov(30),_depth(0), zTest(true), clearFlag(0), clearColor{ 0.75f, 0.75f, 0.75f, 1.0f }
+Camera::Camera() :NearZ(1), FarZ(1000), Projection(CameraProjection::Perspective), _minFov(1), _maxFov(180), Fov(30),_depth(0), ZTest(true), ClearFlag(0)
 {
+	memcpy(ClearColor,RenderPipeline::GetIntance()->DefualtColor,sizeof(ClearColor));
 	Scene::GetInstance()->RemoveChild(this);//效率考虑，没在AddChild去动态转换判断类型
 	Scene::GetInstance()->AddCamera(this);
 }
@@ -18,25 +19,25 @@ Camera::~Camera()
 
 void Camera::Render()
 {
-	if (RenderPipeline::GetIntance()->m_pImmediateContext == 0)
+	if (RenderPipeline::GetIntance()->DeviceContext == 0)
 		return;
 
-	if (clearFlag == CameraClearFlag::SolidColor)
+	if (ClearFlag == CameraClearFlag::SolidColor)
 	{
-		RenderPipeline::GetIntance()->m_RenderTagertTexture->ClearRenderTarget(clearColor);
-		RenderPipeline::GetIntance()->m_DepthStencilTexture->ClearRenderTarget(clearColor);
+		RenderPipeline::GetIntance()->RenderTagertTexture->ClearRenderTarget(ClearColor);
+		RenderPipeline::GetIntance()->DepthStencilTexture->ClearRenderTarget(ClearColor);
 	}
-	else if (clearFlag == CameraClearFlag::DepthOnly)
+	else if (ClearFlag == CameraClearFlag::DepthOnly)
 	{
-		RenderPipeline::GetIntance()->m_DepthStencilTexture->ClearRenderTarget(clearColor);
+		RenderPipeline::GetIntance()->DepthStencilTexture->ClearRenderTarget(ClearColor);
 	}
 
 
-	XMStoreFloat4x4(&m_view, _transform->GetWorldTransform().Invert());
+	XMStoreFloat4x4(&_view, _transform->GetWorldTransform().Invert());
 
-	fov = CLAMP(fov,maxFov,minFov);
-	XMMATRIX T = XMMatrixPerspectiveFovLH(fov/ maxFov*XM_PI, RenderPipeline::GetIntance()->AspectRatio(),nearZ, farZ);
-	XMStoreFloat4x4(&m_proj, T);
+	Fov = CLAMP(Fov,_maxFov,_minFov);
+	XMMATRIX T = XMMatrixPerspectiveFovLH(Fov/ _maxFov*XM_PI, RenderPipeline::GetIntance()->AspectRatio(),NearZ, FarZ);
+	XMStoreFloat4x4(&_proj, T);
 
 	RenderOpaque();
 	RenderTransparent();
@@ -79,9 +80,9 @@ void Camera::InnerRenderEntitys(std::map<int, std::list<Entity*>>& entitysMap)
 		std::list<Entity*>::iterator  startIt = (*startMapIt).second.begin();
 		while (startIt != (*startMapIt).second.end())
 		{
-			if (cullMask >> (*startIt)->GetLayer() & 1)
+			if (CullMask >> (*startIt)->GetLayer() & 1)
 			{
-				(*startIt)->Render(m_view, m_proj);
+				(*startIt)->Render(_view, _proj);
 			}
 			startIt++;
 		}

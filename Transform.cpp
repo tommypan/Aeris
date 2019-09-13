@@ -3,7 +3,7 @@
 
 Transform::Transform(Entity* entity_) :_hostEntity(entity_)
 {
-	name = entity_->GetName();
+	Name = entity_->GetName();
 	_position = Vector3::Zero;
 	_rotation = Quaternion::Identity;
 	_scale = Vector3::One;
