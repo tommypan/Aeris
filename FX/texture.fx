@@ -30,6 +30,7 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin) : SV_Target
 {
 float4 texColor = g_tex.Sample(samTex,pin.tex);
+//float4 result = float4(texColor.x,texColor.y,texColor.z,1);
     return texColor;
 }
 

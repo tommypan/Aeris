@@ -280,7 +280,7 @@ HRESULT RenderPipeline::InitBlendState()
 
 HRESULT RenderPipeline::BuildRenderTextureToBackBuffer()
 {
-
+	SetAlphaBend(false);
 	DeviceContext->OMSetRenderTargets(1, &_backBufferRenderTargetView, nullptr);
 	DeviceContext->ClearRenderTargetView(_backBufferRenderTargetView, DefualtColor);
 	_finalTextureMeshRender->Render(true);
