@@ -83,10 +83,10 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	if (FAILED(hr))
 		return false;
 
-	_renderTextureMesh = GeometryUtility::GetInstance()->CreateScreenRect();
-	_renderTextureMaterial = new Material();
-	_renderTextureMaterial->SetShader("FX\\Lighting.fx");
-	_renderTextureMeshRender = new MeshRender(_renderTextureMesh, _renderTextureMaterial);
+	_finalMesh = GeometryUtility::GetInstance()->CreateScreenRect();
+	_finalMaterial = new Material();
+	_finalMaterial->SetShader("FX\\Lighting.fx");
+	_finalTextureMeshRender = new MeshRender(_finalMesh, _finalMaterial);
 
 	hr = InitBackBuffer();
 	if (FAILED(hr))
@@ -133,9 +133,9 @@ void RenderPipeline::ShutDown()
 	if (m_pZWriteOpenState)m_pZWriteOpenState->Release();
 	if (m_pZWriteCloseState)m_pZWriteCloseState->Release();*/
 	//if (m_pImmediateContext) m_pImmediateContext->Release();
-	SAFE_DELETE(_renderTextureMesh)
-	SAFE_DELETE(_renderTextureMaterial)
-	SAFE_DELETE(_renderTextureMeshRender)
+	SAFE_DELETE(_finalMesh)
+	SAFE_DELETE(_finalMaterial)
+	SAFE_DELETE(_finalTextureMeshRender)
 	if (Device) Device->Release();
 }
 
@@ -180,9 +180,9 @@ void RenderPipeline::ClearParam()
 	_zWriteOpenState = nullptr;
 	_zWriteCloseState = nullptr;
 	_blendState = nullptr;
-	_renderTextureMesh = nullptr;
-	_renderTextureMaterial = nullptr;
-	_renderTextureMeshRender = nullptr;
+	_finalMesh = nullptr;
+	_finalMaterial = nullptr;
+	_finalTextureMeshRender = nullptr;
 	_renderTexture = nullptr;
 }
 
@@ -194,7 +194,7 @@ HRESULT RenderPipeline::InitBackBuffer()
 	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
 	if (FAILED(hr))
 	{
-		Log::LogE("Init Back Buffer 1 step failed!");
+		Log::LogE("Init Back Buffer 1st step failed!");
 		return hr;
 	}
 
@@ -203,7 +203,7 @@ HRESULT RenderPipeline::InitBackBuffer()
 	pBackBuffer->Release();
 	if (FAILED(hr))
 	{
-		Log::LogE("Init Back Buffer 2 step failed!");
+		Log::LogE("Init Back Buffer 2nd step failed!");
 		return hr;
 	}
 
@@ -283,7 +283,7 @@ HRESULT RenderPipeline::BuildRenderTextureToBackBuffer()
 
 	DeviceContext->OMSetRenderTargets(1, &_backBufferRenderTargetView, nullptr);
 	DeviceContext->ClearRenderTargetView(_backBufferRenderTargetView, DefualtColor);
-	_renderTextureMeshRender->Render(true);
+	_finalTextureMeshRender->Render(true);
 	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\texture.fx");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("TextureTech");
 	shader->GetResourceVariable("g_tex")->SetResource(RenderTagertTexture->GetShaderResourceView());
@@ -292,7 +292,7 @@ HRESULT RenderPipeline::BuildRenderTextureToBackBuffer()
 	for (UINT i = 0; i < techDesc.Passes; ++i)
 	{
 		m_pTechnique->GetPassByIndex(i)->Apply(0, RenderPipeline::GetIntance()->DeviceContext);
-		RenderPipeline::GetIntance()->DeviceContext->DrawIndexed(_renderTextureMesh->GetIndexCount(), 0, 0);
+		RenderPipeline::GetIntance()->DeviceContext->DrawIndexed(_finalMesh->GetIndexCount(), 0, 0);
 	}
 
 	return true;

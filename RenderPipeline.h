@@ -65,9 +65,9 @@ private:
 	ID3D11DepthStencilState*_zWriteCloseState;
 	ID3D11BlendState* _blendState;
 
-	Mesh* _renderTextureMesh;
-	Material* _renderTextureMaterial;
-	MeshRender* _renderTextureMeshRender;
+	Mesh* _finalMesh;
+	Material* _finalMaterial;
+	MeshRender* _finalTextureMeshRender;
 	Texture2D* _renderTexture;
 };
 
