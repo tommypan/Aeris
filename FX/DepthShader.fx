@@ -3,9 +3,7 @@
 //VertexShader
 cbuffer CBMatrix:register(b0)
 {
-	matrix World;
-	matrix View;
-	matrix Proj;
+	float4x4 gWorldViewProj;
 };
 
 struct VertexIn
@@ -25,9 +23,7 @@ struct VertexOut
 VertexOut VS(VertexIn ina)
 {
 	VertexOut outa;
-	outa.Pos = mul(float4(ina.Pos,1.0f), World);
-	outa.Pos = mul(outa.Pos, View);
-	outa.Pos = mul(outa.Pos, Proj);
+	outa.Pos = mul(float4(ina.Pos, 1.0f), gWorldViewProj);
 	outa.color = ina.color;
 	return outa;
 }
