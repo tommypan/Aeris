@@ -85,7 +85,7 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 
 	_finalMesh = GeometryUtility::GetInstance()->CreateScreenRect();
 	_finalMaterial = new Material();
-	_finalMaterial->SetShader("FX\\Lighting.fx");
+	_finalMaterial->SetShader("FX\\Lighting.fx");//todo
 	_finalTextureMeshRender = new MeshRender(_finalMesh, _finalMaterial);
 
 	hr = InitBackBuffer();
@@ -107,9 +107,10 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 	return true;
 }
 
-void RenderPipeline::BuildShadowMap()
+void RenderPipeline::GenShadowMap()
 {
-
+	ShadowDepthTexture->ClearRenderTarget(DefualtColor);
+	ShadowDepthTexture->SetRenderTarget(0);
 }
 
 void RenderPipeline::Prepare()
@@ -213,6 +214,8 @@ HRESULT RenderPipeline::InitBackBuffer()
 
 HRESULT RenderPipeline::InitRenderTexture()
 {
+	ShadowDepthTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderDepth, Width, Height);
+
 	RenderTagertTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
 
 	DepthStencilTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderDepth, Width, Height);

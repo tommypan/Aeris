@@ -12,6 +12,7 @@ public:
 	~MeshRender();
 
 	void Render(bool useCutstomMat = false);
+	void RenderShadowMap();
 private:
 	Mesh * _mesh;
 	Material * _material;

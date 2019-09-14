@@ -15,7 +15,7 @@ Shader::Shader(ID3D11Device*m_pd3dDevice, const std::string& path)
 #if defined _DEBUG || defined DEBUG
 	shaderFlag = D3DCOMPILE_DEBUG;
 #endif
-	_name = path;
+	Name = path;
 	std::wstring stemp = std::wstring(path.begin(), path.end());
 	ID3DBlob * blob = nullptr;
 	HRESULT result = D3DX11CompileEffectFromFile(stemp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, shaderFlag,0,m_pd3dDevice,&_effect,&blob);

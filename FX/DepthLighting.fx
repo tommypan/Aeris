@@ -39,8 +39,8 @@ struct VertexIn
 struct VertexOut
 {
 	float4 PosH    : SV_POSITION;	//投影后的坐标
-	float3 PosW    : POSITION;		//世界变换后的坐标
-	float3 PosD    : POSITION;		//深度相机空间的pos
+	float3 PosW    : POSITION0;		//世界变换后的坐标
+	float4 PosD    : POSITION1;		//深度相机空间的pos
 	float3 NormalW : NORMAL;		//世界变换后的顶点法线
 	float2 tex : TEXCOORD; 
 };
@@ -60,9 +60,11 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_Target
 {
-	float2 shadowCoord = float2(shadowCoordX,shadowCoordY);
-	shadowCoord.x = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;
-	shadowCoord.y = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;//todo * -o.5f？ 
+	float2 shadowCoord;
+	//shadowCoord.x = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;
+	//shadowCoord.y = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;//todo * -o.5f？ 
+	shadowCoord.x = (pin.PosD.x/pin.PosD.w)* 0.5f+ 0.5f;
+	shadowCoord.y = (pin.PosD.x/pin.PosD.w)*(-0.5f) + 0.5f;//todo * -o.5f？ 
 	float depth = pin.PosD.z/pin.PosD.w;
 	
 	float4 texColor = g_tex.Sample(samTex,pin.tex);

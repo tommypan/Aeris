@@ -24,7 +24,8 @@ public:
 	Entity(const std::string&  meshPath);
 	~Entity();
 
-	void Render(DirectX::CXMMATRIX view, DirectX::CXMMATRIX proj);
+	void Render(DirectX::CXMMATRIX view, DirectX::CXMMATRIX proj,bool genShadowMap);
+	void test(CXMMATRIX view, CXMMATRIX proj);
 	void SetRenderQueue(int queue);
 	inline Transform * GetTransform() { return _transform; };
 	const std::string& GetName()const { return _name; };

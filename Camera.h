@@ -38,9 +38,12 @@ public:
 	bool ZTest;
 	int ClearFlag;
 	float ClearColor[4];
-private:
-	Matrix	_view;
+	bool IsShadowCamera;
+
+	Matrix	_view;//todo
 	Matrix	_proj;
+private:
+
 	int _minFov;
 	int _maxFov;
 	int _depth;

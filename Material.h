@@ -43,11 +43,12 @@ public:
 	~Material();
 
 	void Render(Mesh* mesh);
+	void RenderShadowMap(Mesh* mesh);
 	void SetTxture(const std::string& name);
 	void SetTxture(Texture2D * texture_);
 	void SetShader(const std::string& name);
-
-	void SetVariable();
+	void SetReciveShadow(bool value);
+	void SetVariable(DirectX::XMMATRIX& test);
 
 	const Shader* GetShader() { return _shader; };
 
@@ -78,8 +79,9 @@ public:
 	DirectX::XMFLOAT4X4 World;
 	DirectX::XMMATRIX View;
 	DirectX::XMMATRIX Proj;
+	bool CastShaow;
 private:
 	Shader * _shader;//м╛ио
 	int _renderQueue;
-
+	bool _reciveShadow;
 };

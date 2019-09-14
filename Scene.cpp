@@ -17,7 +17,6 @@ Scene::~Scene()
 
 void Scene::Render()
 {
-	RenderPipeline::GetIntance()->Prepare();
 	std::vector<Camera*>::iterator cameraIt = _cameras.begin();
 	while (cameraIt != _cameras.end())
 	{
@@ -79,6 +78,31 @@ void Scene::AddCamera(Camera* child)
 void Scene::SortCameras()
 {
 	std::sort(_cameras.begin(), _cameras.end(), &Scene::SortCamera);
+}
+
+Matrix Scene::GetShadowCameraView()
+{
+	std::vector<Camera*>::iterator cameraIt = _cameras.begin();
+	while (cameraIt != _cameras.end())
+	{
+		if ((*cameraIt)->IsShadowCamera)
+		{
+			return (*cameraIt)->_view;
+		}
+	}
+	return Matrix::Identity;
+}
+Matrix Scene::GetShadowCameraProj()
+{
+	std::vector<Camera*>::iterator cameraIt = _cameras.begin();
+	while (cameraIt != _cameras.end())
+	{
+		if ((*cameraIt)->IsShadowCamera)
+		{
+			return (*cameraIt)->_proj;
+		}
+	}
+	return Matrix::Identity;
 }
 
 void Scene::SortTransparentByCameraDist(Camera* targetCam)

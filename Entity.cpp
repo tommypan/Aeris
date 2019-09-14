@@ -19,7 +19,7 @@ Entity::Entity(Mesh* mesh) :_layer(Layer::Default)
 	_transform = new Transform(this);
 	_mesh = mesh;
 	_material = new Material();
-	_material->SetShader("FX\\Lighting.fx");
+	_material->SetShader("FX\\DepthLighting.fx");
 	_meshRender = new MeshRender(_mesh,_material);
 	Scene::GetInstance()->AddChild(this);
 }
@@ -30,7 +30,7 @@ Entity::Entity(const std::string&  meshPath, const std::string& materialPathh) :
 	_transform = new Transform(this);
 	_mesh = new Mesh(meshPath);
 	_material = new Material(materialPathh);
-	_material->SetShader("FX\\Lighting.fx");
+	_material->SetShader("FX\\DepthLighting.fx");
 	_meshRender = new MeshRender(_mesh, _material);
 	Scene::GetInstance()->AddChild(this);
 }
@@ -41,7 +41,7 @@ Entity::Entity(const std::string&  meshPath) :_mesh(nullptr), _material(nullptr)
 	_transform = new Transform(this);
 	_mesh = new Mesh(meshPath);
 	_material = new Material();
-	_material->SetShader("FX\\Lighting.fx");
+	_material->SetShader("FX\\DepthLighting.fx");
 	_meshRender = new MeshRender(_mesh, _material);
 	Scene::GetInstance()->AddChild(this);
 }
@@ -51,7 +51,7 @@ Entity::~Entity()
 	Clear();
 }
 
-void Entity::Render(CXMMATRIX view, CXMMATRIX proj)
+void Entity::Render(CXMMATRIX view, CXMMATRIX proj, bool genShadowMap)
 {
 	if (_meshRender != nullptr)
 	{
@@ -61,11 +61,24 @@ void Entity::Render(CXMMATRIX view, CXMMATRIX proj)
 			_material->View = view;
 			_material->Proj = proj;
 		}
-		_meshRender->Render();
+		if (genShadowMap)
+		{
+			_meshRender->RenderShadowMap();
+		}
+		else
+		{
+			_meshRender->Render();
+		}
 	}
 	
 }
 
+void Entity::test(CXMMATRIX view, CXMMATRIX proj)
+{
+	XMMATRIX world = XMLoadFloat4x4(&_transform->GetWorldTransform());
+	XMMATRIX mvp = (world*view*proj);
+	_material->SetVariable(mvp);
+}
 void Entity::SetRenderQueue(int queue)
 {
 	bool needResort = false;

@@ -108,3 +108,21 @@ void MeshRender::Render(bool useCutstomMat)
 		_material->Render(_mesh);
 	}
 }
+
+void MeshRender::RenderShadowMap()
+{
+	//set vertex buffer
+	UINT stride = sizeof(VertexStruct);
+	UINT offset = 0;
+	RenderPipeline::GetIntance()->DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	//set primitive topology
+	RenderPipeline::GetIntance()->DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//set index buffer
+	RenderPipeline::GetIntance()->DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	//set input layout
+	RenderPipeline::GetIntance()->DeviceContext->IASetInputLayout(m_pInputLayout);
+
+	_material->RenderShadowMap(_mesh);
+}

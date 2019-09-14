@@ -126,6 +126,7 @@ bool TestCase::LoadContent()
 	customEntity->GetMaterial()->Specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
 	customEntity->GetTransform()->SetScale(Vector3(0.05f, 0.05f, 0.05f));
 	customEntity->GetMaterial()->SetTxture("./Assets/test2.dds");
+	customEntity->GetMaterial()->CastShaow = true;
 
 	return true;
 }

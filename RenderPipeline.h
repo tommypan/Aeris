@@ -25,7 +25,7 @@ public:
 	float AspectRatio() const;						//width/height
 
 	bool InitDirect3D(HINSTANCE hInstance, HWND hWnd);
-	void BuildShadowMap();
+	void GenShadowMap();
 	void Prepare();
 	void Present();
 	void ShutDown();								//release
@@ -55,6 +55,7 @@ public:
 	D3D_FEATURE_LEVEL		FeatureLevel;			
 	ID3D11Device*			Device;			
 	ID3D11DeviceContext*	DeviceContext;	
+	RenderTexture* ShadowDepthTexture;
 	RenderTexture* DepthStencilTexture;
 	RenderTexture* RenderTagertTexture;
 	float DefualtColor[4];

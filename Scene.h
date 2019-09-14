@@ -4,12 +4,14 @@
 #include <list>
 #include <vector>
 #include <map>
-
+#include "Macro.h"
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"winmm.lib")
 #pragma comment(lib,"comctl32.lib")
 #pragma comment(lib,"dxguid.lib")
+
+using namespace DirectX;
 
 class Entity;
 class Camera;
@@ -25,6 +27,8 @@ public:
 	void RemoveChild(Entity* child);
 	void AddCamera(Camera* child);
 	void SortCameras();
+	DirectX::Matrix	GetShadowCameraView();
+	DirectX::Matrix	GetShadowCameraProj();
 	std::map<int, std::list<Entity*>>& GeSortedOpaqueChildren() { return _opaqueChildrenMap; };
 	std::map<int, std::list<Entity*>>& GeSortedTransparentChildren() { return _transparentChildrenMap; };
 private:

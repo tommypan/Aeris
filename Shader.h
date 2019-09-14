@@ -20,6 +20,8 @@ public:
 
 	static Shader* GetShader(ID3D11Device*m_pd3dDevice, const std::string& path);
 	static void ReleaseAllShader();
+public:
+	std::string Name;
 private:
 	ID3DX11Effect * _effect;
 	ID3DX11EffectTechnique * _effectTech;
@@ -27,7 +29,6 @@ private:
 	ID3DX11EffectMatrixVariable * _effectMatrixVar;
 	ID3DX11EffectVectorVariable * _effectVectorVar;
 	bool _valide = false;
-	std::string _name;
 private:
 	static std::unordered_map<std::string, Shader *> _shaders;
 };

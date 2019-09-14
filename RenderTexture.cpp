@@ -47,7 +47,7 @@ RenderTexture::RenderTexture(ID3D11Device* d3dDevice, ID3D11DeviceContext* devic
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.Format = _renderType == RenderTextureType::RenderDepth ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
@@ -68,7 +68,6 @@ RenderTexture::~RenderTexture()
 
 void RenderTexture::SetRenderTarget(ID3D11RenderTargetView* renderTargetView)
 {
-	if (_deviceContext != nullptr)
 	{
 		_deviceContext->OMSetRenderTargets(1, &renderTargetView, _depthStencilView);
 		//ÉèÖÃÊÓ¿Ú
