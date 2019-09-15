@@ -55,7 +55,7 @@ void Entity::Render(CXMMATRIX view, CXMMATRIX proj, bool genShadowMap)
 {
 	if (_meshRender != nullptr)
 	{
-		if (_material != nullptr)//todo
+		if (_material != nullptr)
 		{
 			_material->World = _transform->GetWorldTransform();
 			_material->View = view;
@@ -77,8 +77,9 @@ void Entity::test(CXMMATRIX view, CXMMATRIX proj)
 {
 	XMMATRIX world = XMLoadFloat4x4(&_transform->GetWorldTransform());
 	XMMATRIX mvp = (world*view*proj);
-	_material->SetVariable(mvp);
+	_material->SetCustomMatrix("customMVP",mvp);
 }
+
 void Entity::SetRenderQueue(int queue)
 {
 	bool needResort = false;

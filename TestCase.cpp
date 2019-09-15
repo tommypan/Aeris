@@ -6,7 +6,7 @@
 #include "Transform.h"
 #include "Texture2D.h"
 
-TestCase::TestCase() :_theta(1.5f*XM_PI), _phi(0.4f*XM_PI), _radius(40.0f)
+TestCase::TestCase() :_theta(9.00588036), _phi(0.575953603f), _radius(40.0f)
 {
 
 }
@@ -19,11 +19,6 @@ TestCase::~TestCase()
 bool TestCase::LoadContent()
 {
 	//初始化各个物体的世界变换矩阵
-	//平行光
-	_sun.Light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	_sun.Light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	_sun.Light.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	_sun.Light.direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
 	//点光源
 	//m_pointLight.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	//m_pointLight.diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
@@ -65,8 +60,10 @@ bool TestCase::LoadContent()
 	_grid->GetMaterial()->Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
 	_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
 	_grid->GetMaterial()->SetTxture("./Assets/grid.dds");
-	_grid->GetMaterial()->Texture->SetSampleMode(D3D11_TEXTURE_ADDRESS_WRAP);
+	ID3D11SamplerState* samplerState = Texture2D::CreateSampleState(D3D11_TEXTURE_ADDRESS_WRAP);
+	_grid->GetMaterial()->Texture->SetSampleState(samplerState);
 	_grid->SetLayer(Layer::Effect);
+	_grid->Name = "grid";
 
 	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
 	_box = new Entity(boxMesh);
@@ -77,7 +74,8 @@ bool TestCase::LoadContent()
 	_box->GetTransform()->SetPosition(Vector3(0.f, 2.f, 3.f));
 	_box->GetTransform()->SetScale(Vector3(2, 2, 2));
 	_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
-
+	_box->Name = "box1";
+	//_box->GetMaterial()->CastShaow = true;
 	//Mesh* boxMesh2 = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
 	_box2 = new Entity(boxMesh);
 	_box2->GetMaterial()->Ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
@@ -87,7 +85,8 @@ bool TestCase::LoadContent()
 	_box2->GetTransform()->SetPosition(Vector3(-1.f, 3.f, 8.f));
 	_box2->GetTransform()->SetScale(Vector3(2, 2, 2));
 	_box2->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
-
+	_box2->Name = "box2";
+	//_box2->GetMaterial()->CastShaow = true;
 
 	//Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
 	//m_sphere[4] = new Entity(sphereMesh);
@@ -127,12 +126,16 @@ bool TestCase::LoadContent()
 	customEntity->GetTransform()->SetScale(Vector3(0.05f, 0.05f, 0.05f));
 	customEntity->GetMaterial()->SetTxture("./Assets/test2.dds");
 	customEntity->GetMaterial()->CastShaow = true;
+	customEntity->Name = "npc";
+
+	InitSun();
 
 	return true;
 }
 
 void TestCase::UnLoadContent()
 {
+	SAFE_DELETE(_sun);
 	SAFE_DELETE(_camera);
 	SAFE_DELETE(_camera2);
 	SAFE_DELETE(_grid);
@@ -154,6 +157,7 @@ void TestCase::UnLoadContent()
 
 void TestCase::Update(float dt)
 {
+
 	float x = _radius*sinf(_phi)*cosf(_theta);
 	float z = _radius*sinf(_phi)*sinf(_theta);
 	float y = _radius*cosf(_phi);
@@ -172,6 +176,8 @@ void TestCase::Update(float dt)
 	_camera2->GetTransform()->SetScale(cameraScale);
 	_camera2->GetTransform()->SetRotation(cameraRot);
 	_camera2->GetTransform()->SetPosition(cameraPos);
+
+	
 	//点光源和聚光灯要设置其位置
 	//点光源位置
 	//m_pointLight.position = XMFLOAT3(0.0f, 5.0f, 0.0f);
@@ -179,10 +185,9 @@ void TestCase::Update(float dt)
 	//m_spotLight.position = orignPos;
 	//XMStoreFloat3(&m_spotLight.direction, XMVector3Normalize(Vector3(0, 0, 0) - Vector3(x, y, z)));
 
-
 	//set constant buffer
-	Shader* shader = Shader::GetShader(nullptr, "FX\\Lighting.fx");
-	shader->GetVariable("gDirLight")->SetRawValue(&(_sun.Light), 0, sizeof(_sun.Light));
+	Shader* shader = Shader::GetShader(nullptr, "FX\\DepthLighting.fx");//todo
+	shader->GetVariable("gDirLight")->SetRawValue(&(_sun->Light), 0, sizeof(_sun->Light));
 	//shader->GetVariable("gPointLight")->SetRawValue(&m_pointLight, 0, sizeof(m_pointLight));
 	//shader->GetVariable("gSpotLight")->SetRawValue(&m_spotLight, 0, sizeof(m_spotLight));
 	shader->GetVectorVariable("gEyePosW")->SetRawValue(&((XMFLOAT3)_camera->GetTransform()->GetPosition()), 0, sizeof(XMFLOAT3));
@@ -235,3 +240,28 @@ void TestCase::OnMouseMove(WPARAM btnState, int x, int y)
 }
 
 
+void TestCase::InitSun()
+{
+	_sun = new Sun();
+
+	//平行光
+	_sun->Light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	_sun->Light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	_sun->Light.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	_sun->Light.direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
+
+	float x = _radius*sinf(_phi)*cosf(_theta);
+	float z = _radius*sinf(_phi)*sinf(_theta);
+	float y = _radius*cosf(_phi);
+
+	Vector3 orignPos = Vector3(x, y, z);
+
+	Matrix v = Matrix::CreateLookAt(orignPos, Vector3::Zero, Vector3::Up);
+	Matrix invertM = v.Invert();
+	Vector3 cameraScale;
+	Quaternion cameraRot;
+	Vector3 cameraPos;
+	invertM.Decompose(cameraScale, cameraRot, cameraPos);
+	_sun->GetTransform()->SetRotation(cameraRot);
+	_sun->GetTransform()->SetPosition(Vector3(cameraPos.x, cameraPos.y, cameraPos.z));
+}

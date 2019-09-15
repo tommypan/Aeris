@@ -10,6 +10,7 @@ Texture2D shadow_tex: register(t1);
 //};
 
 SamplerState samTex: register( s0 );  
+SamplerState ClampSampleType:register(s1);
 
 cbuffer cbPerFrame
 {
@@ -64,51 +65,60 @@ float4 PS(VertexOut pin) : SV_Target
 	//shadowCoord.x = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;
 	//shadowCoord.y = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;//todo * -o.5f？ 
 	shadowCoord.x = (pin.PosD.x/pin.PosD.w)* 0.5f+ 0.5f;
-	shadowCoord.y = (pin.PosD.x/pin.PosD.w)*(-0.5f) + 0.5f;//todo * -o.5f？ 
+	shadowCoord.y = (pin.PosD.y/pin.PosD.w)*(-0.5f) + 0.5f;//todo * -o.5f？ 
 	float depth = pin.PosD.z/pin.PosD.w;
-	
+
+	float bias;
+	//设置偏斜量
+	bias = 0.001f;
+
 	float4 texColor = g_tex.Sample(samTex,pin.tex);
-	
-	if(shadow_tex.Sample(samTex,shadowCoord).r >= depth)
+	//减去阴影偏斜量
+	float ShadowMapDepth = shadow_tex.Sample(samTex, shadowCoord).r;
+	ShadowMapDepth = ShadowMapDepth + bias;
+	//if (saturate(shadowCoord.x) == shadowCoord.x&&saturate(shadowCoord.y) == shadowCoord.y)
 	{
+		if (ShadowMapDepth >= depth)
+		{
 			//插值运算有可能使法线不再单位化，重新单位化法线
-	pin.NormalW = normalize(pin.NormalW);
+			pin.NormalW = normalize(pin.NormalW);
+			
+			//顶点到观察点向量，归一化
+			float3 toEyeW = normalize(gEyePosW - pin.PosW);
 
-	//顶点到观察点向量，归一化
-	float3 toEyeW = normalize(gEyePosW - pin.PosW);
+			//初始化颜色值全部为0
+			float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+			float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+			float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//初始化颜色值全部为0
-	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+			//每个光源计算后得到的环境光、漫反射光、高光
+			float4 A, D, S;
 
-	//每个光源计算后得到的环境光、漫反射光、高光
-	float4 A, D, S;
+			//每个光源计算后将ADS更新到最终结果中
+			ComputeDirectionalLight(gMaterial, gDirLight, pin.NormalW, toEyeW, A, D, S);
+			ambient += A;
+			diffuse += D;
+			spec += S;
 
-	//每个光源计算后将ADS更新到最终结果中
-	ComputeDirectionalLight(gMaterial, gDirLight, pin.NormalW, toEyeW, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
+			ComputePointLight(gMaterial, gPointLight, pin.PosW, pin.NormalW, toEyeW, A, D, S);
+			ambient += A;
+			diffuse += D;
+			spec += S;
 
-	ComputePointLight(gMaterial, gPointLight, pin.PosW, pin.NormalW, toEyeW, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
+			ComputeSpotLight(gMaterial, gSpotLight, pin.PosW, pin.NormalW, toEyeW, A, D, S);
+			ambient += A;
+			diffuse += D;
+			spec += S;
 
-	ComputeSpotLight(gMaterial, gSpotLight, pin.PosW, pin.NormalW, toEyeW, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
+			float4 litColor = ambient + diffuse + spec;
 
-	float4 litColor = ambient + diffuse + spec;
-
-	//最终颜色透明度使用漫反射光的
-	litColor.a = gMaterial.diffuse.a;
-	texColor = texColor + litColor;
+			//最终颜色透明度使用漫反射光的
+			litColor.a = gMaterial.diffuse.a;
+			texColor = texColor + litColor;
+		}
 	}
-	
-	return texColor;
+	float4 result = float4(texColor.x, texColor.y, texColor.z, 0.5f);
+	return result;
 }
 
 technique11 LightTech

@@ -14,6 +14,8 @@ public:
 	void Render(bool useCutstomMat = false);
 	void RenderShadowMap();
 private:
+	void BindBuffer();
+private:
 	Mesh * _mesh;
 	Material * _material;
 

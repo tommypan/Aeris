@@ -30,10 +30,13 @@ Texture2D::~Texture2D()
 {
 	SAFE_RELEASE(_tex);
 	SAFE_RELEASE(_shaderRes);
+	SAFE_RELEASE(_sampleState);
 }
 
-bool Texture2D::SetSampleMode(D3D11_TEXTURE_ADDRESS_MODE mode)
+ID3D11SamplerState* Texture2D::CreateSampleState(D3D11_TEXTURE_ADDRESS_MODE mode)
 {
+	ID3D11SamplerState* result = nullptr;
+
 	D3D11_SAMPLER_DESC colorMapDesc;
 
 	ZeroMemory(&colorMapDesc, sizeof(colorMapDesc));
@@ -51,14 +54,19 @@ bool Texture2D::SetSampleMode(D3D11_TEXTURE_ADDRESS_MODE mode)
 	colorMapDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	HRESULT hr = RenderPipeline::GetIntance()->Device->CreateSamplerState(&colorMapDesc,
-		&_sampleState);
+		&result);
 
 	if (FAILED(hr))
 	{
 		Log::LogE("Failed to create color map sampler state!");
-		return false;
+		return nullptr;
 
 	}
 
-	return true;
+	return result;
+}
+
+void Texture2D::DestorySamplState(ID3D11SamplerState* state)
+{
+	SAFE_RELEASE(state)
 }

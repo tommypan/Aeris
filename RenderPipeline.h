@@ -26,7 +26,7 @@ public:
 
 	bool InitDirect3D(HINSTANCE hInstance, HWND hWnd);
 	void GenShadowMap();
-	void Prepare();
+	void PrepareRenderTarget();
 	void Present();
 	void ShutDown();								//release
 

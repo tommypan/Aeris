@@ -113,7 +113,7 @@ void RenderPipeline::GenShadowMap()
 	ShadowDepthTexture->SetRenderTarget(0);
 }
 
-void RenderPipeline::Prepare()
+void RenderPipeline::PrepareRenderTarget()
 {
 	DepthStencilTexture->SetRenderTarget(RenderTagertTexture->GetRenderTargetView());
 }

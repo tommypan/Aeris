@@ -127,17 +127,12 @@ void Material::SetReciveShadow(bool value)
 	}
 }
 
-void Material::SetVariable(DirectX::XMMATRIX& customMvp )
+void Material::SetCustomMatrix(const std::string& name,DirectX::XMMATRIX& matrix)
 {
-	if (_shader == nullptr)
-	{
-		return;
-	}
-
-	ID3DX11EffectMatrixVariable * fxWorldViewProj = _shader->GetMatrixVariable("customMVP");
+	ID3DX11EffectMatrixVariable * fxWorldViewProj = _shader->GetMatrixVariable(name);
 	if (fxWorldViewProj != nullptr)
 	{
-		fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&(customMvp)));
+		fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&(matrix)));
 	}
 }
 

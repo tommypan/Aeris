@@ -28,17 +28,19 @@ public:
 	void test(CXMMATRIX view, CXMMATRIX proj);
 	void SetRenderQueue(int queue);
 	inline Transform * GetTransform() { return _transform; };
-	const std::string& GetName()const { return _name; };
 	Material* GetMaterial()const { return _material; };
 	inline int GetRenderQueue() { return _material != nullptr ? _material->_renderQueue : 0; };
 	inline void SetLayer(Layer layer) { _layer = layer; };
 	inline int GetLayer() { return int(_layer); };
 	inline void SetDistToCam(const float& dist) { _distToCurCamera = dist; };
 	bool operator<(Entity*compareE);
+	inline bool GetRenderable() { return _meshRender != nullptr; };
+public:
+	std::string Name;
+
 protected:
 	void Clear();
 protected:
-	std::string _name;
 	Transform * _transform;
 	Mesh * _mesh;
 	Material * _material;

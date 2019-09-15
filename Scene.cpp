@@ -85,9 +85,9 @@ Matrix Scene::GetShadowCameraView()
 	std::vector<Camera*>::iterator cameraIt = _cameras.begin();
 	while (cameraIt != _cameras.end())
 	{
-		if ((*cameraIt)->IsShadowCamera)
+		if ((*cameraIt)->IsShadowCamera())
 		{
-			return (*cameraIt)->_view;
+			return (*cameraIt)->GetViewMatrix();
 		}
 	}
 	return Matrix::Identity;
@@ -97,9 +97,9 @@ Matrix Scene::GetShadowCameraProj()
 	std::vector<Camera*>::iterator cameraIt = _cameras.begin();
 	while (cameraIt != _cameras.end())
 	{
-		if ((*cameraIt)->IsShadowCamera)
+		if ((*cameraIt)->IsShadowCamera())
 		{
-			return (*cameraIt)->_proj;
+			return (*cameraIt)->GetProjectMatrix();
 		}
 	}
 	return Matrix::Identity;

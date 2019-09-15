@@ -3,7 +3,7 @@
 
 Transform::Transform(Entity* entity_) :_hostEntity(entity_)
 {
-	Name = entity_->GetName();
+	Name = entity_->Name;
 	_position = Vector3::Zero;
 	_rotation = Quaternion::Identity;
 	_scale = Vector3::One;
@@ -30,6 +30,10 @@ Transform::~Transform()
  void Transform::SetParent(Transform * parent)
  {
 	 _parent = parent;
+	 if (_parent != nullptr)
+	 {
+		 _parent->_children.push_back(this);
+	 }
 	 SetScale(_scale);
 	 SetRotation(_rotation);
 	 SetPosition(_position);

@@ -8,16 +8,8 @@ RenderTexture::RenderTexture(ID3D11Device* d3dDevice, ID3D11DeviceContext* devic
 
 	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
-	if (_renderType == RenderTextureType::RenderDepth)
-	{
-		textureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; //24位是为了深度缓存，8位是为了模板缓存
-		textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;  //注意深度缓存(纹理)的绑定标志
-
-	}else if (_renderType == RenderTextureType::RenderTarget)
-	{
-		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;  //纹理像素为12个字节
-		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	}
+	textureDesc.Format = _renderType == RenderTextureType::RenderDepth ? DXGI_FORMAT_R24G8_TYPELESS : DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureDesc.BindFlags = _renderType == RenderTextureType::RenderDepth ? (D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE) : D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	textureDesc.Width = TextureWidth;
 	textureDesc.Height = TexureHeight;
 	textureDesc.MipLevels = 1;
@@ -68,11 +60,9 @@ RenderTexture::~RenderTexture()
 
 void RenderTexture::SetRenderTarget(ID3D11RenderTargetView* renderTargetView)
 {
-	{
-		_deviceContext->OMSetRenderTargets(1, &renderTargetView, _depthStencilView);
-		//设置视口
-		_deviceContext->RSSetViewports(1, &_viewPort);
-	}
+	_deviceContext->OMSetRenderTargets(1, &renderTargetView, _depthStencilView);
+	//设置视口
+	_deviceContext->RSSetViewports(1, &_viewPort);
 }
 
 void RenderTexture::ClearRenderTarget(float * clearColor)

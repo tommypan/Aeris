@@ -48,7 +48,7 @@ public:
 	void SetTxture(Texture2D * texture_);
 	void SetShader(const std::string& name);
 	void SetReciveShadow(bool value);
-	void SetVariable(DirectX::XMMATRIX& test);
+	void SetCustomMatrix(const std::string& name, DirectX::XMMATRIX& matrix);
 
 	const Shader* GetShader() { return _shader; };
 

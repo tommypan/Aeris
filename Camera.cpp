@@ -6,9 +6,10 @@
 
 #define CLAMP(x, upper, lower) (min(upper, max(x, lower)))
 
-Camera::Camera() :NearZ(1), FarZ(1000), Projection(CameraProjection::Perspective), _minFov(1), _maxFov(180), Fov(30),_depth(0), ZTest(true), ClearFlag(0)
+Camera::Camera(bool isShadowCamera) :NearZ(1), FarZ(1000), Projection(CameraProjection::Perspective), _minFov(1), _maxFov(180), Fov(30),_depth(0), ZTest(true), ClearFlag(0)
 {
 	ZeroMemory(this,sizeof(this));
+	_isShadowCamera = isShadowCamera;
 	memcpy(ClearColor,RenderPipeline::GetIntance()->DefualtColor,sizeof(ClearColor));
 	Scene::GetInstance()->RemoveChild(this);//效率考虑，没在AddChild去动态转换判断类型
 	Scene::GetInstance()->AddCamera(this);
@@ -20,17 +21,17 @@ Camera::~Camera()
 
 void Camera::Render()
 {
-	if (IsShadowCamera)
+	if (RenderPipeline::GetIntance()->DeviceContext == 0)
+		return;
+
+	if (_isShadowCamera)
 	{
 		RenderPipeline::GetIntance()->GenShadowMap();
 	}
 	else
 	{
-		RenderPipeline::GetIntance()->Prepare();
+		RenderPipeline::GetIntance()->PrepareRenderTarget();
 	}
-
-	if (RenderPipeline::GetIntance()->DeviceContext == 0)
-		return;
 
 	if (ClearFlag == CameraClearFlag::SolidColor)
 	{
@@ -45,9 +46,18 @@ void Camera::Render()
 
 	XMStoreFloat4x4(&_view, _transform->GetWorldTransform().Invert());
 
-	Fov = CLAMP(Fov,_maxFov,_minFov);
-	XMMATRIX T = XMMatrixPerspectiveFovLH(Fov/ _maxFov*XM_PI, RenderPipeline::GetIntance()->AspectRatio(),NearZ, FarZ);
-	XMStoreFloat4x4(&_proj, T);
+	if (Projection == CameraProjection::Orthongaphics)
+	{
+		XMMATRIX T = XMMatrixOrthographicLH(RenderPipeline::GetIntance()->Width, RenderPipeline::GetIntance()->Height, NearZ, FarZ);
+		XMStoreFloat4x4(&_proj, T);
+	}
+	else
+	{
+		Fov = CLAMP(Fov, _maxFov, _minFov);
+		XMMATRIX T = XMMatrixPerspectiveFovLH(Fov / _maxFov*XM_PI, RenderPipeline::GetIntance()->AspectRatio(), NearZ, FarZ);
+		XMStoreFloat4x4(&_proj, T);
+	}
+
 
 	RenderOpaque();
 	RenderTransparent();
@@ -92,17 +102,35 @@ void Camera::InnerRenderEntitys(std::map<int, std::list<Entity*>>& entitysMap)
 		{
 			if (CullMask >> (*startIt)->GetLayer() & 1)
 			{
-				if (IsShadowCamera && (*startIt)->GetMaterial()->CastShaow == false)
+				if (_isShadowCamera && (*startIt)->GetMaterial()->CastShaow == false)
 				{
 					startIt++;
 					continue;
 				}
-				(*startIt)->test(Scene::GetInstance()->GetShadowCameraView(), Scene::GetInstance()->GetShadowCameraProj());
-				(*startIt)->Render(_view, _proj, IsShadowCamera);
+				
+				if (!(*startIt)->GetRenderable())
+				{
+					startIt++;
+					continue;
+				}
+
+				if (!_isShadowCamera)
+				{
+					InnnerGenShadow(*startIt);
+				}
+				(*startIt)->Render(_view, _proj, _isShadowCamera);
 			}
 			startIt++;
 		}
 
 		startMapIt++;
 	}
+}
+
+void Camera::InnnerGenShadow(Entity* entity)
+{
+	XMMATRIX world = XMLoadFloat4x4(&(entity->GetTransform()->GetWorldTransform()));
+	XMMATRIX view = Scene::GetInstance()->GetShadowCameraView();
+	XMMATRIX proj = Scene::GetInstance()->GetShadowCameraProj();
+	entity->GetMaterial()->SetCustomMatrix("customMVP", world*view*proj);
 }

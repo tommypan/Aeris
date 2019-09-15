@@ -1,5 +1,4 @@
-#ifndef _LIGHT_DEMO_H_
-#define _LIGHT_DEMO_H_
+#pragma once
 
 #include <list>
 #include <vector>
@@ -46,5 +45,3 @@ private:
 	std::map<int, std::list<Entity*>> _transparentChildrenMap;
 	std::vector<Camera*> _cameras;
 };
-
-#endif//_LIGHT_DEMO_H_
