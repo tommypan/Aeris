@@ -45,7 +45,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		return -2;
 
 	ShowWindow(hwnd, nShowCmd);
-	Log::LogD("Init Engine");
 
 	bool result =  RenderPipeline::GetIntance()->InitDirect3D(hInstance, hwnd);
 	if (!result)

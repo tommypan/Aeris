@@ -76,12 +76,16 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 			&Device, &FeatureLevel, &DeviceContext);
 		if (SUCCEEDED(hr))
 		{
-			DriverType = driverTypes[driverTypeIndex];
+			Log::LogD("Init Engine Sucess,featureLevels:"+ std::to_string(FeatureLevel));
+			Log::LogD("Support MRT");
 			break;
 		}
 	}
 	if (FAILED(hr))
+	{
+		Log::LogE("Init Engine Fail");
 		return false;
+	}
 
 	_finalMesh = GeometryUtility::GetInstance()->CreateScreenRect();
 	_finalMaterial = new Material();
