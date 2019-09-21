@@ -1,11 +1,16 @@
 Texture2D g_tex: register(t0);
 SamplerState samTex: register(s0);
 
+struct Material
+{
+	float4 ambient;
+	float4 specular;//w表示高光强度
+	float4 reflect;
+};
 
 cbuffer cbPerObject
 {
 	float4x4 gWorld;
-	float4x4 gWorldInvTranspose;//世界矩阵的逆矩阵的转置
 	float4x4 gWorldViewProj;
 	Material gMaterial;
 };
@@ -25,12 +30,7 @@ struct VertexOut
 	float2 tex		: TEXCOORD0;
 };
 
-struct Material
-{
-	float4 ambient;
-	float4 specular;//w表示高光强度
-	float4 reflect;
-};
+
 
 struct PixelOutDeferred
 {
@@ -42,7 +42,7 @@ struct PixelOutDeferred
 VertexOut BasicVS(VertexIn vIn)
 {
 	VertexOut vOut;
-	vOut.position = mul(vOut.hPos, gWorldViewProj);
+	vOut.position = mul(vIn.position, gWorldViewProj);
 	vOut.hPos = float4(vIn.position, 1.0f);
 	vOut.normal   = mul(normalize(vIn.normal), (float3x3)gWorld);
 	vOut.tex      = vIn.tex;
@@ -53,10 +53,10 @@ VertexOut BasicVS(VertexIn vIn)
 PixelOutDeferred BasicPS(VertexOut pIn)
 {
 	PixelOutDeferred pOut;
-	pOut.position = pIn.hPos;
+	pOut.position = mul(pIn.hPos, gWorld);
 	pOut.normal = float4(pIn.normal, 1.0f);
-	float4 texColor = g_tex.Sample(samTex, pIn.tex)
-	pOut.albedoSpec = float4(texColor.xyz, specular.w);
+	float4 texColor = g_tex.Sample(samTex, pIn.tex);
+	pOut.albedoSpec = float4(texColor.xyz, gMaterial.specular.w);
 	return pOut;
 }
 

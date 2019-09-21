@@ -5,9 +5,9 @@ Texture2D gTexPosition: register(t0);
 Texture2D gTexNormal: register(t1);
 Texture2D gTexAlbedoSpec: register(t2);
 
-const int DLCount = 1;
-const int PLCount = 4;
-const int SLCount = 1;
+static const int DLCount = 1;
+static const int PLCount = 4;
+static const int SLCount = 1;
 
 cbuffer cbPerFrame
 {
@@ -50,21 +50,22 @@ PixelOutBasic LightingPS(VertexOut pIn)
 	PixelOutBasic pOut;
 	float3 position = gTexPosition.Sample(samTex, pIn.tex).rgb;
 	float3 normal = gTexNormal.Sample(samTex, pIn.tex).rgb;
-	float3 diffuse = gTexAlbedoSpec.Sample(samTex, pIn.tex).rgb;
-	float specular = gTexAlbedoSpec.Sample(samTex, pIn.tex).a;
-	float4 ambient = float3(0.0f, 0.0f, 0.0f);
+	float4 albedoSpec = gTexAlbedoSpec.Sample(samTex, pIn.tex).rgba;
+	//float specular = gTexAlbedoSpec.Sample(samTex, pIn.tex).a;
+	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float3 toEyeW = normalize(gEyePosW - position);
 
-	float4 colorLinear;
+	float4 colorLinear = float4(0.0f, 0.0f, 0.0f, 0.0f);//±ÿ–Î≥ı ºªØ
 	float4 A, D, S;
 	for (int i = 0; i < DLCount; i++)
 	{
 		if (length(normal) > 0.0f)
 		{
-			ComputeDirectionalLight(ambient, diffuse, gDirLight.direction, normal, gEyePosW - position, A, D, S);
+			ComputeDirectionalLight(ambient, albedoSpec, gDirLight[i], normal, toEyeW, A, D, S);
 			colorLinear += A;
 			colorLinear += D;
 			colorLinear += S;
-			//float3 colorLinear = lambertian * diffuse + specular * float3(1.0f, 1.0f, 1.0f);//need do
+			//float3 colorLinear = lambertian * albedoSpec + specular * float3(1.0f, 1.0f, 1.0f);//need do
 			//float4(pow(colorLinear, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f);
 		}
 	}
@@ -73,7 +74,7 @@ PixelOutBasic LightingPS(VertexOut pIn)
 	{
 		if (length(normal) > 0.0f)
 		{
-			ComputePointLight(ambient, diffuse, gDirLight.gPointLight[i], position, normal, gEyePosW - position, A, D, S);
+			ComputePointLight(ambient, albedoSpec, gPointLight[i], position, normal, toEyeW, A, D, S);
 			colorLinear += A;
 			colorLinear += D;
 			colorLinear += S;
@@ -84,7 +85,7 @@ PixelOutBasic LightingPS(VertexOut pIn)
 	{
 		if (length(normal) > 0.0f)
 		{
-			ComputeSpotLight(ambient, diffuse, gDirLight.gSpotLight[i], position, normal, gEyePosW - position, A, D, S);
+			ComputeSpotLight(ambient, albedoSpec, gSpotLight[i], position, normal, toEyeW, A, D, S);
 			colorLinear += A;
 			colorLinear += D;
 			colorLinear += S;
@@ -93,7 +94,7 @@ PixelOutBasic LightingPS(VertexOut pIn)
 
 
 	pOut.color = float4(pow(colorLinear, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f);
-	//pOut.color = float4(diffuse, 1.0f);
+	//pOut.color = float4(albedoSpec, 1.0f);
 	return pOut;
 }
 

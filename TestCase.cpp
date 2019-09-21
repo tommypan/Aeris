@@ -124,6 +124,9 @@ bool TestCase::LoadContent()
 	customEntity->GetMaterial()->CastShaow = true;
 	customEntity->Name = "npc";
 
+	Shader* deshader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredAttribute.fx");
+
+
 	InitSun();
 
 	return true;

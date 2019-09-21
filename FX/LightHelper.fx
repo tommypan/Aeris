@@ -44,7 +44,7 @@ struct SpotLight
 struct Material
 {
 	float4 ambient;
-	float4 specular;//w表示高光强度
+	float4 albedoSpec;//w表示高光强度
 	float4 reflect;
 };
 

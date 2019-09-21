@@ -11,14 +11,14 @@ Texture2D g_tex: register(t0);
 SamplerState samTex: register( s0 );  
 
 
-const int DLCount = 1;
-const int PLCount = 4;
-const int SLCount = 1;
+static const int DLCount = 1;
+static const int PLCount = 4;
+static const int SLCount = 1;
 cbuffer cbPerFrame
 {
-	DirectionalLight gDirLight[1];
-	PointLight gPointLight[4];
-	SpotLight gSpotLight[1];
+	DirectionalLight gDirLight[DLCount];
+	PointLight gPointLight[PLCount];
+	SpotLight gSpotLight[SLCount];
 	float3 gEyePosW;			//观察点
 };
 
@@ -76,7 +76,7 @@ float4 PS(VertexOut pin) : SV_Target
 	//每个光源计算后将ADS更新到最终结果中
 	for (int i = 0; i < DLCount; i++)
 	{
-		ComputeDirectionalLight(gMaterial.ambient, gMaterial.specular, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
+		ComputeDirectionalLight(gMaterial.ambient, gMaterial.albedoSpec, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;
@@ -84,7 +84,7 @@ float4 PS(VertexOut pin) : SV_Target
 
 	for (int i = 0; i < PLCount; i++)
 	{
-		ComputePointLight(gMaterial.ambient, gMaterial.specular, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+		ComputePointLight(gMaterial.ambient, gMaterial.albedoSpec, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;
@@ -92,7 +92,7 @@ float4 PS(VertexOut pin) : SV_Target
 
 	for (int i = 0; i < SLCount; i++)
 	{
-		ComputeSpotLight(gMaterial.ambient, gMaterial.specular, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+		ComputeSpotLight(gMaterial.ambient, gMaterial.albedoSpec, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;
