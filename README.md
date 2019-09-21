@@ -1,2 +1,6 @@
 # Aeris
-Aeris Is a deferre lighting 3D render engine,which based on DirectX
+unitylike API
+deferre shading + forward lighting
+custom render pipeline
+light volume
+pbr,etc...

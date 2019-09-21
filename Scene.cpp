@@ -24,6 +24,16 @@ void Scene::Render()
 		{
 			SortTransparentByCameraDist((*cameraIt));
 		}
+		if ((*cameraIt)->IsShadowCamera())
+		{
+			if (!(*cameraIt)->NeedGenShadow())
+			{
+				cameraIt++;
+				continue;
+			}
+			(*cameraIt)->SetNeedGenShadow(false);
+		}
+
 		(*cameraIt)->Render();
 		cameraIt++;
 	}

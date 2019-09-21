@@ -44,13 +44,13 @@ struct SpotLight
 struct Material
 {
 	float4 ambient;
-	float4 diffuse;
 	float4 specular;//w表示高光强度
 	float4 reflect;
 };
 
 //计算平行光
-void ComputeDirectionalLight(Material mat,        //材质
+void ComputeDirectionalLight(float4 inAmbient,
+	float4 inSpecular,
 	DirectionalLight L,    //平行光
 	float3 normal,        //顶点法线
 	float3 toEye,        //顶点到眼睛的向量
@@ -67,7 +67,7 @@ void ComputeDirectionalLight(Material mat,        //材质
 	float3 lightVec = -L.direction;
 
 	// 环境光直接计算
-	ambient = mat.ambient * L.ambient;
+	ambient = inAmbient * L.ambient;
 
 	// 计算漫反射系数
 	//光线、法线方向归一化
@@ -80,16 +80,18 @@ void ComputeDirectionalLight(Material mat,        //材质
 	{
 
 		float3 v = reflect(-lightVec, normal);
-		float specFactor = pow(max(dot(v, toEye), 0.0f), mat.specular.w);
+		float specFactor = pow(max(dot(v, toEye), 0.0f), inSpecular.w);
 		//计算漫反射光
-		diffuse = diffuseFactor * mat.diffuse * L.diffuse;
+		float4 mDiffuse = float4(inSpecular.xyz, 0.0f);
+		diffuse = diffuseFactor * mDiffuse * L.diffuse;
 		//计算高光
-		spec = specFactor * mat.specular * L.specular;
+		spec = specFactor * mDiffuse * L.specular;
 	}
 }
 
 //计算点光源
-void ComputePointLight(Material mat,        //材质
+void ComputePointLight(float4 inAmbient,
+	float4 inSpecular,
 	PointLight L,        //点光源
 	float3 pos,            //顶点位置
 	float3 normal,        //顶点法线
@@ -116,7 +118,7 @@ void ComputePointLight(Material mat,        //材质
 	lightVec /= d;
 
 	//计算环境光
-	ambient = mat.ambient * L.ambient;
+	ambient = inAmbient * L.ambient;
 
 	//漫反射系数
 	float diffuseFactor = dot(lightVec, normal);
@@ -125,11 +127,12 @@ void ComputePointLight(Material mat,        //材质
 	if (diffuseFactor > 0.0f)
 	{
 		float3 v = reflect(-lightVec, normal);
-		float specFactor = pow(max(dot(v, toEye), 0.0f), mat.specular.w);
+		float specFactor = pow(max(dot(v, toEye), 0.0f), inSpecular.w);
 		//计算漫反射光
-		diffuse = diffuseFactor * mat.diffuse * L.diffuse;
+		float4 mDiffuse = float4(inSpecular.xyz, 0.0f);
+		diffuse = diffuseFactor * mDiffuse * L.diffuse;
 		//计算高光
-		spec = specFactor * mat.specular * L.specular;
+		spec = specFactor * inSpecular * L.specular;
 	}
 
 	// 计算衰减
@@ -139,7 +142,8 @@ void ComputePointLight(Material mat,        //材质
 	spec *= att;
 }
 //计算聚光灯
-void ComputeSpotLight(Material mat,            //材质
+void ComputeSpotLight(float4 inAmbient,
+	float4 inSpecular,
 	SpotLight L,        //聚光灯
 	float3 pos,            //顶点位置
 	float3 normal,        //顶点法线
@@ -167,7 +171,7 @@ void ComputeSpotLight(Material mat,            //材质
 	lightVec /= d;
 
 	//计算环境光
-	ambient = mat.ambient * L.ambient;
+	ambient = inAmbient * L.ambient;
 	//计算漫反射系数
 	float diffuseFactor = dot(lightVec, normal);
 
@@ -175,11 +179,12 @@ void ComputeSpotLight(Material mat,            //材质
 	if (diffuseFactor > 0.0f)
 	{
 		float3 v = reflect(-lightVec, normal);
-		float specFactor = pow(max(dot(v, toEye), 0.0f), mat.specular.w);
+		float specFactor = pow(max(dot(v, toEye), 0.0f), inSpecular.w);
 		//漫反射光
-		diffuse = diffuseFactor * mat.diffuse * L.diffuse;
+		float4 mDiffuse = float4(inSpecular.xyz, 0.0f);
+		diffuse = diffuseFactor * mDiffuse * L.diffuse;
 		//高光
-		spec = specFactor * mat.specular * L.specular;
+		spec = specFactor * inSpecular * L.specular;
 	}
 
 	//聚光衰减系数

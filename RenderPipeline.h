@@ -56,6 +56,9 @@ public:
 	ID3D11Device*			Device;			
 	ID3D11DeviceContext*	DeviceContext;	
 	RenderTexture* ShadowDepthTexture;
+	RenderTexture* DeferPosTexture;
+	RenderTexture* DeferNormalTexture;
+	RenderTexture* DeferColorTexture;//x,y,z是材质本身的颜色，代表漫反射和高光反射的颜色，w表示高光强度
 	RenderTexture* DepthStencilTexture;
 	RenderTexture* RenderTagertTexture;
 	float DefualtColor[4];

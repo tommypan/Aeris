@@ -220,9 +220,15 @@ HRESULT RenderPipeline::InitRenderTexture()
 {
 	ShadowDepthTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderDepth, Width, Height);
 
-	RenderTagertTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
+	DeferPosTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
+
+	DeferNormalTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
+
+	DeferColorTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
 
 	DepthStencilTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderDepth, Width, Height);
+
+	RenderTagertTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
 
 	return true;
 }

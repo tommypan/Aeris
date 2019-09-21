@@ -28,6 +28,8 @@ public:
 	inline Matrix& GetViewMatrix(){ return _view; };
 	inline Matrix& GetProjectMatrix() { return _proj; };
 	inline bool IsShadowCamera() { return _isShadowCamera; };
+	inline bool NeedGenShadow() {return _needGenShadow;}
+	inline void SetNeedGenShadow(bool value) { _needGenShadow = value; }
 private:
 	void RenderOpaque();
 	void RenderTransparent();
@@ -44,6 +46,7 @@ public:
 	float ClearColor[4];
 private:
 	bool _isShadowCamera;
+	bool _needGenShadow;
 	Matrix	_view;
 	Matrix	_proj;
 	int _minFov;

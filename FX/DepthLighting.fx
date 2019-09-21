@@ -12,11 +12,15 @@ Texture2D shadow_tex: register(t1);
 SamplerState samTex: register( s0 );  
 SamplerState ClampSampleType:register(s1);
 
+
+const int DLCount = 1;
+const int PLCount = 4;
+const int SLCount = 1;
 cbuffer cbPerFrame
 {
-	DirectionalLight gDirLight;
-	PointLight gPointLight;
-	SpotLight gSpotLight;
+	DirectionalLight gDirLight[1];
+	PointLight gPointLight[4];
+	SpotLight gSpotLight[1];
 	float3 gEyePosW;			//观察点
 };
 
@@ -95,25 +99,33 @@ float4 PS(VertexOut pin) : SV_Target
 			float4 A, D, S;
 
 			//每个光源计算后将ADS更新到最终结果中
-			ComputeDirectionalLight(gMaterial, gDirLight, pin.NormalW, toEyeW, A, D, S);
-			ambient += A;
-			diffuse += D;
-			spec += S;
+			for (int i = 0; i < DLCount; i++)
+			{
+				ComputeDirectionalLight(gMaterial.ambient, gMaterial.specular, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
+				ambient += A;
+				diffuse += D;
+				spec += S;
+			}
 
-			ComputePointLight(gMaterial, gPointLight, pin.PosW, pin.NormalW, toEyeW, A, D, S);
-			ambient += A;
-			diffuse += D;
-			spec += S;
+			for (int i = 0; i < PLCount; i++)
+			{
+				ComputePointLight(gMaterial.ambient, gMaterial.specular, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+				ambient += A;
+				diffuse += D;
+				spec += S;
+			}
 
-			ComputeSpotLight(gMaterial, gSpotLight, pin.PosW, pin.NormalW, toEyeW, A, D, S);
-			ambient += A;
-			diffuse += D;
-			spec += S;
+			for (int i = 0; i < SLCount; i++)
+			{
+				ComputeSpotLight(gMaterial.ambient, gMaterial.specular, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+				ambient += A;
+				diffuse += D;
+				spec += S;
+			}
 
 			float4 litColor = ambient + diffuse + spec;
 
 			//最终颜色透明度使用漫反射光的
-			litColor.a = gMaterial.diffuse.a;
 			texColor = texColor + litColor;
 		}
 	}
