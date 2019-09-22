@@ -70,13 +70,17 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+	//反射颜色
+	float4 texColor = g_tex.Sample(samTex, pin.tex);
+	float4 albedoSpec = float4(texColor.xyz, gMaterial.specGloss);
+
 	//每个光源计算后得到的环境光、漫反射光、高光
 	float4 A, D, S;
 
 	//每个光源计算后将ADS更新到最终结果中
 	for (int i = 0; i < DLCount; i++)
 	{
-		ComputeDirectionalLight(gMaterial.ambient, gMaterial.albedoSpec, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
+		ComputeDirectionalLight(gMaterial.ambient, albedoSpec, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;
@@ -84,7 +88,7 @@ float4 PS(VertexOut pin) : SV_Target
 
 	for (int i = 0; i < PLCount; i++)
 	{
-		ComputePointLight(gMaterial.ambient, gMaterial.albedoSpec, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+		ComputePointLight(gMaterial.ambient, albedoSpec, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;
@@ -92,16 +96,14 @@ float4 PS(VertexOut pin) : SV_Target
 
 	for (int i = 0; i < SLCount; i++)
 	{
-		ComputeSpotLight(gMaterial.ambient, gMaterial.albedoSpec, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+		ComputeSpotLight(gMaterial.ambient, albedoSpec, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;
 	}
 
-	float4 litColor = ambient + diffuse + spec;
+	texColor = texColor + ambient + diffuse + spec;
 
-	//最终颜色透明度使用漫反射光的
-	float4 texColor = g_tex.Sample(samTex,pin.tex) + litColor;
 	float4 result = float4(texColor.x, texColor.y, texColor.z, 0.5f);
 	return result;
 }

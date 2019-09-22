@@ -50,6 +50,11 @@ struct VertexOut
 	float2 tex : TEXCOORD; 
 };
 
+struct PSOut
+{
+	float4 color    : SV_Target0;
+};
+
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
@@ -63,20 +68,22 @@ VertexOut VS(VertexIn vin)
 	return vout;
 }
 
-float4 PS(VertexOut pin) : SV_Target
+PSOut PS(VertexOut pin)
 {
+	PSOut psout; //不能用out，会与标准库重名(晕)
+	//反射颜色
+	float4 texColor = g_tex.Sample(samTex,pin.tex);
+	float4 albedoSpec = float4(texColor.xyz, gMaterial.specGloss);
+
+
 	float2 shadowCoord;
 	//shadowCoord.x = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;
 	//shadowCoord.y = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;//todo * -o.5f？ 
 	shadowCoord.x = (pin.PosD.x/pin.PosD.w)* 0.5f+ 0.5f;
 	shadowCoord.y = (pin.PosD.y/pin.PosD.w)*(-0.5f) + 0.5f;//todo * -o.5f？ 
 	float depth = pin.PosD.z/pin.PosD.w;
+	float bias = 0.001f;
 
-	float bias;
-	//设置偏斜量
-	bias = 0.001f;
-
-	float4 texColor = g_tex.Sample(samTex,pin.tex);
 	//减去阴影偏斜量
 	float ShadowMapDepth = shadow_tex.Sample(samTex, shadowCoord).r;
 	ShadowMapDepth = ShadowMapDepth + bias;
@@ -101,7 +108,7 @@ float4 PS(VertexOut pin) : SV_Target
 			//每个光源计算后将ADS更新到最终结果中
 			for (int i = 0; i < DLCount; i++)
 			{
-				ComputeDirectionalLight(gMaterial.ambient, gMaterial.albedoSpec, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
+				ComputeDirectionalLight(gMaterial.ambient, albedoSpec, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
@@ -109,7 +116,7 @@ float4 PS(VertexOut pin) : SV_Target
 
 			for (int i = 0; i < PLCount; i++)
 			{
-				ComputePointLight(gMaterial.ambient, gMaterial.albedoSpec, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+				ComputePointLight(gMaterial.ambient, albedoSpec, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
@@ -117,20 +124,18 @@ float4 PS(VertexOut pin) : SV_Target
 
 			for (int i = 0; i < SLCount; i++)
 			{
-				ComputeSpotLight(gMaterial.ambient, gMaterial.albedoSpec, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+				ComputeSpotLight(gMaterial.ambient, albedoSpec, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
 			}
 
-			float4 litColor = ambient + diffuse + spec;
-
-			//最终颜色透明度使用漫反射光的
-			texColor = texColor + litColor;
+			 texColor = texColor + ambient + diffuse + spec;
 		}
 	}
 	float4 result = float4(texColor.x, texColor.y, texColor.z, 0.5f);
-	return result;
+	psout.color = result;
+	return psout;
 }
 
 technique11 LightTech
@@ -138,7 +143,7 @@ technique11 LightTech
 	pass P0
 	{
 		SetVertexShader(CompileShader(vs_5_0, VS()));
-		SetGeometryShader(NULL);
+		//SetGeometryShader(NULL);
 		SetPixelShader(CompileShader(ps_5_0, PS()));
 	}
 }

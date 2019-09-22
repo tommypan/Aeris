@@ -14,15 +14,15 @@ enum RenderQueue
 
 struct MaterialUniform
 {
-	MaterialUniform(const XMFLOAT4& ambient_, const XMFLOAT4& specular_,const XMFLOAT4& reflect_)
+	MaterialUniform(const XMFLOAT4& ambient_, const float& gloss_,const XMFLOAT4& reflect_)
 	{
 		ambient = ambient_;
-		specular = specular_;
+		gloss = gloss_;
 		reflect = reflect_;
 	}
 
 	XMFLOAT4 ambient;
-	XMFLOAT4 specular;//w表示高光强度
+	float gloss;
 	XMFLOAT4 reflect;
 
 };
@@ -63,7 +63,7 @@ public:
 private :
 	inline MaterialUniform GetUniform()
 	{
-		MaterialUniform result(Ambient, ColorSpecular, Reflect);
+		MaterialUniform result(Ambient, gloss, Reflect);
 		return result;
 	};
 
@@ -71,7 +71,7 @@ private :
 public:
 	Texture2D * Texture;//这些地方其实可以封个ptr再暴露给外部，让外部没有机会瞎搞，不过这个只是自己用的renderengine，就算了
 	XMFLOAT4 Ambient;
-	XMFLOAT4 ColorSpecular;//x,y,z表示漫反射和高光反射出来的颜色；w表示高光强度
+	float gloss;//w表示高光强度
 	XMFLOAT4 Reflect;
 	DirectX::XMFLOAT4X4 World;
 	DirectX::XMMATRIX View;

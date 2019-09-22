@@ -56,7 +56,7 @@ bool TestCase::LoadContent()
 	Mesh* gridMesh = GeometryUtility::GetInstance()->CreateGrid(20.f, 20.f, 50, 50);
 	_grid = new Entity(gridMesh);
 	_grid->GetMaterial()->Ambient = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
-	_grid->GetMaterial()->ColorSpecular = XMFLOAT4(0.48f, 0.77f, 0.46f, 16.0f);
+	_grid->GetMaterial()->gloss = 16.0f;
 	_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
 	_grid->GetMaterial()->SetTxture("./Assets/grid.dds");
 	ID3D11SamplerState* samplerState = Texture2D::CreateSampleState(D3D11_TEXTURE_ADDRESS_WRAP);
@@ -67,7 +67,7 @@ bool TestCase::LoadContent()
 	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
 	_box = new Entity(boxMesh);
 	_box->GetMaterial()->Ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	_box->GetMaterial()->ColorSpecular = XMFLOAT4(0.7f, 0.85f, 0.7f, 16.0f);
+	_box->GetMaterial()->gloss = 16.0f;
 	_box->SetRenderQueue(RenderQueue::Transperent);
 	_box->GetTransform()->SetPosition(Vector3(0.f, 2.f, 3.f));
 	_box->GetTransform()->SetScale(Vector3(2, 2, 2));
@@ -77,7 +77,7 @@ bool TestCase::LoadContent()
 	//Mesh* boxMesh2 = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
 	_box2 = new Entity(boxMesh);
 	_box2->GetMaterial()->Ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
-	_box2->GetMaterial()->ColorSpecular = XMFLOAT4(0.7f, 0.85f, 0.7f, 16.0f);
+	_box2->GetMaterial()->gloss = 16.0f;
 	_box2->SetRenderQueue(RenderQueue::Transperent);
 	_box2->GetTransform()->SetPosition(Vector3(-1.f, 3.f, 8.f));
 	_box2->GetTransform()->SetScale(Vector3(2, 2, 2));
@@ -118,7 +118,7 @@ bool TestCase::LoadContent()
 
 	Entity * customEntity = new Entity("./Assets/12.obj");
 	customEntity->GetMaterial()->Ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
-	customEntity->GetMaterial()->ColorSpecular = XMFLOAT4(0.2f, 0.4f, 0.6f, 16.0f);
+	customEntity->GetMaterial()->gloss = 16.0f;
 	customEntity->GetTransform()->SetScale(Vector3(0.05f, 0.05f, 0.05f));
 	customEntity->GetMaterial()->SetTxture("./Assets/test2.dds");
 	customEntity->GetMaterial()->CastShaow = true;
@@ -185,7 +185,7 @@ void TestCase::Update(float dt)
 	//XMStoreFloat3(&m_spotLight.direction, XMVector3Normalize(Vector3(0, 0, 0) - Vector3(x, y, z)));
 
 	//set constant buffer
-	Shader* shader = Shader::GetShader(nullptr, "FX\\DepthLighting.fx");//todo
+	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredShading.fx");//todo
 	DirectionalLight dl[1] = { _sun->Light };
 	shader->GetVariable("gDirLight")->SetRawValue(&(dl), 0, sizeof(dl));
 	//shader->GetVariable("gPointLight")->SetRawValue(&m_pointLight, 0, sizeof(m_pointLight));

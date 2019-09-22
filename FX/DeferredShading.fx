@@ -1,6 +1,10 @@
 #include "LightHelper.fx"
 
-SamplerState samTex: register(s0);
+SamplerState samTex
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+};
+
 Texture2D gTexPosition: register(t0);
 Texture2D gTexNormal: register(t1);
 Texture2D gTexAlbedoSpec: register(t2);
@@ -20,6 +24,7 @@ cbuffer cbPerFrame
 struct VertexIn
 {
 	float3 position : POSITION;
+	float3 NormalL : NORMAL;
 	float2 tex		: TEXCOORD;
 };
 
@@ -30,10 +35,6 @@ struct VertexOut
 	float2 tex		: TEXCOORD0;
 };
 
-struct PixelOutBasic
-{
-	float4 color : SV_Target;
-};
 
 VertexOut LightingVS(VertexIn vIn)
 {
@@ -45,12 +46,11 @@ VertexOut LightingVS(VertexIn vIn)
 	return vOut;
 }
 
-PixelOutBasic LightingPS(VertexOut pIn)
+float4 LightingPS(VertexOut pIn): SV_Target
 {
-	PixelOutBasic pOut;
 	float3 position = gTexPosition.Sample(samTex, pIn.tex).rgb;
 	float3 normal = gTexNormal.Sample(samTex, pIn.tex).rgb;
-	float4 albedoSpec = gTexAlbedoSpec.Sample(samTex, pIn.tex).rgba;
+	float4 albedoSpec = gTexAlbedoSpec.Sample(samTex, pIn.tex);
 	//float specular = gTexAlbedoSpec.Sample(samTex, pIn.tex).a;
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float3 toEyeW = normalize(gEyePosW - position);
@@ -93,9 +93,12 @@ PixelOutBasic LightingPS(VertexOut pIn)
 	}
 
 
-	pOut.color = float4(pow(colorLinear, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f);
-	//pOut.color = float4(albedoSpec, 1.0f);
-	return pOut;
+	float4 color = float4(pow(colorLinear, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f);
+	//float4 color = float4(0.0f,0.0f,0.0f, 0.0f);
+	//return float4(position,1.0f);
+	return albedoSpec;
+	//return float4(normal,1.0f);
+	//return color;
 }
 
 technique11 LightTech
@@ -103,6 +106,7 @@ technique11 LightTech
 	pass P0
 	{
 		SetVertexShader(CompileShader(vs_5_0, LightingVS()));
+		SetGeometryShader( NULL );
 		SetPixelShader(CompileShader(ps_5_0, LightingPS()));
 	}
 };

@@ -29,7 +29,7 @@ public:
 	void PrepareRenderTarget();
 	void Present();
 	void ShutDown();								//release
-
+	void GetMRTRenderTarget(ID3D11RenderTargetView* result[]);
 	void SetZWrite(bool enable);
 	void SetAlphaBend(bool enable);
 
@@ -39,7 +39,8 @@ private:
 	HRESULT InitRenderTexture();
 	HRESULT InitDepthStencilState();
 	HRESULT InitBlendState();
-	HRESULT BuildRenderTextureToBackBuffer();
+	void BuildDeferShading();
+	HRESULT BuildPostEffectToBackBuffer();
 public:
 	static RenderPipeline* GetIntance()
 	{
@@ -69,10 +70,13 @@ private:
 	ID3D11DepthStencilState*_zWriteCloseState;
 	ID3D11BlendState* _blendState;
 
+	Mesh* _deferShadingMesh;
+	Material* _deferShadingMaterial;
+	MeshRender* _deferShadingTextureMeshRender;
+
 	Mesh* _finalMesh;
 	Material* _finalMaterial;
 	MeshRender* _finalTextureMeshRender;
-	Texture2D* _renderTexture;
 };
 
 #endif//_DX11DEMOBASE_H_

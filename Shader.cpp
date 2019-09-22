@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include "Macro.h"
 #include "RenderPipeline.h"
+#include "Log.h"
 
 std::unordered_map<std::string, Shader*> Shader::_shaders;
 
@@ -22,18 +23,27 @@ Shader::Shader(ID3D11Device*m_pd3dDevice, const std::string& path)
 	_valide = result==0;
 	if (!_valide)
 	{
+		if (blob)
+		{
+			char * content = (char*)blob->GetBufferPointer();
+			OutputDebugStringA(content);
+			Log::GetInstance()->LogE((std::string)content);
+		}
+			blob->Release();
 		return;
 	}
 
-	_effectTech = _effect->GetTechniqueByName("LightTech");
-	_effectMatrixVar = _effect->GetVariableByName("gWorld")->AsMatrix();
-	_effectMatrixVar = _effect->GetVariableByName("gWorldInvTranspose")->AsMatrix();
-	_effectMatrixVar = _effect->GetVariableByName("gWorldViewProj")->AsMatrix();
-	_effectVar = _effect->GetVariableByName("gMaterial");
-	_effectVar = _effect->GetVariableByName("gDirLight");
-	_effectVar = _effect->GetVariableByName("gPointLight");
-	_effectVar = _effect->GetVariableByName("gSpotLight");
-	_effectVectorVar = _effect->GetVariableByName("gEyePosW")->AsVector();
+	//_effectTech = _effect->GetTechniqueByName("LightTech");
+	//_effectMatrixVar = _effect->GetVariableByName("gWorld")->AsMatrix();
+	//_effectMatrixVar = _effect->GetVariableByName("gWorldInvTranspose")->AsMatrix();
+	//_effectMatrixVar = _effect->GetVariableByName("gWorldViewProj")->AsMatrix();
+	//_effectVar = _effect->GetVariableByName("gMaterial");
+	//_effectVar = _effect->GetVariableByName("gDirLight");
+	//_effectVar = _effect->GetVariableByName("gPointLight");
+	//_effectVar = _effect->GetVariableByName("gSpotLight");
+	//_effectVectorVar = _effect->GetVariableByName("gEyePosW")->AsVector();
+	//_effectVar = _effect->GetVariableByName("shadow_tex");
+	//没有的话也会取个默认值出来
 }
 
 Shader::~Shader()

@@ -19,7 +19,7 @@ Entity::Entity(Mesh* mesh) :_layer(Layer::Default)
 	_transform = new Transform(this);
 	_mesh = mesh;
 	_material = new Material();
-	_material->SetShader("FX\\DepthLighting.fx");
+	_material->SetShader("FX\\DeferredAttribute.fx");
 	_meshRender = new MeshRender(_mesh,_material);
 	Scene::GetInstance()->AddChild(this);
 }
@@ -30,7 +30,7 @@ Entity::Entity(const std::string&  meshPath, const std::string& materialPathh) :
 	_transform = new Transform(this);
 	_mesh = new Mesh(meshPath);
 	_material = new Material(materialPathh);
-	_material->SetShader("FX\\DepthLighting.fx");
+	_material->SetShader("FX\\DeferredAttribute.fx");
 	_meshRender = new MeshRender(_mesh, _material);
 	Scene::GetInstance()->AddChild(this);
 }
@@ -41,7 +41,7 @@ Entity::Entity(const std::string&  meshPath) :_mesh(nullptr), _material(nullptr)
 	_transform = new Transform(this);
 	_mesh = new Mesh(meshPath);
 	_material = new Material();
-	_material->SetShader("FX\\DepthLighting.fx");
+	_material->SetShader("FX\\DeferredAttribute.fx");
 	_meshRender = new MeshRender(_mesh, _material);
 	Scene::GetInstance()->AddChild(this);
 }

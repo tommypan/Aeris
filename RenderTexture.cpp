@@ -58,9 +58,9 @@ RenderTexture::~RenderTexture()
 
 }
 
-void RenderTexture::SetRenderTarget(ID3D11RenderTargetView* renderTargetView)
+void RenderTexture::SetRenderTarget(int count, ID3D11RenderTargetView* renderTargetView[])
 {
-	_deviceContext->OMSetRenderTargets(1, &renderTargetView, _depthStencilView);
+	_deviceContext->OMSetRenderTargets(count, renderTargetView, _depthStencilView);
 	//ÉèÖÃÊÓ¿Ú
 	_deviceContext->RSSetViewports(1, &_viewPort);
 }
