@@ -37,17 +37,17 @@ struct VertexOut
 
 struct PixelOutDeferred
 {
-	float4 position : SV_Target0;//世界坐标，用于光照计算方向
-	float4 normal   : SV_Target1;//本地坐标
+	float4 position : SV_Target0;//世界坐标系，用于光照计算方向
+	float4 normal   : SV_Target1;//世界坐标系
 	float4 albedoSpec  : SV_Target2;
 };
 
 VertexOut BasicVS(VertexIn vIn)
 {
 	VertexOut vOut;
-	vOut.position = mul(float4(vIn.position, 1.0f), gWorldViewProj);//忘记了float3转换为float4，w分离则是0，那么计算结果完全错误，渲染不出来
+	vOut.position = mul(float4(vIn.position, 1.0f), gWorldViewProj);//忘记了float3转换为float4，w分量则是0，那么计算结果完全错误，被裁剪完了
 	vOut.hPos = float4(vIn.position, 1.0f);
-	vOut.normal   = mul(normalize(vIn.normal), (float3x3)gWorld);
+	vOut.normal   = mul(normalize(vIn.normal), (float3x3)gWorld);//4,4行列决定原点在另外坐标系显示，对于向量可直接舍弃；normal在ps阶段转换没意义，只会浪费资源
 	vOut.tex      = vIn.tex;
 
 	return vOut;

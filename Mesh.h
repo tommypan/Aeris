@@ -17,14 +17,14 @@ public:
 	{
 		pos = cp.pos;
 		normal = cp.normal;
-		tangent = cp.tangent;
+		//tangent = cp.tangent;
 		coord = cp.coord;
 	};
 
 public:
 	XMFLOAT3 pos;
 	XMFLOAT3 normal;
-	XMFLOAT3 tangent;
+	//XMFLOAT3 tangent;
 	XMFLOAT2 coord;
 };
 

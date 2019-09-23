@@ -24,7 +24,8 @@ bool Loader::Load(const std::string& path,Mesh* mesh)
 		{
 			return false;
 		}
-		int testTextureIndex = 0;
+		int texCoordIndex = 0;
+		int normalIndex = 0;
 		while (!feof(fp))
 		{
 			char lineBuffer[256];
@@ -38,13 +39,18 @@ bool Loader::Load(const std::string& path,Mesh* mesh)
 					Vector3 texcoord;
 					SplitToVector3(lineBuffer, " ", texcoord);
 					Vector2 realTexcoord(texcoord.x, texcoord.y);
-					mesh->Vertices[testTextureIndex].coord = realTexcoord;
-					testTextureIndex++;
+					mesh->Vertices[texCoordIndex].coord = realTexcoord;
+					texCoordIndex++;
 				}
 				else if (lineBuffer[1] == 'n')
 				{
-					Vector3 normal;
-					SplitToVector3(lineBuffer, " ", normal);
+					if (normalIndex < mesh->Vertices.size())
+					{
+						Vector3 normal;
+						SplitToVector3(lineBuffer, " ", normal);
+						mesh->Vertices[normalIndex].normal = normal;
+						normalIndex++;
+					}
 				}
 				else
 				{
@@ -53,6 +59,10 @@ bool Loader::Load(const std::string& path,Mesh* mesh)
 					SplitToVector3(lineBuffer, " ", pos);
 					tex.pos = pos;
 					mesh->Vertices.push_back(tex);
+
+					/*Vector3 normal;
+					DirectX::XMStoreFloat3(&normal, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&pos)));
+					mesh->Vertices.back().normal = normal;*/
 				}
 			}
 			else if (lineBuffer[0] == 'f')

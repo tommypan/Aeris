@@ -14,19 +14,19 @@ Mesh* GeometryUtility::CreateScreenRect()
 
 	meshData->Vertices[0].pos = XMFLOAT3(-halfW, -halfH,0);
 	meshData->Vertices[0].normal = XMFLOAT3(0.f, 0.f, -1.f);
-	meshData->Vertices[0].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[0].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[0].coord = XMFLOAT2(0.f, 1.f);
 	meshData->Vertices[1].pos = XMFLOAT3(-halfW, halfH, 0);
 	meshData->Vertices[1].normal = XMFLOAT3(0.f, 0.f, -1.f);
-	meshData->Vertices[1].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[1].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[1].coord = XMFLOAT2(0.f, 0.f);
 	meshData->Vertices[2].pos = XMFLOAT3(halfW, halfH, 0);
 	meshData->Vertices[2].normal = XMFLOAT3(0.f, 0.f, -1.f);
-	meshData->Vertices[2].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[2].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[2].coord = XMFLOAT2(1.f, 0.f);
 	meshData->Vertices[3].pos = XMFLOAT3(halfW, -halfH, 0);
 	meshData->Vertices[3].normal = XMFLOAT3(0.f, 0.f, -1.f);
-	meshData->Vertices[3].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[3].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[3].coord = XMFLOAT2(1.f, 1.f);
 
 	meshData->Indices[0] = 0;
@@ -59,104 +59,104 @@ Mesh* GeometryUtility::CreateBox(float width, float height, float depth)
 	//前面
 	meshData->Vertices[0].pos = XMFLOAT3(-halfW, -halfH, -halfD);
 	meshData->Vertices[0].normal = XMFLOAT3(0.f, 0.f, -1.f);
-	meshData->Vertices[0].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[0].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[0].coord = XMFLOAT2(0.f, 1.f);
 	meshData->Vertices[1].pos = XMFLOAT3(-halfW, halfH, -halfD);
 	meshData->Vertices[1].normal = XMFLOAT3(0.f, 0.f, -1.f);
-	meshData->Vertices[1].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[1].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[1].coord = XMFLOAT2(0.f, 0.f);
 	meshData->Vertices[2].pos = XMFLOAT3(halfW, halfH, -halfD);
 	meshData->Vertices[2].normal = XMFLOAT3(0.f, 0.f, -1.f);
-	meshData->Vertices[2].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[2].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[2].coord = XMFLOAT2(1.f, 0.f);
 	meshData->Vertices[3].pos = XMFLOAT3(halfW, -halfH, -halfD);
 	meshData->Vertices[3].normal = XMFLOAT3(0.f, 0.f, -1.f);
-	meshData->Vertices[3].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[3].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[3].coord = XMFLOAT2(1.f, 1.f);
 	//左侧面
 	meshData->Vertices[4].pos = XMFLOAT3(-halfW, -halfH, halfD);
 	meshData->Vertices[4].normal = XMFLOAT3(-1.f, 0.f, 0.f);
-	meshData->Vertices[4].tangent = XMFLOAT3(0.f, 0.f, -1.f);
+	//meshData->Vertices[4].tangent = XMFLOAT3(0.f, 0.f, -1.f);
 	meshData->Vertices[4].coord = XMFLOAT2(0.f, 1.f);
 	meshData->Vertices[5].pos = XMFLOAT3(-halfW, halfH, halfD);
 	meshData->Vertices[5].normal = XMFLOAT3(-1.f, 0.f, 0.f);
-	meshData->Vertices[5].tangent = XMFLOAT3(0.f, 0.f, -1.f);
+	//meshData->Vertices[5].tangent = XMFLOAT3(0.f, 0.f, -1.f);
 	meshData->Vertices[5].coord = XMFLOAT2(0.f, 0.f);
 	meshData->Vertices[6].pos = XMFLOAT3(-halfW, halfH, -halfD);
 	meshData->Vertices[6].normal = XMFLOAT3(-1.f, 0.f, 0.f);
-	meshData->Vertices[6].tangent = XMFLOAT3(0.f, 0.f, -1.f);
+	//meshData->Vertices[6].tangent = XMFLOAT3(0.f, 0.f, -1.f);
 	meshData->Vertices[6].coord = XMFLOAT2(1.f, 0.f);
 	meshData->Vertices[7].pos = XMFLOAT3(-halfW, -halfH, -halfD);
 	meshData->Vertices[7].normal = XMFLOAT3(-1.f, 0.f, 0.f);
-	meshData->Vertices[7].tangent = XMFLOAT3(0.f, 0.f, -1.f);
+	//meshData->Vertices[7].tangent = XMFLOAT3(0.f, 0.f, -1.f);
 	meshData->Vertices[7].coord = XMFLOAT2(1.f, 1.f);
 	//背面
 	meshData->Vertices[8].pos = XMFLOAT3(halfW, -halfH, halfD);
 	meshData->Vertices[8].normal = XMFLOAT3(0.f, 0.f, 1.f);
-	meshData->Vertices[8].tangent = XMFLOAT3(-1.f, 0.f, 0.f);
+	//meshData->Vertices[8].tangent = XMFLOAT3(-1.f, 0.f, 0.f);
 	meshData->Vertices[8].coord = XMFLOAT2(0.f, 1.f);
 	meshData->Vertices[9].pos = XMFLOAT3(halfW, halfH, halfD);
 	meshData->Vertices[9].normal = XMFLOAT3(0.f, 0.f, 1.f);
-	meshData->Vertices[9].tangent = XMFLOAT3(-1.f, 0.f, 0.f);
+	//meshData->Vertices[9].tangent = XMFLOAT3(-1.f, 0.f, 0.f);
 	meshData->Vertices[9].coord = XMFLOAT2(0.f, 0.f);
 	meshData->Vertices[10].pos = XMFLOAT3(-halfW, halfH, halfD);
 	meshData->Vertices[10].normal = XMFLOAT3(0.f, 0.f, 1.f);
-	meshData->Vertices[10].tangent = XMFLOAT3(-1.f, 0.f, 0.f);
+	//meshData->Vertices[10].tangent = XMFLOAT3(-1.f, 0.f, 0.f);
 	meshData->Vertices[10].coord = XMFLOAT2(1.f, 0.f);
 	meshData->Vertices[11].pos = XMFLOAT3(-halfW, -halfH, halfD);
 	meshData->Vertices[11].normal = XMFLOAT3(0.f, 0.f, 1.f);
-	meshData->Vertices[11].tangent = XMFLOAT3(-1.f, 0.f, 0.f);
+	//meshData->Vertices[11].tangent = XMFLOAT3(-1.f, 0.f, 0.f);
 	meshData->Vertices[11].coord = XMFLOAT2(1.f, 1.f);
 	//右侧面
 	meshData->Vertices[12].pos = XMFLOAT3(halfW, -halfH, -halfD);
 	meshData->Vertices[12].normal = XMFLOAT3(1.f, 0.f, 0.f);
-	meshData->Vertices[12].tangent = XMFLOAT3(0.f, 0.f, 1.f);
+	//meshData->Vertices[12].tangent = XMFLOAT3(0.f, 0.f, 1.f);
 	meshData->Vertices[12].coord = XMFLOAT2(0.f, 1.f);
 	meshData->Vertices[13].pos = XMFLOAT3(halfW, halfH, -halfD);
 	meshData->Vertices[13].normal = XMFLOAT3(1.f, 0.f, 0.f);
-	meshData->Vertices[13].tangent = XMFLOAT3(0.f, 0.f, 1.f);
+	//meshData->Vertices[13].tangent = XMFLOAT3(0.f, 0.f, 1.f);
 	meshData->Vertices[13].coord = XMFLOAT2(0.f, 0.f);
 	meshData->Vertices[14].pos = XMFLOAT3(halfW, halfH, halfD);
 	meshData->Vertices[14].normal = XMFLOAT3(1.f, 0.f, 0.f);
-	meshData->Vertices[14].tangent = XMFLOAT3(0.f, 0.f, 1.f);
+	//meshData->Vertices[14].tangent = XMFLOAT3(0.f, 0.f, 1.f);
 	meshData->Vertices[14].coord = XMFLOAT2(1.f, 0.f);
 	meshData->Vertices[15].pos = XMFLOAT3(halfW, -halfH, halfD);
 	meshData->Vertices[15].normal = XMFLOAT3(1.f, 0.f, 0.f);
-	meshData->Vertices[15].tangent = XMFLOAT3(0.f, 0.f, 1.f);
+	//meshData->Vertices[15].tangent = XMFLOAT3(0.f, 0.f, 1.f);
 	meshData->Vertices[15].coord = XMFLOAT2(1.f, 1.f);
 	//上面
 	meshData->Vertices[16].pos = XMFLOAT3(-halfW, halfH, -halfD);
 	meshData->Vertices[16].normal = XMFLOAT3(0.f, 1.f, 0.f);
-	meshData->Vertices[16].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[16].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[16].coord = XMFLOAT2(0.f, 1.f);
 	meshData->Vertices[17].pos = XMFLOAT3(-halfW, halfH, halfD);
 	meshData->Vertices[17].normal = XMFLOAT3(0.f, 1.f, 0.f);
-	meshData->Vertices[17].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[17].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[17].coord = XMFLOAT2(0.f, 0.f);
 	meshData->Vertices[18].pos = XMFLOAT3(halfW, halfH, halfD);
 	meshData->Vertices[18].normal = XMFLOAT3(0.f, 1.f, 0.f);
-	meshData->Vertices[18].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[18].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[18].coord = XMFLOAT2(1.f, 0.f);
 	meshData->Vertices[19].pos = XMFLOAT3(halfW, halfH, -halfD);
 	meshData->Vertices[19].normal = XMFLOAT3(0.f, 1.f, 0.f);
-	meshData->Vertices[19].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[19].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[19].coord = XMFLOAT2(1.f, 1.f);
 	//底面
 	meshData->Vertices[20].pos = XMFLOAT3(-halfW, -halfH, halfD);
 	meshData->Vertices[20].normal = XMFLOAT3(0.f, -1.f, 0.f);
-	meshData->Vertices[20].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[20].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[20].coord = XMFLOAT2(0.f, 1.f);
 	meshData->Vertices[21].pos = XMFLOAT3(-halfW, -halfH, -halfD);
 	meshData->Vertices[21].normal = XMFLOAT3(0.f, -1.f, 0.f);
-	meshData->Vertices[21].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[21].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[21].coord = XMFLOAT2(0.f, 0.f);
 	meshData->Vertices[22].pos = XMFLOAT3(halfW, -halfH, -halfD);
 	meshData->Vertices[22].normal = XMFLOAT3(0.f, -1.f, 0.f);
-	meshData->Vertices[22].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[22].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[22].coord = XMFLOAT2(1.f, 0.f);
 	meshData->Vertices[23].pos = XMFLOAT3(halfW, -halfH, halfD);
 	meshData->Vertices[23].normal = XMFLOAT3(0.f, -1.f, 0.f);
-	meshData->Vertices[23].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[23].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[23].coord = XMFLOAT2(1.f, 1.f);
 
 	//构建索引
@@ -235,7 +235,7 @@ Mesh* GeometryUtility::CreateGrid(float width, float height, UINT m, UINT n)
 			meshData->Vertices[index].pos.z = tmpZ;
 
 			meshData->Vertices[index].normal = XMFLOAT3(0.f, 1.f, 0.f);
-			meshData->Vertices[index].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+			//meshData->Vertices[index].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 
 			meshData->Vertices[index].coord = XMFLOAT2(dx*i, dx*j);
 		}
@@ -416,8 +416,8 @@ Mesh* GeometryUtility::CreateSphere(float radius, int slice, int stack)
 			XMVECTOR N = XMVectorSet(x, y, z, 0.f);
 			XMStoreFloat3(&meshData->Vertices[index].normal, XMVector3Normalize(N));
 			//切线
-			XMVECTOR T = XMVectorSet(-sin(theta), 0.f, cos(theta), 0.f);
-			XMStoreFloat3(&meshData->Vertices[index].tangent, XMVector3Normalize(T));
+			//XMVECTOR T = XMVectorSet(-sin(theta), 0.f, cos(theta), 0.f);
+			//XMStoreFloat3(&meshData->Vertices[index].tangent, XMVector3Normalize(T));
 			//纹理坐标
 			meshData->Vertices[index].coord = XMFLOAT2(j*1.f / slice, i*1.f / stack);
 		}
@@ -427,12 +427,12 @@ Mesh* GeometryUtility::CreateSphere(float radius, int slice, int stack)
 	//添加顶部和底部两个顶点信息
 	meshData->Vertices[size].pos = XMFLOAT3(0.f, radius, 0.f);
 	meshData->Vertices[size].normal = XMFLOAT3(0.f, 1.f, 0.f);
-	meshData->Vertices[size].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[size].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[size].coord = XMFLOAT2(0.f, 0.f);
 
 	meshData->Vertices[size + 1].pos = XMFLOAT3(0.f, -radius, 0.f);
 	meshData->Vertices[size + 1].normal = XMFLOAT3(0.f, -1.f, 0.f);
-	meshData->Vertices[size + 1].tangent = XMFLOAT3(1.f, 0.f, 0.f);
+	//meshData->Vertices[size + 1].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 	meshData->Vertices[size + 1].coord = XMFLOAT2(0.f, 1.f);
 
 	UINT tmp(0);
