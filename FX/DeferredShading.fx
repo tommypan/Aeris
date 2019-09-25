@@ -97,8 +97,9 @@ float4 LightingPS(VertexOut pIn): SV_Target
 	//float4 color = float4(0.0f,0.0f,0.0f, 0.0f);
 	//return float4(position,1.0f);
 	//return albedoSpec;
-	return float4(normal,1.0f);
-	//return color;
+	//return float4(normal,1.0f);
+	return color;
+	//return float4(355.0f,900.0f,777.0f,1.0f);
 }
 
 technique11 LightTech
