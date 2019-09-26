@@ -89,12 +89,12 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 
 	_deferShadingMesh = GeometryUtility::GetInstance()->CreateScreenRect();
 	_deferShadingMaterial = new Material();
-	_deferShadingMaterial->SetShader("FX\\Lighting.fx");//todo
+	_deferShadingMaterial->SetShader("FX\\DepthLighting.fx");//todo
 	_deferShadingTextureMeshRender = new MeshRender(_deferShadingMesh, _deferShadingMaterial);
 
 	_finalMesh = GeometryUtility::GetInstance()->CreateScreenRect();
 	_finalMaterial = new Material();
-	_finalMaterial->SetShader("FX\\Lighting.fx");//todo
+	_finalMaterial->SetShader("FX\\DepthLighting.fx");//todo
 	_finalTextureMeshRender = new MeshRender(_finalMesh, _finalMaterial);
 
 	hr = InitBackBuffer();
@@ -122,21 +122,34 @@ void RenderPipeline::GenShadowMap()
 	ShadowDepthTexture->SetRenderTarget(0,0);
 }
 
-void RenderPipeline::PrepareRenderTarget()
+void RenderPipeline::PrepareRenderTarget(bool isDefer)
 {
-	const int mrtCount = 3;
-	ID3D11RenderTargetView* renderTarget[mrtCount] =
-	{ DeferPosTexture->GetRenderTargetView(),DeferNormalTexture->GetRenderTargetView(),DeferColorTexture->GetRenderTargetView() };
-	//GetMRTRenderTarget(renderTarget);
-	//const int mrtCount = 1;
-	//ID3D11RenderTargetView* renderTarget[mrtCount] = { RenderTagertTexture->GetRenderTargetView()};
-	DepthStencilTexture->SetRenderTarget(mrtCount, renderTarget);
+	if (isDefer)
+	{
+		const int mrtCount = 3;
+		ID3D11RenderTargetView* renderTarget[mrtCount] = { 0,0,0 };
+		GetMRTRenderTarget(renderTarget);
+		DepthStencilTexture->SetRenderTarget(mrtCount, renderTarget);
+	}
+	else
+	{
+		const int mrtCount = 1;
+		ID3D11RenderTargetView* renderTarget[mrtCount] = { RenderTagertTexture->GetRenderTargetView()};
+		DepthStencilTexture->SetRenderTarget(mrtCount, renderTarget);
+	}
+
+}
+
+void RenderPipeline::FinishRenderTarget(bool isDefer)
+{
+	if (isDefer)
+	{
+		BuildDeferShading();
+	}
 }
 
 void RenderPipeline::Present()
 {
-	BuildDeferShading();
-
 	BuildPostEffectToBackBuffer();
 
 	_swapChain->Present(0, 0);
@@ -319,10 +332,12 @@ HRESULT RenderPipeline::InitBlendState()
 void RenderPipeline::BuildDeferShading()
 {
 	SetAlphaBend(false);
-	ID3D11RenderTargetView* renderTexture = RenderTagertTexture->GetRenderTargetView();
-	DeviceContext->OMSetRenderTargets(1, &renderTexture, nullptr);
-	DeviceContext->ClearRenderTargetView(RenderTagertTexture->GetRenderTargetView(), DefualtColor);
-	_deferShadingTextureMeshRender->Render(true);
+	//ID3D11RenderTargetView* renderTexture = RenderTagertTexture->GetRenderTargetView();
+	const int mrtCount = 1;
+	ID3D11RenderTargetView* renderTarget[mrtCount] = { RenderTagertTexture->GetRenderTargetView() };
+	DepthStencilTexture->SetRenderTarget(1, renderTarget);
+	//DeviceContext->OMSetRenderTargets(1, &renderTexture, ->GetRenderTargetView());
+	_deferShadingTextureMeshRender->Render(true,true);
 	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredShading.fx");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("LightTech");
 	shader->GetResourceVariable("gTexPosition")->SetResource(DeferPosTexture->GetShaderResourceView());
@@ -343,8 +358,8 @@ HRESULT RenderPipeline::BuildPostEffectToBackBuffer()
 	SetAlphaBend(false);
 	DeviceContext->OMSetRenderTargets(1, &_backBufferRenderTargetView, nullptr);
 	DeviceContext->ClearRenderTargetView(_backBufferRenderTargetView, DefualtColor);
-	_finalTextureMeshRender->Render(true);
-	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\texture.fx");
+	_finalTextureMeshRender->Render(true,true);
+	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\Texture.fx");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("TextureTech");
 	shader->GetResourceVariable("g_tex")->SetResource(RenderTagertTexture->GetShaderResourceView());
 	D3DX11_TECHNIQUE_DESC techDesc;

@@ -32,18 +32,6 @@ Shader::Shader(ID3D11Device*m_pd3dDevice, const std::string& path)
 			blob->Release();
 		return;
 	}
-
-	//_effectTech = _effect->GetTechniqueByName("LightTech");
-	//_effectMatrixVar = _effect->GetVariableByName("gWorld")->AsMatrix();
-	//_effectMatrixVar = _effect->GetVariableByName("gWorldInvTranspose")->AsMatrix();
-	//_effectMatrixVar = _effect->GetVariableByName("gWorldViewProj")->AsMatrix();
-	//_effectVar = _effect->GetVariableByName("gMaterial");
-	//_effectVar = _effect->GetVariableByName("gDirLight");
-	//_effectVar = _effect->GetVariableByName("gPointLight");
-	//_effectVar = _effect->GetVariableByName("gSpotLight");
-	//_effectVectorVar = _effect->GetVariableByName("gEyePosW")->AsVector();
-	//_effectVar = _effect->GetVariableByName("shadow_tex");
-	//没有的话也会取个默认值出来
 }
 
 Shader::~Shader()

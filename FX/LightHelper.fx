@@ -43,7 +43,7 @@ struct SpotLight
 
 struct Material
 {
-	float4 ambient;
+	//float4 ambient;
 	float specGloss;//表示高光强度
 	float4 reflect;
 };

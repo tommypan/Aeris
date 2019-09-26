@@ -11,7 +11,7 @@ public:
 	MeshRender(Mesh* mesh, Material* material);
 	~MeshRender();
 
-	void Render(bool useCutstomMat = false);
+	void Render(bool useCutstomMat,bool isDefer);
 	void RenderShadowMap();
 private:
 	void BindBuffer();

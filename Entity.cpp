@@ -51,7 +51,7 @@ Entity::~Entity()
 	Clear();
 }
 
-void Entity::Render(CXMMATRIX view, CXMMATRIX proj, bool genShadowMap)
+void Entity::Render(CXMMATRIX view, CXMMATRIX proj, bool genShadowMap,bool isDefer)
 {
 	if (_meshRender != nullptr)
 	{
@@ -67,7 +67,7 @@ void Entity::Render(CXMMATRIX view, CXMMATRIX proj, bool genShadowMap)
 		}
 		else
 		{
-			_meshRender->Render();
+			_meshRender->Render(false,isDefer);
 		}
 	}
 	

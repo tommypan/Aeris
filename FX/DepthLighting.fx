@@ -13,14 +13,14 @@ SamplerState samTex: register( s0 );
 SamplerState ClampSampleType:register(s1);
 
 
-const int DLCount = 1;
-const int PLCount = 4;
-const int SLCount = 1;
+static const int DLCount = 1;
+static const int PLCount = 4;
+static const int SLCount = 1;
 cbuffer cbPerFrame
 {
-	DirectionalLight gDirLight[1];
-	PointLight gPointLight[4];
-	SpotLight gSpotLight[1];
+	DirectionalLight gDirLight[DLCount];
+	PointLight gPointLight[PLCount];
+	SpotLight gSpotLight[SLCount];
 	float3 gEyePosW;			//观察点
 };
 
@@ -77,12 +77,11 @@ PSOut PS(VertexOut pin)
 
 
 	float2 shadowCoord;
-	//shadowCoord.x = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;
-	//shadowCoord.y = (pin.PosD.x/pin.PosD.w)/2 + 0.5f;//todo * -o.5f？ 
 	shadowCoord.x = (pin.PosD.x/pin.PosD.w)* 0.5f+ 0.5f;
 	shadowCoord.y = (pin.PosD.y/pin.PosD.w)*(-0.5f) + 0.5f;//todo * -o.5f？ 
 	float depth = pin.PosD.z/pin.PosD.w;
 	float bias = 0.001f;
+	float4 matAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//减去阴影偏斜量
 	float ShadowMapDepth = shadow_tex.Sample(samTex, shadowCoord).r;
@@ -108,7 +107,7 @@ PSOut PS(VertexOut pin)
 			//每个光源计算后将ADS更新到最终结果中
 			for (int i = 0; i < DLCount; i++)
 			{
-				ComputeDirectionalLight(gMaterial.ambient, albedoSpec, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
+				ComputeDirectionalLight(matAmbient, albedoSpec, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
@@ -116,7 +115,7 @@ PSOut PS(VertexOut pin)
 
 			for (int i = 0; i < PLCount; i++)
 			{
-				ComputePointLight(gMaterial.ambient, albedoSpec, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+				ComputePointLight(matAmbient, albedoSpec, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
@@ -124,13 +123,17 @@ PSOut PS(VertexOut pin)
 
 			for (int i = 0; i < SLCount; i++)
 			{
-				ComputeSpotLight(gMaterial.ambient, albedoSpec, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+				ComputeSpotLight(matAmbient, albedoSpec, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
 			}
 
-			 texColor = texColor + ambient + diffuse + spec;
+			 texColor = ambient + diffuse + spec;
+		}
+		else
+		{
+			texColor  = texColor * 0.55f;
 		}
 	}
 	float4 result = float4(texColor.x, texColor.y, texColor.z, 0.5f);

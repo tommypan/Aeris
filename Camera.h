@@ -16,6 +16,13 @@ enum CameraClearFlag
 	DontClear = 2,
 };
 
+enum CameraRenderPath
+{
+	Forward = 0,
+	DeferShading = 1,
+	DeferLighting = 2,
+};
+
 class Camera : public Entity
 {
 public:
@@ -30,6 +37,8 @@ public:
 	inline bool IsShadowCamera() { return _isShadowCamera; };
 	inline bool NeedGenShadow() {return _needGenShadow;}
 	inline void SetNeedGenShadow(bool value) { _needGenShadow = value; }
+	void SetRenderPath(CameraRenderPath renderPath);
+	inline CameraRenderPath GetRenderPath() { return _renderPath; }
 private:
 	void RenderOpaque();
 	void RenderTransparent();
@@ -47,6 +56,7 @@ public:
 private:
 	bool _isShadowCamera;
 	bool _needGenShadow;
+	CameraRenderPath _renderPath;
 	Matrix	_view;
 	Matrix	_proj;
 	int _minFov;

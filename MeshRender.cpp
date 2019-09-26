@@ -88,13 +88,13 @@ MeshRender::~MeshRender()
 	_material = nullptr;
 }
 
-void MeshRender::Render(bool useCutstomMat)
+void MeshRender::Render(bool useCutstomMat, bool isDefer)
 {
 	BindBuffer();
 
 	if (!useCutstomMat)
 	{
-		_material->Render(_mesh);
+		_material->Render(_mesh, isDefer);
 	}
 }
 

@@ -14,14 +14,12 @@ enum RenderQueue
 
 struct MaterialUniform
 {
-	MaterialUniform(const XMFLOAT4& ambient_, const float& gloss_,const XMFLOAT4& reflect_)
+	MaterialUniform(const float& gloss_,const XMFLOAT4& reflect_)
 	{
-		ambient = ambient_;
 		gloss = gloss_;
 		reflect = reflect_;
 	}
 
-	XMFLOAT4 ambient;
 	float gloss;
 	XMFLOAT4 reflect;
 
@@ -40,7 +38,7 @@ public:
 	Material(const std::string& path);
 	~Material();
 
-	void Render(Mesh* mesh);
+	void Render(Mesh* mesh,bool isDefer);
 	void RenderShadowMap(Mesh* mesh);
 	void SetTxture(const std::string& name);
 	void SetTxture(Texture2D * texture_);
@@ -63,14 +61,13 @@ public:
 private :
 	inline MaterialUniform GetUniform()
 	{
-		MaterialUniform result(Ambient, gloss, Reflect);
+		MaterialUniform result(gloss, Reflect);
 		return result;
 	};
 
 	void Init();
 public:
 	Texture2D * Texture;//这些地方其实可以封个ptr再暴露给外部，让外部没有机会瞎搞，不过这个只是自己用的renderengine，就算了
-	XMFLOAT4 Ambient;
 	float gloss;//w表示高光强度
 	XMFLOAT4 Reflect;
 	DirectX::XMFLOAT4X4 World;

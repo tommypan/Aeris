@@ -26,7 +26,8 @@ public:
 
 	bool InitDirect3D(HINSTANCE hInstance, HWND hWnd);
 	void GenShadowMap();
-	void PrepareRenderTarget();
+	void PrepareRenderTarget(bool isDefer);
+	void FinishRenderTarget(bool isDefer);
 	void Present();
 	void ShutDown();								//release
 	void GetMRTRenderTarget(ID3D11RenderTargetView* result[]);

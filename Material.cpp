@@ -32,12 +32,15 @@ Material::~Material()
 	SAFE_DELETE(Texture);
 }
 
-void Material::Render(Mesh* mesh)
+void Material::Render(Mesh* mesh, bool isDefer)
 {
 	if (_shader == nullptr || mesh == nullptr)
 	{
 		return;
 	}
+
+	_shader = isDefer ? Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredAttribute.fx")
+		: Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DepthLighting.fx");
 
 	ID3DX11EffectTechnique * technique = _shader->GetTech("LightTech");
 
@@ -81,7 +84,7 @@ void Material::Render(Mesh* mesh)
 
 void Material::RenderShadowMap(Mesh* mesh)
 {
-	Shader* depthShader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DepthShader.fx");
+	Shader* depthShader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\GenDepth.fx");
 	if (depthShader != nullptr)
 	{
 		ID3DX11EffectTechnique * technique = depthShader->GetTech("LightTech");

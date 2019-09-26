@@ -2,7 +2,7 @@
 
 SamplerState samTex
 {
-    Filter = MIN_MAG_MIP_LINEAR;
+	Filter = MIN_MAG_MIP_LINEAR;
 };
 
 Texture2D gTexPosition: register(t0);
@@ -46,60 +46,63 @@ VertexOut LightingVS(VertexIn vIn)
 	return vOut;
 }
 
-float4 LightingPS(VertexOut pIn): SV_Target
+float4 LightingPS(VertexOut pIn) : SV_Target
 {
 	float3 position = gTexPosition.Sample(samTex, pIn.tex).rgb;
+	float inShadow = gTexPosition.Sample(samTex, pIn.tex).a;
 	float3 normal = gTexNormal.Sample(samTex, pIn.tex).rgb;
 	float4 albedoSpec = gTexAlbedoSpec.Sample(samTex, pIn.tex);
-	//float specular = gTexAlbedoSpec.Sample(samTex, pIn.tex).a;
-	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 matAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float3 toEyeW = normalize(gEyePosW - position);
-
 	float4 colorLinear = float4(0.0f, 0.0f, 0.0f, 0.0f);//±ÿ–Î≥ı ºªØ
-	float4 A, D, S;
-	for (int i = 0; i < DLCount; i++)
+
+	if (inShadow == 0.0f)
 	{
-		if (length(normal) > 0.0f)
+		float4 A, D, S;
+		for (int i = 0; i < DLCount; i++)
 		{
-			ComputeDirectionalLight(ambient, albedoSpec, gDirLight[i], normal, toEyeW, A, D, S);
-			colorLinear += A;
-			colorLinear += D;
-			colorLinear += S;
-			//float3 colorLinear = lambertian * albedoSpec + specular * float3(1.0f, 1.0f, 1.0f);//need do
-			//float4(pow(colorLinear, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f);
+			if (length(normal) > 0.0f)
+			{
+				ComputeDirectionalLight(matAmbient, albedoSpec, gDirLight[i], normal, toEyeW, A, D, S);
+				colorLinear += A;
+				colorLinear += D;
+				colorLinear += S;
+			}
+		}
+
+		for (int i = 0; i < PLCount; i++)
+		{
+			if (length(normal) > 0.0f)
+			{
+				ComputePointLight(matAmbient, albedoSpec, gPointLight[i], position, normal, toEyeW, A, D, S);
+				colorLinear += A;
+				colorLinear += D;
+				colorLinear += S;
+			}
+		}
+
+		for (int i = 0; i < SLCount; i++)
+		{
+			if (length(normal) > 0.0f)
+			{
+				ComputeSpotLight(matAmbient, albedoSpec, gSpotLight[i], position, normal, toEyeW, A, D, S);
+				colorLinear += A;
+				colorLinear += D;
+				colorLinear += S;
+			}
 		}
 	}
-
-	for (int i = 0; i < PLCount; i++)
+	else
 	{
-		if (length(normal) > 0.0f)
-		{
-			ComputePointLight(ambient, albedoSpec, gPointLight[i], position, normal, toEyeW, A, D, S);
-			colorLinear += A;
-			colorLinear += D;
-			colorLinear += S;
-		}
+		colorLinear = colorLinear * 0.55f;
 	}
-
-	for (int i = 0; i < SLCount; i++)
-	{
-		if (length(normal) > 0.0f)
-		{
-			ComputeSpotLight(ambient, albedoSpec, gSpotLight[i], position, normal, toEyeW, A, D, S);
-			colorLinear += A;
-			colorLinear += D;
-			colorLinear += S;
-		}
-	}
-
-
-	float4 color = float4(pow(colorLinear, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f);
-	//float4 color = float4(0.0f,0.0f,0.0f, 0.0f);
+	//colorLinear += albedoSpec;
+	//float4 color = float4(pow(colorLinear, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f); gamma correct
 	//return float4(position,1.0f);
-	//return albedoSpec;
+	// albedoSpec;
+	return colorLinear;
 	//return float4(normal,1.0f);
-	return color;
-	//return float4(355.0f,900.0f,777.0f,1.0f);
+	//return color;
 }
 
 technique11 LightTech
@@ -107,7 +110,7 @@ technique11 LightTech
 	pass P0
 	{
 		SetVertexShader(CompileShader(vs_5_0, LightingVS()));
-		SetGeometryShader( NULL );
+		SetGeometryShader(NULL);
 		SetPixelShader(CompileShader(ps_5_0, LightingPS()));
 	}
 };

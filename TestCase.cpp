@@ -33,29 +33,19 @@ bool TestCase::LoadContent()
 	//m_spotLight.spot = 96.0f;
 	//m_spotLight.range = 10000.0f;
 
-
-	//camera = new Camera();
-	//camera->cullMask = 1 << Layer::Default; //| 1 << Layer::Effect;
-	//camera->SetDepth(1);
-	//
-
-	//camera2 = new Camera();
-	//camera2->cullMask = 1 << Layer::Effect;
-	//camera2->SetDepth(2);
-	//camera2->clearFlag = CameraClearFlag::DontClear;
-
 	_camera = new Camera();
-	_camera->CullMask = 1 << Layer::Effect; //| 1 << Layer::Effect;
+	_camera->CullMask = 1 << Layer::Default; //| 1 << Layer::Effect;
 	_camera->SetDepth(1);
+	_camera->SetRenderPath(CameraRenderPath::DeferShading);
 
 	_camera2 = new Camera();
-	_camera2->CullMask = 1 << Layer::Default;
+	_camera2->CullMask = 1 << Layer::Effect;
 	_camera2->SetDepth(2);
 	_camera2->ClearFlag = CameraClearFlag::DontClear;
+	_camera2->SetRenderPath(CameraRenderPath::Forward);
 
 	Mesh* gridMesh = GeometryUtility::GetInstance()->CreateGrid(20.f, 20.f, 50, 50);
 	_grid = new Entity(gridMesh);
-	_grid->GetMaterial()->Ambient = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
 	_grid->GetMaterial()->gloss = 16.0f;
 	_grid->GetTransform()->SetPosition(Vector3(0.f, 0.f, 0.f));
 	_grid->GetMaterial()->SetTxture("./Assets/grid.dds");
@@ -66,28 +56,27 @@ bool TestCase::LoadContent()
 
 	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
 	_box = new Entity(boxMesh);
-	_box->GetMaterial()->Ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
 	_box->GetMaterial()->gloss = 16.0f;
 	_box->SetRenderQueue(RenderQueue::Transperent);
 	_box->GetTransform()->SetPosition(Vector3(0.f, 2.f, 3.f));
 	_box->GetTransform()->SetScale(Vector3(2, 2, 2));
 	_box->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
 	_box->Name = "box1";
+	_box->SetLayer(Layer::Effect);
 	//_box->GetMaterial()->CastShaow = true;
-	//Mesh* boxMesh2 = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
+
 	_box2 = new Entity(boxMesh);
-	_box2->GetMaterial()->Ambient = XMFLOAT4(0.7f, 0.85f, 0.7f, 1.0f);
 	_box2->GetMaterial()->gloss = 16.0f;
 	_box2->SetRenderQueue(RenderQueue::Transperent);
 	_box2->GetTransform()->SetPosition(Vector3(-1.f, 3.f, 8.f));
 	_box2->GetTransform()->SetScale(Vector3(2, 2, 2));
 	_box2->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), 90));
 	_box2->Name = "box2";
+	_box2->SetLayer(Layer::Effect);
 	//_box2->GetMaterial()->CastShaow = true;
 
 	//Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
 	//m_sphere[4] = new Entity(sphereMesh);
-	//m_sphere[4]->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
 	//m_sphere[4]->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
 	//m_sphere[4]->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
 	//m_sphere[4]->GetTransform()->SetPosition(Vector3(0.f, 3.5f, 0.f));
@@ -100,7 +89,6 @@ bool TestCase::LoadContent()
 
 	//		Mesh* sphereMesh = GeometryUtility::GetInstance()->CreateSphere(2, 30, 30);
 	//		m_sphere[i * 2 + j] = new Entity(sphereMesh);
-	//		m_sphere[i * 2 + j]->GetMaterial()->ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
 	//		m_sphere[i * 2 + j]->GetMaterial()->diffuse = XMFLOAT4(0.2f, 0.4f, 0.6f, 1.0f);
 	//		m_sphere[i * 2 + j]->GetMaterial()->specular = XMFLOAT4(0.9f, 0.9f, 0.9f, 16.0f);
 	//		m_sphere[i * 2 + j]->GetTransform()->SetPosition(Vector3(-5.f + i*10.f, 4.f, -5.f + j*10.f));
@@ -108,7 +96,6 @@ bool TestCase::LoadContent()
 
 	//		Mesh* cylinderMesh = GeometryUtility::GetInstance()->CreateCylinder(0.5f, 0.5f, 2, 20, 20);
 	//		m_cylinder[i * 2 + j] = new Entity(cylinderMesh);
-	//		m_cylinder[i * 2 + j]->GetMaterial()->ambient = XMFLOAT4(0.651f, 0.5f, 0.392f, 1.0f);
 	//		m_cylinder[i * 2 + j]->GetMaterial()->diffuse = XMFLOAT4(0.651f, 0.5f, 0.392f, 1.0f);
 	//		m_cylinder[i * 2 + j]->GetMaterial()->specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 16.0f);
 	//		m_cylinder[i * 2 + j]->GetTransform()->SetPosition(Vector3(-5.f + i*10.f, 1.f, -5.f + j*10.f));
@@ -116,16 +103,12 @@ bool TestCase::LoadContent()
 	//	}
 	//}
 
-	Entity * customEntity = new Entity("./Assets/12.obj");
-	customEntity->GetMaterial()->Ambient = XMFLOAT4(0.1f, 0.2f, 0.3f, 1.0f);
+	Entity * customEntity = new Entity("./Assets/beauty.obj");
 	customEntity->GetMaterial()->gloss = 16.0f;
 	customEntity->GetTransform()->SetScale(Vector3(0.05f, 0.05f, 0.05f));
 	customEntity->GetMaterial()->SetTxture("./Assets/test2.dds");
 	customEntity->GetMaterial()->CastShaow = true;
 	customEntity->Name = "npc";
-
-	Shader* deshader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredAttribute.fx");
-
 
 	InitSun();
 
@@ -191,6 +174,12 @@ void TestCase::Update(float dt)
 	//shader->GetVariable("gPointLight")->SetRawValue(&m_pointLight, 0, sizeof(m_pointLight));
 	//shader->GetVariable("gSpotLight")->SetRawValue(&m_spotLight, 0, sizeof(m_spotLight));
 	shader->GetVectorVariable("gEyePosW")->SetRawValue(&((XMFLOAT3)_camera->GetTransform()->GetPosition()), 0, sizeof(XMFLOAT3));
+
+	shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DepthLighting.fx");//todo
+	shader->GetVariable("gDirLight")->SetRawValue(&(dl), 0, sizeof(dl));
+	//shader->GetVariable("gPointLight")->SetRawValue(&m_pointLight, 0, sizeof(m_pointLight));
+	//shader->GetVariable("gSpotLight")->SetRawValue(&m_spotLight, 0, sizeof(m_spotLight));
+	shader->GetVectorVariable("gEyePosW")->SetRawValue(&((XMFLOAT3)_camera->GetTransform()->GetPosition()), 0, sizeof(XMFLOAT3));
 }
 
 void TestCase::OnMouseDown(WPARAM btnState, int x, int y)
@@ -245,11 +234,6 @@ void TestCase::InitSun()
 	_sun = new Sun();
 
 	//Æ½ÐÐ¹â
-	_sun->Light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	_sun->Light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	_sun->Light.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	_sun->Light.direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
-
 	float x = _radius*sinf(_phi)*cosf(_theta);
 	float z = _radius*sinf(_phi)*sinf(_theta);
 	float y = _radius*cosf(_phi);
@@ -262,6 +246,10 @@ void TestCase::InitSun()
 	Quaternion cameraRot;
 	Vector3 cameraPos;
 	invertM.Decompose(cameraScale, cameraRot, cameraPos);
+	Vector3 camPos = Vector3(cameraPos.x, cameraPos.y, cameraPos.z);
 	_sun->GetTransform()->SetRotation(cameraRot);
-	_sun->GetTransform()->SetPosition(Vector3(cameraPos.x, cameraPos.y, cameraPos.z));
+	_sun->GetTransform()->SetPosition(camPos);
+	camPos.Normalize();
+	Vector3 test = Vector3(-camPos.x,-camPos.y,-camPos.z);
+	_sun->Light.direction = test;
 }

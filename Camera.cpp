@@ -6,7 +6,7 @@
 
 #define CLAMP(x, upper, lower) (min(upper, max(x, lower)))
 
-Camera::Camera(bool isShadowCamera) :NearZ(1), FarZ(1000), Projection(CameraProjection::Perspective), _minFov(1), _maxFov(180), Fov(30),_depth(0), ZTest(true), ClearFlag(0)
+Camera::Camera(bool isShadowCamera) :NearZ(1), FarZ(1000), Projection(CameraProjection::Perspective), _minFov(1), _maxFov(180), Fov(30),_depth(0), ZTest(true), ClearFlag(0), _renderPath(CameraRenderPath::Forward)
 {
 	ZeroMemory(this,sizeof(this));
 	_isShadowCamera = isShadowCamera;
@@ -30,7 +30,7 @@ void Camera::Render()
 	}
 	else
 	{
-		RenderPipeline::GetIntance()->PrepareRenderTarget();
+		RenderPipeline::GetIntance()->PrepareRenderTarget(_renderPath != CameraRenderPath::Forward);
 	}
 
 	if (ClearFlag == CameraClearFlag::SolidColor)
@@ -64,12 +64,22 @@ void Camera::Render()
 
 	RenderOpaque();
 	RenderTransparent();
+
+	if (!_isShadowCamera)
+	{
+		RenderPipeline::GetIntance()->FinishRenderTarget(_renderPath != CameraRenderPath::Forward);
+	}
 }
 
 void Camera::SetDepth(int depth)
 {
 	_depth = depth;
 	Scene::GetInstance()->SortCameras();
+}
+
+void Camera::SetRenderPath(CameraRenderPath renderPath)
+{ 
+	_renderPath = renderPath;
 }
 
 void Camera::RenderOpaque()
@@ -88,7 +98,7 @@ void Camera::RenderTransparent()
 	std::map<int, std::list<Entity*>>& renderList = Scene::GetInstance()->GeSortedTransparentChildren();
 	if (renderList.size() > 0)
 	{
-		RenderPipeline::GetIntance()->SetZWrite(false);
+		RenderPipeline::GetIntance()->SetZWrite(false);//todo 要依据camera 筛选处理下
 		RenderPipeline::GetIntance()->SetAlphaBend(true);
 		InnerRenderEntitys(renderList);
 	}
@@ -121,7 +131,7 @@ void Camera::InnerRenderEntitys(std::map<int, std::list<Entity*>>& entitysMap)
 				{
 					InnnerGenShadow(*startIt);
 				}
-				(*startIt)->Render(_view, _proj, _isShadowCamera);
+				(*startIt)->Render(_view, _proj, _isShadowCamera,_renderPath != CameraRenderPath::Forward);
 			}
 			startIt++;
 		}
