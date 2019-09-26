@@ -1,51 +1,51 @@
 /***************************
 //LightHelper.fx
-//光照结构定义及计算函数  
+//光照结构定义及计算函数
 ***************************/
 
 struct DirectionalLight
 {
-	float4 ambient;	
-	float4 diffuse;	
-	float4 specular;	
-	float3 direction;	
-	float pad;			
+	float4 Ambient;
+	float4 Diffuse;
+	float4 Specular;
+	float3 Direction;
+	float Pad;
 };
 
 struct PointLight
 {
-	float4 ambient;
-	float4 diffuse;
-	float4 specular;
+	float4 Ambient;
+	float4 Diffuse;
+	float4 Specular;
 
-	float3 position;
-	float range;      
-					 
-	float3 att;
-	float pad;
+	float3 Position;
+	float Range;
+
+	float3 Att;
+	float Pad;
 };
 
 struct SpotLight
 {
-	float4 ambient;
-	float4 diffuse;
-	float4 specular;
+	float4 Ambient;
+	float4 Diffuse;
+	float4 Specular;
 
-	float3 position;
-	float range;      
-					  
-	float3 direction;
-	float spot;          
+	float3 Position;
+	float Range;
 
-	float3 att;
-	float pad;
+	float3 Direction;
+	float Spot;
+
+	float3 Att;
+	float Pad;
 };
 
 struct Material
 {
-	//float4 ambient;
-	float specGloss;//表示高光强度
-	float4 reflect;
+	//float4 Ambient;
+	float SpecGloss;//表示高光强度
+	float4 Reflect;
 };
 
 //计算平行光
@@ -64,10 +64,10 @@ void ComputeDirectionalLight(float4 inAmbient,
 	spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	// 光线方向
-	float3 lightVec = -L.direction;
+	float3 lightVec = -L.Direction;
 
 	// 环境光直接计算
-	ambient = inAmbient * L.ambient;
+	ambient = inAmbient * L.Ambient;
 
 	// 计算漫反射系数
 	//光线、法线方向归一化
@@ -83,9 +83,9 @@ void ComputeDirectionalLight(float4 inAmbient,
 		float specFactor = pow(max(dot(v, toEye), 0.0f), inSpecular.w);
 		//计算漫反射光
 		float4 mDiffuse = float4(inSpecular.xyz, 0.0f);
-		diffuse = diffuseFactor * mDiffuse * L.diffuse;
+		diffuse = diffuseFactor * mDiffuse * L.Diffuse;
 		//计算高光
-		spec = specFactor * mDiffuse * L.specular;
+		spec = specFactor * mDiffuse * L.Specular;
 	}
 }
 
@@ -105,20 +105,20 @@ void ComputePointLight(float4 inAmbient,
 	spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//光照方向：顶点到光源
-	float3 lightVec = L.position - pos;
+	float3 lightVec = L.Position - pos;
 
 	//顶点到光源距离
 	float d = length(lightVec);
 
 	//超过范围不再计算
-	if (d > L.range)
+	if (d > L.Range)
 		return;
 
 	//归一化光照方向
 	lightVec /= d;
 
 	//计算环境光
-	ambient = inAmbient * L.ambient;
+	ambient = inAmbient * L.Ambient;
 
 	//漫反射系数
 	float diffuseFactor = dot(lightVec, normal);
@@ -130,16 +130,16 @@ void ComputePointLight(float4 inAmbient,
 		float specFactor = pow(max(dot(v, toEye), 0.0f), inSpecular.w);
 		//计算漫反射光
 		float4 mDiffuse = float4(inSpecular.xyz, 0.0f);
-		diffuse = diffuseFactor * mDiffuse * L.diffuse;
+		diffuse = diffuseFactor * mDiffuse * L.Diffuse;
 		//计算高光
-		spec = specFactor * inSpecular * L.specular;
+		spec = specFactor * inSpecular * L.Specular;
 	}
 
 	// 计算衰减
-	float att = 1.0f / dot(L.att, float3(1.0f, d, d*d));
+	float Att = 1.0f / dot(L.Att, float3(1.0f, d, d*d));
 
-	diffuse *= att;
-	spec *= att;
+	diffuse *= Att;
+	spec *= Att;
 }
 //计算聚光灯
 void ComputeSpotLight(float4 inAmbient,
@@ -158,20 +158,20 @@ void ComputeSpotLight(float4 inAmbient,
 	spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//光照方向：顶点到光源
-	float3 lightVec = L.position - pos;
+	float3 lightVec = L.Position - pos;
 
 	//顶点到光源距离
 	float d = length(lightVec);
 
 	//距离大于光照方向不再计算
-	if (d > L.range)
+	if (d > L.Range)
 		return;
 
 	//归一化光照方向
 	lightVec /= d;
 
 	//计算环境光
-	ambient = inAmbient * L.ambient;
+	ambient = inAmbient * L.Ambient;
 	//计算漫反射系数
 	float diffuseFactor = dot(lightVec, normal);
 
@@ -182,16 +182,16 @@ void ComputeSpotLight(float4 inAmbient,
 		float specFactor = pow(max(dot(v, toEye), 0.0f), inSpecular.w);
 		//漫反射光
 		float4 mDiffuse = float4(inSpecular.xyz, 0.0f);
-		diffuse = diffuseFactor * mDiffuse * L.diffuse;
+		diffuse = diffuseFactor * mDiffuse * L.Diffuse;
 		//高光
-		spec = specFactor * inSpecular * L.specular;
+		spec = specFactor * inSpecular * L.Specular;
 	}
 
 	//聚光衰减系数
-	float spot = pow(max(dot(-lightVec, L.direction), 0.0f), L.spot);
+	float Spot = pow(max(dot(-lightVec, L.Direction), 0.0f), L.Spot);
 	//衰减系数
-	float att = spot / dot(L.att, float3(1.0f, d, d*d));
-	ambient *= spot;
-	diffuse *= att;
-	spec *= att;
+	float Att = Spot / dot(L.Att, float3(1.0f, d, d*d));
+	ambient *= Spot;
+	diffuse *= Att;
+	spec *= Att;
 }

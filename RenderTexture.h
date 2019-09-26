@@ -13,7 +13,7 @@ public:
 	RenderTexture(ID3D11Device* d3dDevice, ID3D11DeviceContext* deviceContext,RenderTextureType type,int TextureWidth, int TexureHeight);
 	~RenderTexture();
 
-	void SetRenderTarget(int count,ID3D11RenderTargetView* renderTarget[]);
+	void BindRenderTarget(int count,ID3D11RenderTargetView* renderTarget[]);
 	void ClearRenderTarget(float * clearColor);
 	inline ID3D11ShaderResourceView* GetShaderResourceView() {return _shaderResourceView;};
 	inline ID3D11RenderTargetView* GetRenderTargetView() { return _renderTargetView; };

@@ -98,7 +98,7 @@ void Camera::RenderTransparent()
 	std::map<int, std::list<Entity*>>& renderList = Scene::GetInstance()->GeSortedTransparentChildren();
 	if (renderList.size() > 0)
 	{
-		RenderPipeline::GetIntance()->SetZWrite(false);//todo 要依据camera 筛选处理下
+		RenderPipeline::GetIntance()->SetZWrite(false);
 		RenderPipeline::GetIntance()->SetAlphaBend(true);
 		InnerRenderEntitys(renderList);
 	}
@@ -145,5 +145,5 @@ void Camera::InnnerGenShadow(Entity* entity)
 	XMMATRIX world = XMLoadFloat4x4(&(entity->GetTransform()->GetWorldTransform()));
 	XMMATRIX view = Scene::GetInstance()->GetShadowCameraView();
 	XMMATRIX proj = Scene::GetInstance()->GetShadowCameraProj();
-	entity->GetMaterial()->SetCustomMatrix("customMVP", world*view*proj);
+	entity->GetMaterial()->SetCustomMatrix("gCustomMVP", world*view*proj);
 }

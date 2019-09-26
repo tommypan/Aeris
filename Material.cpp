@@ -67,10 +67,9 @@ void Material::Render(Mesh* mesh, bool isDefer)
 	ID3D11ShaderResourceView* textureAtrribute = Texture != nullptr ? Texture->GetShaderAttribute() : nullptr;
 	if (textureAtrribute != nullptr)
 	{
-		_shader->GetResourceVariable("g_tex")->SetResource(textureAtrribute);
-		ID3D11ShaderResourceView* test = RenderPipeline::GetIntance()->ShadowDepthTexture->GetShaderResourceView();
-		_shader->GetResourceVariable("shadow_tex")->SetResource(test);
-		_shader->GetSamplerVariable("samTex")->SetSampler(0, Texture->GetSampleState());
+		_shader->GetResourceVariable("gMainTex")->SetResource(textureAtrribute);
+		_shader->GetResourceVariable("gShadowTex")->SetResource(RenderPipeline::GetIntance()->ShadowDepthTexture->GetShaderResourceView());
+		_shader->GetSamplerVariable("gSamTex")->SetSampler(0, Texture->GetSampleState());
 	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;

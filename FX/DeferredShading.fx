@@ -1,6 +1,6 @@
 #include "LightHelper.fx"
 
-SamplerState samTex
+SamplerState gSamTex
 {
 	Filter = MIN_MAG_MIP_LINEAR;
 };
@@ -23,35 +23,35 @@ cbuffer cbPerFrame
 
 struct VertexIn
 {
-	float3 position : POSITION;
-	float3 NormalL : NORMAL;
-	float2 tex		: TEXCOORD;
+	float3 PosV : POSITION;
+	float3 NormalV : NORMAL;
+	float2 Tex		: TEXCOORD;
 };
 
 struct VertexOut
 {
-	float4 hPos		: HPOS;
-	float4 position : SV_POSITION;
-	float2 tex		: TEXCOORD0;
+	float4 HPos		: HPos;
+	float4 PosV : SV_POSITION;
+	float2 Tex		: TEXCOORD0;
 };
 
 
 VertexOut LightingVS(VertexIn vIn)
 {
 	VertexOut vOut;
-	vOut.hPos = float4(vIn.position, 1.0f);
-	vOut.position = vOut.hPos;
-	vOut.tex = vIn.tex;
+	vOut.HPos = float4(vIn.PosV, 1.0f);
+	vOut.PosV = vOut.HPos;
+	vOut.Tex = vIn.Tex;
 
 	return vOut;
 }
 
 float4 LightingPS(VertexOut pIn) : SV_Target
 {
-	float3 position = gTexPosition.Sample(samTex, pIn.tex).rgb;
-	float inShadow = gTexPosition.Sample(samTex, pIn.tex).a;
-	float3 normal = gTexNormal.Sample(samTex, pIn.tex).rgb;
-	float4 albedoSpec = gTexAlbedoSpec.Sample(samTex, pIn.tex);
+	float3 position = gTexPosition.Sample(gSamTex, pIn.Tex).rgb;
+	float inShadow = gTexPosition.Sample(gSamTex, pIn.Tex).a;
+	float3 normal = gTexNormal.Sample(gSamTex, pIn.Tex).rgb;
+	float4 albedoSpec = gTexAlbedoSpec.Sample(gSamTex, pIn.Tex);
 	float4 matAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float3 toEyeW = normalize(gEyePosW - position);
 	float4 colorLinear = float4(0.0f, 0.0f, 0.0f, 0.0f);//±ÿ–Î≥ı ºªØ

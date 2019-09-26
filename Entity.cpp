@@ -73,13 +73,6 @@ void Entity::Render(CXMMATRIX view, CXMMATRIX proj, bool genShadowMap,bool isDef
 	
 }
 
-void Entity::test(CXMMATRIX view, CXMMATRIX proj)
-{
-	XMMATRIX world = XMLoadFloat4x4(&_transform->GetWorldTransform());
-	XMMATRIX mvp = (world*view*proj);
-	_material->SetCustomMatrix("customMVP",mvp);
-}
-
 void Entity::SetRenderQueue(int queue)
 {
 	bool needResort = false;

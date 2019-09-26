@@ -8,28 +8,27 @@ cbuffer CBMatrix:register(b0)
 
 struct VertexIn
 {
-	float3 Pos:POSITION;
-
-	float3 NormalL : NORMAL;	//todo 去掉
-	float2 tex : TEXCOORD;
+	float3 PosC:POSITION;
+	float3 NormalV : NORMAL;
+	float2 Tex : TEXCOORD;
 };
 
 
 struct VertexOut
 {
-	float4 Pos:SV_POSITION;
-	float4 color:COlOR;
+	float4 PosC:SV_POSITION;
+	float4 Color:Color;
 };
 
 
-VertexOut VS(VertexIn ina)
+VertexOut VS(VertexIn vIn)
 {
 	VertexOut outa;
-	outa.Pos = mul(float4(ina.Pos, 1.0f), gWorldViewProj);
+	outa.PosC = mul(float4(vIn.PosC, 1.0f), gWorldViewProj);
 	return outa;
 }
 
-float4 PS(VertexOut outa) : SV_Target
+float4 PS(VertexOut pIn) : SV_Target
 {
 	return float4(1,1,1,1);
 }

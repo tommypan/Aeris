@@ -1,16 +1,16 @@
 #include "LightHelper.fx"
 
-Texture2D g_tex: register(t0);
-Texture2D shadow_tex: register(t1);
-//SamplerState samTex
+Texture2D gMainTex: register(t0);
+Texture2D gShadowTex: register(t1);
+//SamplerState gSamTex
 //{
 //    Filter = MIN_MAG_MIP_LINEAR;
 //	AddressU = WRAP;  
 //    AddressV = WRAP;
 //};
 
-SamplerState samTex: register( s0 );  
-SamplerState ClampSampleType:register(s1);
+SamplerState gSamTex: register( s0 );  
+SamplerState gClampSampleType:register(s1);
 
 
 static const int DLCount = 1;
@@ -30,71 +30,70 @@ cbuffer cbPerObject
 	float4x4 gWorldInvTranspose;//世界矩阵的逆矩阵的转置
 	float4x4 gWorldViewProj;
 	Material gMaterial;
-	
-	float4x4 customMVP;
+	float4x4 gCustomMVP;
 };
 
 struct VertexIn
 {
-	float3 PosL    : POSITION;	//顶点坐标
-	float3 NormalL : NORMAL;	//顶点法线
-	float2 tex : TEXCOORD;
+	float3 PosV    : POSITION;	//顶点坐标
+	float3 NormalV : NORMAL;	//顶点法线
+	float2 Tex : TEXCOORD;
 };
 
 struct VertexOut
 {
-	float4 PosH    : SV_POSITION;	//投影后的坐标
+	float4 PosC    : SV_POSITION;	//投影后的坐标
 	float3 PosW    : POSITION0;		//世界变换后的坐标
 	float4 PosD    : POSITION1;		//深度相机空间的pos
 	float3 NormalW : NORMAL;		//世界变换后的顶点法线
-	float2 tex : TEXCOORD; 
+	float2 Tex : TEXCOORD; 
 };
 
 struct PSOut
 {
-	float4 color    : SV_Target0;
+	float4 Color    : SV_Target0;
 };
 
-VertexOut VS(VertexIn vin)
+VertexOut VS(VertexIn vIn)
 {
 	VertexOut vout;
 
-	vout.PosW = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
-	vout.NormalW = mul(vin.NormalL, (float3x3)gWorldInvTranspose);
+	vout.PosW = mul(float4(vIn.PosV, 1.0f), gWorld).xyz;
+	vout.NormalW = mul(vIn.NormalV, (float3x3)gWorldInvTranspose);
 
-	vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
-	vout.PosD = mul(float4(vin.PosL, 1.0f), customMVP);
-	vout.tex = vin.tex;    
+	vout.PosC = mul(float4(vIn.PosV, 1.0f), gWorldViewProj);
+	vout.PosD = mul(float4(vIn.PosV, 1.0f), gCustomMVP);
+	vout.Tex = vIn.Tex;    
 	return vout;
 }
 
-PSOut PS(VertexOut pin)
+PSOut PS(VertexOut pIn)
 {
 	PSOut psout; //不能用out，会与标准库重名(晕)
 	//反射颜色
-	float4 texColor = g_tex.Sample(samTex,pin.tex);
-	float4 albedoSpec = float4(texColor.xyz, gMaterial.specGloss);
+	float4 texColor = gMainTex.Sample(gSamTex,pIn.Tex);
+	float4 albedoSpec = float4(texColor.xyz, gMaterial.SpecGloss);
 
 
 	float2 shadowCoord;
-	shadowCoord.x = (pin.PosD.x/pin.PosD.w)* 0.5f+ 0.5f;
-	shadowCoord.y = (pin.PosD.y/pin.PosD.w)*(-0.5f) + 0.5f;//todo * -o.5f？ 
-	float depth = pin.PosD.z/pin.PosD.w;
+	shadowCoord.x = (pIn.PosD.x/pIn.PosD.w)* 0.5f+ 0.5f;
+	shadowCoord.y = (pIn.PosD.y/pIn.PosD.w)*(-0.5f) + 0.5f;//todo * -o.5f？ 
+	float depth = pIn.PosD.z/pIn.PosD.w;
 	float bias = 0.001f;
 	float4 matAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//减去阴影偏斜量
-	float ShadowMapDepth = shadow_tex.Sample(samTex, shadowCoord).r;
+	float ShadowMapDepth = gShadowTex.Sample(gSamTex, shadowCoord).r;
 	ShadowMapDepth = ShadowMapDepth + bias;
 	//if (saturate(shadowCoord.x) == shadowCoord.x&&saturate(shadowCoord.y) == shadowCoord.y)
 	{
 		if (ShadowMapDepth >= depth)
 		{
 			//插值运算有可能使法线不再单位化，重新单位化法线
-			pin.NormalW = normalize(pin.NormalW);
+			pIn.NormalW = normalize(pIn.NormalW);
 			
 			//顶点到观察点向量，归一化
-			float3 toEyeW = normalize(gEyePosW - pin.PosW);
+			float3 toEyeW = normalize(gEyePosW - pIn.PosW);
 
 			//初始化颜色值全部为0
 			float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -107,7 +106,7 @@ PSOut PS(VertexOut pin)
 			//每个光源计算后将ADS更新到最终结果中
 			for (int i = 0; i < DLCount; i++)
 			{
-				ComputeDirectionalLight(matAmbient, albedoSpec, gDirLight[i], pin.NormalW, toEyeW, A, D, S);
+				ComputeDirectionalLight(matAmbient, albedoSpec, gDirLight[i], pIn.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
@@ -115,7 +114,7 @@ PSOut PS(VertexOut pin)
 
 			for (int i = 0; i < PLCount; i++)
 			{
-				ComputePointLight(matAmbient, albedoSpec, gPointLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+				ComputePointLight(matAmbient, albedoSpec, gPointLight[i], pIn.PosW, pIn.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
@@ -123,7 +122,7 @@ PSOut PS(VertexOut pin)
 
 			for (int i = 0; i < SLCount; i++)
 			{
-				ComputeSpotLight(matAmbient, albedoSpec, gSpotLight[i], pin.PosW, pin.NormalW, toEyeW, A, D, S);
+				ComputeSpotLight(matAmbient, albedoSpec, gSpotLight[i], pIn.PosW, pIn.NormalW, toEyeW, A, D, S);
 				ambient += A;
 				diffuse += D;
 				spec += S;
@@ -137,7 +136,7 @@ PSOut PS(VertexOut pin)
 		}
 	}
 	float4 result = float4(texColor.x, texColor.y, texColor.z, 0.5f);
-	psout.color = result;
+	psout.Color = result;
 	return psout;
 }
 

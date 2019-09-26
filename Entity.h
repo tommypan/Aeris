@@ -25,7 +25,6 @@ public:
 	~Entity();
 
 	void Render(DirectX::CXMMATRIX view, DirectX::CXMMATRIX proj,bool genShadowMap,bool isDefer);
-	void test(CXMMATRIX view, CXMMATRIX proj);
 	void SetRenderQueue(int queue);
 	inline Transform * GetTransform() { return _transform; };
 	Material* GetMaterial()const { return _material; };

@@ -119,7 +119,7 @@ bool RenderPipeline::InitDirect3D(HINSTANCE hInstance, HWND hWnd)
 void RenderPipeline::GenShadowMap()
 {
 	ShadowDepthTexture->ClearRenderTarget(DefualtColor);
-	ShadowDepthTexture->SetRenderTarget(0,0);
+	ShadowDepthTexture->BindRenderTarget(0,0);
 }
 
 void RenderPipeline::PrepareRenderTarget(bool isDefer)
@@ -129,13 +129,13 @@ void RenderPipeline::PrepareRenderTarget(bool isDefer)
 		const int mrtCount = 3;
 		ID3D11RenderTargetView* renderTarget[mrtCount] = { 0,0,0 };
 		GetMRTRenderTarget(renderTarget);
-		DepthStencilTexture->SetRenderTarget(mrtCount, renderTarget);
+		DepthStencilTexture->BindRenderTarget(mrtCount, renderTarget);
 	}
 	else
 	{
 		const int mrtCount = 1;
 		ID3D11RenderTargetView* renderTarget[mrtCount] = { RenderTagertTexture->GetRenderTargetView()};
-		DepthStencilTexture->SetRenderTarget(mrtCount, renderTarget);
+		DepthStencilTexture->BindRenderTarget(mrtCount, renderTarget);
 	}
 
 }
@@ -332,11 +332,9 @@ HRESULT RenderPipeline::InitBlendState()
 void RenderPipeline::BuildDeferShading()
 {
 	SetAlphaBend(false);
-	//ID3D11RenderTargetView* renderTexture = RenderTagertTexture->GetRenderTargetView();
 	const int mrtCount = 1;
 	ID3D11RenderTargetView* renderTarget[mrtCount] = { RenderTagertTexture->GetRenderTargetView() };
-	DepthStencilTexture->SetRenderTarget(1, renderTarget);
-	//DeviceContext->OMSetRenderTargets(1, &renderTexture, ->GetRenderTargetView());
+	DepthStencilTexture->BindRenderTarget(1, renderTarget);
 	_deferShadingTextureMeshRender->Render(true,true);
 	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredShading.fx");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("LightTech");
@@ -361,7 +359,7 @@ HRESULT RenderPipeline::BuildPostEffectToBackBuffer()
 	_finalTextureMeshRender->Render(true,true);
 	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\Texture.fx");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("TextureTech");
-	shader->GetResourceVariable("g_tex")->SetResource(RenderTagertTexture->GetShaderResourceView());
+	shader->GetResourceVariable("gMainTex")->SetResource(RenderTagertTexture->GetShaderResourceView());
 	D3DX11_TECHNIQUE_DESC techDesc;
 	m_pTechnique->GetDesc(&techDesc);
 	for (UINT i = 0; i < techDesc.Passes; ++i)
