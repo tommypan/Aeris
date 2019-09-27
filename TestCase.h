@@ -33,8 +33,7 @@ private:
 	Entity*		_grid;
 	Entity*		_water;
 	Entity*		_box[4];
-	Entity*		_sphere[5];
-	Entity*		_cylinder[4];
+	Entity*		_wall[4];
 
 	float							_theta;
 	float							_phi;

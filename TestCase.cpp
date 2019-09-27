@@ -67,9 +67,10 @@ bool TestCase::LoadContent()
 
 
 	Mesh* boxMesh = GeometryUtility::GetInstance()->CreateBox(2, 1.5f, 2);
+	Mesh* wallMesh = GeometryUtility::GetInstance()->CreateBox(0.1, 1.5f, 20);
 	float signX = -1.0f;
 	float signZ = -1.0f;
-	for (int i = 0; i < 4; i++ )
+	for (int i = 0; i < 4; i++)
 	{
 		_box[i] = new Entity(boxMesh);
 		_box[i]->GetMaterial()->gloss = 16.0f;
@@ -79,6 +80,33 @@ bool TestCase::LoadContent()
 		_box[i]->GetMaterial()->SetTxture("./Assets/grid.dds");
 		_box[i]->SetLayer(Layer::Effect);
 		_box[i]->GetMaterial()->CastShaow = true;
+
+		_wall[i] = new Entity(wallMesh);
+		_wall[i]->GetMaterial()->gloss = 16.0f;
+		if (i == 0)
+		{
+			_wall[i]->GetTransform()->SetPosition(Vector3(-10, _box[i]->GetTransform()->GetPosition().y, 0));
+		}
+		else if (i == 1)
+		{
+			_wall[i]->GetTransform()->SetPosition(Vector3(0, _box[i]->GetTransform()->GetPosition().y, -10));
+		}
+		else if (i == 2)
+		{
+			_wall[i]->GetTransform()->SetPosition(Vector3(10 * signX, _box[i]->GetTransform()->GetPosition().y, 0));
+
+		}
+		else
+		{
+			_wall[i]->GetTransform()->SetPosition(Vector3(0, _box[i]->GetTransform()->GetPosition().y, 10));
+		}
+		_wall[i]->GetTransform()->SetScale(Vector3(1, 4, 1));
+		_wall[i]->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), (3.14159 / 2)*i));//angle竟然是弧度制，fuck
+		_wall[i]->Name = "box";
+		_wall[i]->GetMaterial()->SetTxture("./Assets/grid.dds");
+		_wall[i]->SetLayer(Layer::Effect);
+		_wall[i]->GetMaterial()->CastShaow = true;
+
 		_pointLights[i].ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 		_pointLights[i].diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
 		_pointLights[i].specular = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
@@ -91,7 +119,7 @@ bool TestCase::LoadContent()
 			signX = -1.0f;
 			signZ = 1.0f;
 		}
-		else if(i == 1)
+		else if (i == 1)
 		{
 			signX = 1.0f;
 			signZ = -1.0f;
@@ -107,7 +135,7 @@ bool TestCase::LoadContent()
 	Entity * customEntity = new Entity("./Assets/beauty.obj");
 	customEntity->GetMaterial()->gloss = 16.0f;
 	customEntity->GetTransform()->SetScale(Vector3(0.05f, 0.05f, 0.05f));
-	customEntity->GetMaterial()->SetTxture("./Assets/test2.dds");
+	customEntity->GetMaterial()->SetTxture("./Assets/grid.dds");
 	customEntity->GetMaterial()->CastShaow = true;
 	customEntity->Name = "npc";
 
@@ -126,14 +154,9 @@ void TestCase::UnLoadContent()
 	{
 		SAFE_DELETE(_box[i]);
 	}
-	for (int i = 0; i < 5; i++)
-	{
-		SAFE_DELETE(_sphere[i]);
-	}
-
 	for (int i = 0; i < 4; i++)
 	{
-		SAFE_DELETE(_cylinder[i]);
+		SAFE_DELETE(_wall[i]);
 	}
 
 	Shader::ReleaseAllShader();
@@ -161,7 +184,7 @@ void TestCase::Update(float dt)
 	_camera2->GetTransform()->SetRotation(cameraRot);
 	_camera2->GetTransform()->SetPosition(cameraPos);
 
-	
+
 	//点光源和聚光灯要设置其位置
 	//点光源位置
 	//_pointLight.position = XMFLOAT3(0.0f, 5.0f, 0.0f);
@@ -189,7 +212,7 @@ void TestCase::Update(float dt)
 	shader->GetVariable("gPointLight")->SetRawValue(&_pointLights, 0, sizeof(_pointLights));
 	//shader->GetVariable("gSpotLight")->SetRawValue(&_spotLight, 0, sizeof(_spotLight));
 	shader->GetVectorVariable("gEyePosW")->SetRawValue(&((XMFLOAT3)_camera->GetTransform()->GetPosition()), 0, sizeof(XMFLOAT3));
-	
+
 }
 
 void TestCase::OnMouseDown(WPARAM btnState, int x, int y)
