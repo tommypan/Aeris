@@ -933,6 +933,14 @@ inline void Vector3::Normalize()
 	XMStoreFloat3(this, X);
 }
 
+inline void Vector3::Negative()
+{
+	using namespace DirectX;
+	this->x = - this->x;
+	this->y = -this->y;
+	this->z = -this->z;
+}
+
 inline void Vector3::Normalize(Vector3& result) const
 {
 	using namespace DirectX;

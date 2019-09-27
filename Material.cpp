@@ -39,8 +39,15 @@ void Material::Render(Mesh* mesh, bool isDefer)
 		return;
 	}
 
-	_shader = isDefer ? Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredAttribute.fx")
-		: Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DepthLighting.fx");
+	if (!_reciveShadow && !isDefer)
+	{
+		_shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\NormalLighting.fx");
+	}
+	else
+	{
+		_shader = isDefer ? Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredAttribute.fx")
+			: Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DepthLighting.fx");
+	}
 
 	ID3DX11EffectTechnique * technique = _shader->GetTech("LightTech");
 
@@ -118,15 +125,16 @@ void Material::SetShader(const std::string& name)
 
 void Material::SetReciveShadow(bool value)
 {
-	if (_reciveShadow)
-	{
-		std::string name = "Depth" + _shader->Name;//todo check
-		_shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, name);
-	}
-	else
-	{
-		//todo
-	}
+	//if (_reciveShadow)
+	//{
+	//	std::string name = "Depth" + _shader->Name;//todo check
+	//	_shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, name);
+	//}
+	//else
+	//{
+	//	//todo
+	//}
+	_reciveShadow = value;
 }
 
 void Material::SetCustomMatrix(const std::string& name,DirectX::XMMATRIX& matrix)

@@ -26,13 +26,13 @@ private:
 	Camera * _camera2;
 	//光源和材质
 	Sun*				_sun;
-	PointLight						_pointLight;
+	PointLight						_pointLights[4];
 	SpotLight						_spotLight;
 
 	//绘制的几种几何图形
 	Entity*		_grid;
-	Entity*		_box;
-	Entity*		_box2;
+	Entity*		_water;
+	Entity*		_box[4];
 	Entity*		_sphere[5];
 	Entity*		_cylinder[4];
 
