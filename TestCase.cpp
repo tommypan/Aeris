@@ -101,7 +101,7 @@ bool TestCase::LoadContent()
 			_wall[i]->GetTransform()->SetPosition(Vector3(0, _box[i]->GetTransform()->GetPosition().y, 10));
 		}
 		_wall[i]->GetTransform()->SetScale(Vector3(1, 4, 1));
-		_wall[i]->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), (3.14159 / 2)*i));//angle竟然是弧度制，fuck
+		_wall[i]->GetTransform()->SetRotation(Quaternion::CreateFromAxisAngle(Vector3::Up, (PI / 2.f)*i));//angle竟然是弧度制，fuck
 		_wall[i]->Name = "box";
 		_wall[i]->GetMaterial()->SetTxture("./Assets/grid.dds");
 		_wall[i]->SetLayer(Layer::Effect);
