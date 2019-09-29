@@ -175,7 +175,7 @@ void RenderPipeline::ShutDown()
 
 void RenderPipeline::GetMRTRenderTarget(ID3D11RenderTargetView* result[])
 {
-	result[0] = GBuggerPosTexture->GetRenderTargetView();
+	result[0] = GBufferPosTexture->GetRenderTargetView();
 	result[1] = GBufferNormalTexture->GetRenderTargetView();
 	result[2] = GBufferColorTexture->GetRenderTargetView();
 };
@@ -258,7 +258,7 @@ HRESULT RenderPipeline::InitRenderTexture()
 {
 	ShadowDepthTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderDepth, Width, Height);
 
-	GBuggerPosTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
+	GBufferPosTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
 
 	GBufferNormalTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
 
@@ -338,7 +338,7 @@ void RenderPipeline::BuildDeferShading()
 	_deferShadingTextureMeshRender->Render(true,true);
 	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredShading.fx");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("LightTech");
-	shader->GetResourceVariable("gTexPosition")->SetResource(GBuggerPosTexture->GetShaderResourceView());
+	shader->GetResourceVariable("gTexPosition")->SetResource(GBufferPosTexture->GetShaderResourceView());
 	shader->GetResourceVariable("gTexNormal")->SetResource(GBufferNormalTexture->GetShaderResourceView());
 	shader->GetResourceVariable("gTexAlbedoSpec")->SetResource(GBufferColorTexture->GetShaderResourceView());
 	D3DX11_TECHNIQUE_DESC techDesc;
