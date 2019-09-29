@@ -175,9 +175,9 @@ void RenderPipeline::ShutDown()
 
 void RenderPipeline::GetMRTRenderTarget(ID3D11RenderTargetView* result[])
 {
-	result[0] = DeferPosTexture->GetRenderTargetView();
-	result[1] = DeferNormalTexture->GetRenderTargetView();
-	result[2] = DeferColorTexture->GetRenderTargetView();
+	result[0] = GBuggerPosTexture->GetRenderTargetView();
+	result[1] = GBufferNormalTexture->GetRenderTargetView();
+	result[2] = GBufferColorTexture->GetRenderTargetView();
 };
 
 void RenderPipeline::SetZWrite(bool enable)
@@ -258,11 +258,11 @@ HRESULT RenderPipeline::InitRenderTexture()
 {
 	ShadowDepthTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderDepth, Width, Height);
 
-	DeferPosTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
+	GBuggerPosTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
 
-	DeferNormalTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
+	GBufferNormalTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
 
-	DeferColorTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
+	GBufferColorTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderTarget, Width, Height);
 
 	DepthStencilTexture = new RenderTexture(Device, DeviceContext, RenderTextureType::RenderDepth, Width, Height);
 
@@ -338,9 +338,9 @@ void RenderPipeline::BuildDeferShading()
 	_deferShadingTextureMeshRender->Render(true,true);
 	Shader* shader = Shader::GetShader(RenderPipeline::GetIntance()->Device, "FX\\DeferredShading.fx");
 	ID3DX11EffectTechnique * m_pTechnique = shader->GetTech("LightTech");
-	shader->GetResourceVariable("gTexPosition")->SetResource(DeferPosTexture->GetShaderResourceView());
-	shader->GetResourceVariable("gTexNormal")->SetResource(DeferNormalTexture->GetShaderResourceView());
-	shader->GetResourceVariable("gTexAlbedoSpec")->SetResource(DeferColorTexture->GetShaderResourceView());
+	shader->GetResourceVariable("gTexPosition")->SetResource(GBuggerPosTexture->GetShaderResourceView());
+	shader->GetResourceVariable("gTexNormal")->SetResource(GBufferNormalTexture->GetShaderResourceView());
+	shader->GetResourceVariable("gTexAlbedoSpec")->SetResource(GBufferColorTexture->GetShaderResourceView());
 	D3DX11_TECHNIQUE_DESC techDesc;
 	m_pTechnique->GetDesc(&techDesc);
 	for (UINT i = 0; i < techDesc.Passes; ++i)

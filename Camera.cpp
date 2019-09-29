@@ -36,9 +36,9 @@ void Camera::Render()
 	if (ClearFlag == CameraClearFlag::SolidColor)
 	{
 		RenderPipeline::GetIntance()->RenderTagertTexture->ClearRenderTarget(ClearColor);
-		RenderPipeline::GetIntance()->DeferColorTexture->ClearRenderTarget(ClearColor);
-		RenderPipeline::GetIntance()->DeferNormalTexture->ClearRenderTarget(ClearColor);
-		RenderPipeline::GetIntance()->DeferPosTexture->ClearRenderTarget(ClearColor);
+		RenderPipeline::GetIntance()->GBufferColorTexture->ClearRenderTarget(ClearColor);
+		RenderPipeline::GetIntance()->GBufferNormalTexture->ClearRenderTarget(ClearColor);
+		RenderPipeline::GetIntance()->GBuggerPosTexture->ClearRenderTarget(ClearColor);
 		RenderPipeline::GetIntance()->DepthStencilTexture->ClearRenderTarget(ClearColor);
 	}
 	else if (ClearFlag == CameraClearFlag::DepthOnly)
