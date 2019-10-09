@@ -30,6 +30,7 @@ float4 PS(VertexOut pIn) : SV_Target
 {
 	float4 texColor = gMainTex.Sample(samState,pIn.Tex);
 	//float4 result = float4(texColor.x,texColor.y,texColor.z,1);
+	//float4 color = float4(pow(texColor, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f); //gamma correct
 	return texColor;
 }
 

@@ -97,12 +97,10 @@ float4 LightingPS(VertexOut pIn) : SV_Target
 		colorLinear = colorLinear * 0.55f;
 	}
 	//colorLinear += albedoSpec;
-	//float4 color = float4(pow(colorLinear, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f); gamma correct
 	//return float4(position,1.0f);
 	// albedoSpec;
 	return colorLinear;
 	//return float4(normal,1.0f);
-	//return color;
 }
 
 technique11 LightTech
